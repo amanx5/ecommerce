@@ -1,194 +1,141 @@
 import { FILE_PATHS } from "@/constants";
 import { appendFile } from "node:fs/promises";
 import { Request, Response } from "express";
+import { isError } from "@/utils/data-types";
 
-export enum LOG_LEVELS {
-  INFO = 1,
-  WARN = 2,
-  ERROR = 3,
-}
-
-export type LogLevel = LOG_LEVELS;
+export type LogLevel = "info" | "warn" | "error";
 export type LogElements = unknown[];
+export type LogTimestamp = number;
+export type LogType = "app" | "sql";
+export type LogTarget = "console" | "file" | "both" | "none";
 
 export type Log = {
+  at: LogTimestamp;
   level: LogLevel;
   elements: LogElements;
-  time: string;
 };
 
-export enum LOGS_TARGET {
-  CONSOLE = "console",
-  FILE = "file",
-  BOTH = "both",
-  NONE = "none",
-}
+export const LOGS_TARGET_ALL: LogTarget[] = ["console", "file", "both", "none"];
 
-const logsTargets = Object.values(LOGS_TARGET);
+export const LOGS_TARGET_DEFAULTS: Record<LogType, LogTarget> = {
+  app: "console",
+  sql: "none",
+};
 
-const appLogsTarget = logsTargets.includes(process.env.APP_LOGS as LOGS_TARGET)
-  ? process.env.APP_LOGS
-  : LOGS_TARGET.CONSOLE;
+export const LOGS_TARGET_ENV_VARS: Record<LogType, string> = {
+  app: "APP_LOGS",
+  sql: "SQL_LOGS",
+};
 
-const sqlLogsTarget = logsTargets.includes(process.env.SQL_LOGS as LOGS_TARGET)
-  ? process.env.SQL_LOGS
-  : LOGS_TARGET.CONSOLE;
+function resolveTargets(type: LogType) {
+  const targetSetInEnv = process.env[LOGS_TARGET_ENV_VARS[type]];
+  const target = isValidLogsTarget(targetSetInEnv)
+    ? targetSetInEnv
+    : LOGS_TARGET_DEFAULTS[type];
 
-function getDateTimeStrForLogging() {
-  return new Date().toLocaleString();
-}
+  return {
+    inFile: target === "file" || target === "both",
+    inConsole: target === "console" || target === "both",
+  };
 
-function prepareErrorText(err: Error) {
-  const mainText = `${err.name}: ${err.message}`;
-  const stackText = err.stack && err.stack != mainText ? "\n" + err.stack : "";
-  return `${mainText}${stackText}`;
-}
-
-function prepareMetadataText(log: Log, hideLogLevel?: boolean) {
-  const { time, level } = log;
-  const logLevelName = LOG_LEVELS[level];
-
-  const timeStr = "[" + time + "] ";
-  const levelStr = hideLogLevel ? "" : "[" + logLevelName + "] ";
-
-  return timeStr + levelStr;
-}
-
-function prepareElementsText(log: Log) {
-  const { elements } = log;
-  const messageStr = elements[0];
-
-  const otherElementsStr =
-    elements.length > 1 ? elements.slice(1).map(formatElement).join("") : "";
-
-  return messageStr + otherElementsStr;
-
-  function formatElement(el: unknown) {
-    let str;
-
-    try {
-      if (el instanceof Error) {
-        if (hasOriginalError(el)) {
-          str = "\nOriginal " + prepareErrorText(el.original);
-        }
-        str += "\n" + prepareErrorText(el);
-      } else {
-        str = JSON.stringify(el, null, 2);
-      }
-    } catch (err) {
-      str = "Error occured while stringifying log element: " + err;
-    }
-
-    return str + "\n";
+  function isValidLogsTarget(value: unknown): value is LogTarget {
+    return LOGS_TARGET_ALL.includes(value as LogTarget);
   }
 }
 
-function hasOriginalError(obj: unknown): obj is { original: Error } {
-  if (typeof obj === "object" && obj !== null && hasOriginalProperty(obj)) {
-    return obj.original instanceof Error;
-  }
-  return false;
-
-  function hasOriginalProperty(obj: object): obj is { original: Error } {
-    return Object.hasOwn(obj, "original");
-  }
-}
-
-export function addConsoleLog(level: LogLevel, ...elements: LogElements) {
+export function logConsole(level: LogLevel, ...elements: LogElements) {
   switch (level) {
-    case LOG_LEVELS.ERROR:
+    case "error":
       console.error(...elements);
       break;
-    case LOG_LEVELS.INFO:
+    case "info":
       console.info(...elements);
       break;
-    case LOG_LEVELS.WARN:
+    case "warn":
       console.warn(...elements);
       break;
   }
 }
 
-export async function addAppLog(level: LogLevel, elements: LogElements) {
-  const log: Log = {
-    level,
-    elements,
-    time: getDateTimeStrForLogging(),
-  };
+export async function logFile(type: LogType, text: string) {
+  const fileName = FILE_PATHS.logs[type];
 
-  const metadataText = prepareMetadataText(log);
-  const elementsText = prepareElementsText(log);
-  const completeText = metadataText + elementsText;
+  try {
+    await appendFile(fileName, "\n" + text);
+  } catch (err) {
+    logConsole("error", `Unable to write logs in file: ${fileName}\n`, err);
+  }
+}
 
-  // logging in console
-  if (
-    appLogsTarget === LOGS_TARGET.BOTH ||
-    appLogsTarget === LOGS_TARGET.CONSOLE
-  ) {
-    addConsoleLog(level, completeText);
+export async function addAppLog(level: LogLevel, ...elements: LogElements) {
+  const time = new Date().toLocaleString();
+  const lines = getLines();
+
+  const { inConsole, inFile } = resolveTargets("app");
+
+  if (inConsole) {
+    logConsole(level, lines);
   }
 
-  // logging in file
-  if (
-    appLogsTarget === LOGS_TARGET.BOTH ||
-    appLogsTarget === LOGS_TARGET.FILE
-  ) {
-    try {
-      await appendFile(FILE_PATHS.logsApp, "\n" + completeText);
-    } catch (err) {
-      addConsoleLog(LOG_LEVELS.ERROR, [
-        `Error occured in updating ${FILE_PATHS.logsApp} file.`,
-        err,
-      ]);
+  if (inFile) {
+    await logFile("app", lines);
+  }
+
+  function getLines() {
+    let lines = `[${time}] [${level}] ${elements[0]}`;
+
+    if (elements.length > 1) {
+      lines += "\n" + elements.slice(1).map(elementToLine).join("\n");
+    }
+
+    return lines;
+
+    function elementToLine(el: unknown) {
+      try {
+        return isError(el) ? errorToLine(el) : JSON.stringify(el, null, 2);
+      } catch (err) {
+        return "Failed to convert log element to line. Log element: " + el;
+      }
+
+      function errorToLine(err: Error): string {
+        const { name, message, stack, cause } = err;
+
+        const mainText = name + ": " + message;
+        const stackText = stack != mainText ? "\n" + stack : "";
+        const causeText = isError(cause) ? "\n" + errorToLine(cause) : "";
+
+        return mainText + stackText + causeText;
+      }
     }
   }
 }
 
-export async function addSqlLog(sql: string) {
-  const log: Log = {
-    level: LOG_LEVELS.INFO,
-    elements: [sql],
-    time: getDateTimeStrForLogging(),
-  };
-  const metadataText = prepareMetadataText(log, true);
-  const elementsText = prepareElementsText(log);
-  const completeText = metadataText + elementsText;
-
-  // logging in console
-  if (
-    sqlLogsTarget === LOGS_TARGET.BOTH ||
-    sqlLogsTarget === LOGS_TARGET.CONSOLE
-  ) {
-    addConsoleLog(LOG_LEVELS.INFO, completeText);
-  }
-
-  // logging in file
-  if (
-    sqlLogsTarget === LOGS_TARGET.BOTH ||
-    sqlLogsTarget === LOGS_TARGET.FILE
-  ) {
-    try {
-      await appendFile(FILE_PATHS.logsSql, "\n" + completeText);
-    } catch (err) {
-      addConsoleLog(LOG_LEVELS.ERROR, [
-        `Error occured in updating ${FILE_PATHS.logsSql} file.`,
-        err,
-      ]);
-    }
-  }
-}
-
-export function addAppRequestLog(req: Request, res: Response) {
+export async function addRequestLog(req: Request, res: Response) {
   const { start, err } = res.locals;
   const durationMs = Number(process.hrtime.bigint() - start) / 1_000_000;
 
-  const logLevel: LogLevel = err ? LOG_LEVELS.ERROR : LOG_LEVELS.INFO;
-
-  const logMessage =
+  const firstLine =
     `${req.method} "${req.originalUrl}"  ` +
     `→ "${res.statusCode} ${res.statusMessage}" ` +
     `(${durationMs.toFixed(2)} ms)`;
 
-  const logElements = err ? [logMessage, err] : [logMessage];
+  const level = err ? "error" : "info";
+  const elements = err ? [firstLine, err] : [firstLine];
 
-  addAppLog(logLevel, logElements);
+  await addAppLog(level, ...elements);
+}
+
+export async function addSqlLog(sql: string) {
+  const time = new Date().toLocaleString();
+  const line = `[${time}] ${sql}`;
+
+  const { inConsole, inFile } = resolveTargets("sql");
+
+  if (inConsole) {
+    logConsole("info", line);
+  }
+
+  if (inFile) {
+    await logFile("sql", line);
+  }
 }

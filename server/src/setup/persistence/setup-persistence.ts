@@ -9,7 +9,6 @@ import {
   addSqlLog,
   isDevelopment,
   isProduction,
-  LOG_LEVELS,
   seedStaticTables,
 } from "@/utils/";
 import { Sequelize } from "sequelize";
@@ -49,7 +48,9 @@ export async function setupPersistence(): Promise<PersistenceHelpers> {
     await instance.authenticate();
     const modelsMap = defineModels(instance);
     // TODO: use migrations in production
-    await instance.sync(isDevelopment() ? { force: true } : {});
+    await instance.sync({
+      force: isDevelopment(),
+    });
     await seedStaticTables(modelsMap);
 
     return {
@@ -57,10 +58,7 @@ export async function setupPersistence(): Promise<PersistenceHelpers> {
       modelsMap,
     };
   } catch (err) {
-    addAppLog(LOG_LEVELS.ERROR, [
-      "Error occured while setting up persistence layer.",
-      err,
-    ]);
+    addAppLog("error", "Failed to set up persistence layer.", err);
 
     return await terminateApplication(instance);
   }

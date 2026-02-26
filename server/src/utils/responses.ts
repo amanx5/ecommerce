@@ -24,8 +24,5 @@ export function sendResponseError(
   clientMessage: string,
   error?: unknown,
 ) {
-  return next({
-    error,
-    message: clientMessage,
-  });
+  return next(new Error(clientMessage, { cause: error }));
 }

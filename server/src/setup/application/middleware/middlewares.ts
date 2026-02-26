@@ -9,7 +9,7 @@ import {
 } from "@/api";
 import { FILE_PATHS, HttpStatus } from "@/constants";
 import type { DefinedModelsMap } from "@/setup/";
-import { addAppRequestLog, sendResponseError, isDevelopment } from "@/utils";
+import { addRequestLog, sendResponseError, isDevelopment } from "@/utils";
 import cors from "cors";
 import express, {
   type RequestHandler,
@@ -54,7 +54,7 @@ const uiBuildMiddleware = express.static(FILE_PATHS.uiBuild);
 const loggerMiddleware: RequestHandler = (req, res, next) => {
   res.locals.start = process.hrtime.bigint();
 
-  res.on("finish", () => addAppRequestLog(req, res));
+  res.on("finish", () => addRequestLog(req, res));
 
   next();
 };
@@ -103,7 +103,7 @@ const notFoundMiddleware: RequestHandler = (_req, res, _next) => {
 // ******************************************************************************************************************
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const errorMiddleware: ErrorRequestHandler = (err, req, res, next) => {
-  res.locals.err = err;
+  res.locals.err = err; // for logging in loggerMiddleware
   res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
     message: err?.message || "Something went wrong",
   });
