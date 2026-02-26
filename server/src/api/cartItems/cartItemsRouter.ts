@@ -26,7 +26,11 @@ export function getCartItemsRouter(modelsMap: DefinedModelsMap) {
         include.push("product");
       }
 
-      const items = await CartItem.findAll({ include });
+      const items = await CartItem.findAll({
+        include,
+        order: [["createdAt", "DESC"]],
+      });
+
       sendResponse(
         res,
         HttpStatus.OK,
@@ -46,7 +50,12 @@ export function getCartItemsRouter(modelsMap: DefinedModelsMap) {
     const { productId, quantity = 1, deliveryOptionId = "1" } = req.body;
 
     if (!productId) {
-      return sendResponse(res, HttpStatus.BAD_REQUEST, false, "Product ID is required");
+      return sendResponse(
+        res,
+        HttpStatus.BAD_REQUEST,
+        false,
+        "Product ID is required",
+      );
     }
 
     const quantityIncrement = parseInt(quantity, 10);

@@ -78,7 +78,9 @@ export function getProductsRouter(modelsMap: DefinedModelsMap) {
           });
         }
       } else {
-        results = await Product.findAll();
+        results = await Product.findAll({
+          order: [["createdAt", "DESC"]],
+        });
       }
 
       sendResponse(
