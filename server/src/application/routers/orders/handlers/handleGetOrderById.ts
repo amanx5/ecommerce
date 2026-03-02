@@ -1,17 +1,14 @@
+import { getUserId } from "@/application/routers/auth/utils";
+import { Responder } from "@/application/utils";
 import { HttpStatus } from "@/constants";
 import { Order, OrderItem, Product } from "@/persistance/models";
-import { sendResponse, sendResponseError } from "@/application/utils";
-import { Request, Response, type NextFunction } from "express";
+import type { RequestHandler } from "express";
 
-export async function handleGetOrderById(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
+export const handleGetOrderById: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
     const orderId = Array.isArray(id) ? id[0] : id;
-
+    const userId = getUserId(res);
     const expand = req.query.expand;
     const include = [
       {
@@ -28,17 +25,19 @@ export async function handleGetOrderById(
             : [],
       },
     ];
+    const where = {
+      id: orderId,
+      userId,
+    };
 
-    const order = await Order.findByPk(orderId, {
-      include,
-    });
+    const order = await Order.findOne({ where, include });
 
     if (!order) {
-      return sendResponse(res, HttpStatus.NOT_FOUND, false, "Order not found", null);
+      return Responder.failure(res, HttpStatus.NOT_FOUND, "Order not found");
     }
 
-    sendResponse(res, HttpStatus.OK, true, "Order fetched successfully", order);
+    Responder.success(res, HttpStatus.OK, "Order fetched successfully", order);
   } catch (error) {
-    sendResponseError(next, "Failed to fetch order", error);
+    Responder.error(res, "Failed to fetch order", error);
   }
-}
+};

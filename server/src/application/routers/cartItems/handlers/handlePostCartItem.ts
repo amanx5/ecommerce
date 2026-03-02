@@ -1,23 +1,19 @@
+import { Responder } from "@/application/utils";
+import { getUserId } from "@/application/routers/auth/utils";
 import { HttpStatus } from "@/constants";
 import { CartItem } from "@/persistance/models";
-import { sendResponse, sendResponseError } from "@/application/utils";
-import { Request, Response, type NextFunction } from "express";
+import type { RequestHandler } from "express";
 
-const min = 0;
+const min = 1;
 const max = 10;
 
-export async function handlePostCartItem(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
+export const handlePostCartItem: RequestHandler = async (req, res) => {
   const { productId, quantity = 1, deliveryOptionId = "1" } = req.body;
 
   if (!productId) {
-    return sendResponse(
+    return Responder.failure(
       res,
       HttpStatus.BAD_REQUEST,
-      false,
       "Product ID is required",
     );
   }
@@ -29,26 +25,27 @@ export async function handlePostCartItem(
     quantityIncrement <= max;
 
   if (!isQuantityValid) {
-    return sendResponse(
+    return Responder.failure(
       res,
       HttpStatus.BAD_REQUEST,
-      false,
-      "Quantity must be a number between 1 and 10",
+      `Quantity must be a number between ${min} and ${max}`,
     );
   }
 
   try {
-    let cartItem = await CartItem.findOne({ where: { productId } });
+    const userId = getUserId(res);
+    let cartItem = await CartItem.findOne({
+      where: { productId, userId },
+    });
 
     if (cartItem) {
       const currentQuantity = cartItem.get("quantity");
 
       if (currentQuantity + quantityIncrement > max) {
         const available = max - currentQuantity;
-        return sendResponse(
+        return Responder.failure(
           res,
           HttpStatus.BAD_REQUEST,
-          false,
           available < 1
             ? "You have already added maximum quantity of this item to the cart"
             : `You can add maximum of ${available} more items`,
@@ -61,11 +58,12 @@ export async function handlePostCartItem(
         productId,
         quantity: quantityIncrement,
         deliveryOptionId,
+        userId,
       });
     }
 
-    sendResponse(res, HttpStatus.CREATED, true, "Item added to cart", cartItem);
+    Responder.success(res, HttpStatus.CREATED, "Item added to cart", cartItem);
   } catch (err) {
-    sendResponseError(next, "Failed to add item to cart", err);
+    Responder.error(res, "Failed to add item to cart", err);
   }
-}
+};

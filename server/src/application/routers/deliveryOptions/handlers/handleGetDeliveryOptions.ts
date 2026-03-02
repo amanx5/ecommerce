@@ -1,24 +1,19 @@
 import { expandDeliveryOption } from "@/application/routers/deliveryOptions/deliveryOptionsUtil";
+import { Responder } from "@/application/utils";
 import { HttpStatus } from "@/constants";
 import { DeliveryOption } from "@/persistance/models";
-import { sendResponse, sendResponseError } from "@/application/utils";
-import { Request, Response, type NextFunction } from "express";
+import type { RequestHandler } from "express";
 
-export async function handleGetDeliveryOptions(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
+export const handleGetDeliveryOptions: RequestHandler = async (req, res) => {
   try {
     const { expand } = req.query;
     const deliveryOptions = await DeliveryOption.findAll();
     const successMessage = "Delivery options fetched successfully";
 
     if (expand == undefined) {
-      return sendResponse(
+      return Responder.success(
         res,
         HttpStatus.OK,
-        true,
         successMessage,
         deliveryOptions,
       );
@@ -28,14 +23,13 @@ export async function handleGetDeliveryOptions(
       expandDeliveryOption(deliveryOption, expand),
     );
 
-    sendResponse(
+    Responder.success(
       res,
       HttpStatus.OK,
-      true,
       successMessage,
       deliveryOptionsExpanded,
     );
   } catch (err) {
-    sendResponseError(next, "Failed to fetch delivery options", err);
+    Responder.error(res, "Failed to fetch delivery options", err);
   }
-}
+};

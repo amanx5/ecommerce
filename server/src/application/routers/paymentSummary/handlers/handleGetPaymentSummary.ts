@@ -1,20 +1,18 @@
+import { Responder } from "@/application/utils";
+import { getUserId } from "@/application/routers/auth/utils/user";
 import { HttpStatus } from "@/constants";
 import { CartItem, Product, DeliveryOption } from "@/persistance/models/";
-import { sendResponse, sendResponseError } from "@/application/utils";
-import { isNumber } from "@/utils";
-import { Request, Response, type NextFunction } from "express";
+import { type RequestHandler } from "express";
 
-export async function handleGetPaymentSummary(
-  _req: Request,
-  res: Response,
-  next: NextFunction,
-) {
+export const handleGetPaymentSummary: RequestHandler = async (_req, res) => {
   try {
+    const where = { userId: getUserId(res) };
     const cartItems = await CartItem.findAll({
       include: [
         { model: Product, as: "product" },
         { model: DeliveryOption, as: "deliveryOption" },
       ],
+      where,
     });
 
     let totalItems = 0;
@@ -22,21 +20,17 @@ export async function handleGetPaymentSummary(
     let shippingCostCents = 0;
 
     for (const cartItem of cartItems) {
-      const quantity = cartItem.quantity;
-      const productPriceCents = cartItem.product?.priceCents;
-      const deliveryPriceCents = cartItem.deliveryOption?.priceCents;
-
-      if (
-        !isNumber(quantity) ||
-        !isNumber(productPriceCents) ||
-        !isNumber(deliveryPriceCents)
-      ) {
-        throw new Error("Cart item data is invalid");
+      if (!cartItem.product || !cartItem.deliveryOption) {
+        throw new Error("Association fields are missing in cart item");
       }
+
+      const quantity = cartItem.quantity;
+      const productPriceCents = cartItem.product.priceCents;
+      const deliveryPriceCents = cartItem.deliveryOption.priceCents;
 
       totalItems += quantity;
       productCostCents += productPriceCents * quantity;
-      shippingCostCents += deliveryPriceCents;
+      shippingCostCents += deliveryPriceCents * quantity;
     }
 
     const totalCostBeforeTaxCents = productCostCents + shippingCostCents;
@@ -52,14 +46,13 @@ export async function handleGetPaymentSummary(
       totalCostCents,
     };
 
-    sendResponse(
+    return Responder.success(
       res,
       HttpStatus.OK,
-      true,
       "Payment summary fetched successfully",
       summary,
     );
-  } catch (error) {
-    sendResponseError(next, "Failed to fetch payment summary", error);
+  } catch (err) {
+    return Responder.error(res, "Failed to fetch payment summary", err);
   }
-}
+};

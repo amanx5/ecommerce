@@ -1,36 +1,33 @@
+import { Responder } from "@/application/utils";
+import { getUserId } from "@/application/routers/auth/utils";
 import { HttpStatus } from "@/constants";
 import { CartItem } from "@/persistance/models";
-import { sendResponse, sendResponseError } from "@/application/utils";
-import { Request, Response, type NextFunction } from "express";
+import { type RequestHandler } from "express";
 
-export async function handlePutCartItem(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
+export const handlePutCartItem: RequestHandler = async (req, res) => {
   const { productId } = req.params;
   const { deliveryOptionId } = req.body;
 
   try {
-    const cartItem = await CartItem.findOne({ where: { productId } });
+    const userId = getUserId(res);
+    const cartItem = await CartItem.findOne({
+      where: { productId, userId },
+    });
 
     if (cartItem) {
       if (deliveryOptionId !== undefined) {
         await cartItem.update({ deliveryOptionId });
       }
-      sendResponse(
+      Responder.success(
         res,
         HttpStatus.OK,
-        true,
         "Cart item updated successfully",
         cartItem,
       );
     } else {
-      sendResponse(res, HttpStatus.NOT_FOUND, false, "Item not found in cart");
+      Responder.failure(res, HttpStatus.NOT_FOUND, "Item not found in cart");
     }
   } catch (err) {
-    sendResponseError(next, "Failed to update cart item", err);
+    Responder.error(res, "Failed to update cart item", err);
   }
-}
-
-handlePutCartItem.examples = ["/api/cartItems/123"];
+};

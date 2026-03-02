@@ -1,5 +1,4 @@
-import type { Product } from "./Product";
-import type { DeliveryOption } from "./DeliveryOption";
+import type { DeliveryOption, Product, User } from "@/persistance/models/";
 import {
   Association,
   CreationOptional,
@@ -24,6 +23,7 @@ export class CartItem extends Model<
   // foreign keys
   declare productId: ForeignKey<Product["id"]>;
   declare deliveryOptionId: ForeignKey<DeliveryOption["id"]> | null;
+  declare userId: ForeignKey<User["id"]>;
 
   // Association properties (aka Non-persistent properties, transient, Eager-loaded relations)
   declare product?: NonAttribute<Product>;
@@ -36,6 +36,7 @@ export class CartItem extends Model<
 
   static initModel(sequelize: Sequelize) {
     this.init(
+      // attributes
       {
         id: {
           type: DataTypes.UUID,
@@ -57,9 +58,18 @@ export class CartItem extends Model<
           type: DataTypes.STRING,
           references: { model: "delivery_options", key: "id" },
         },
+        userId: {
+          type: DataTypes.UUID,
+          allowNull: false,
+          references: {
+            model: "users",
+            key: "id",
+          },
+        },
         createdAt: DataTypes.DATE,
         updatedAt: DataTypes.DATE,
       },
+      // options
       {
         sequelize,
         tableName: "cart_items",

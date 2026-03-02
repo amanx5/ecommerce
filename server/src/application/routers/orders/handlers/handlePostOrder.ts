@@ -1,3 +1,5 @@
+import { getUserId } from "@/application/routers/auth/utils";
+import { Responder } from "@/application/utils";
 import { HttpStatus } from "@/constants";
 import {
   CartItem,
@@ -6,39 +8,39 @@ import {
   OrderItem,
   Product,
 } from "@/persistance/models";
-import { sendResponse, sendResponseError } from "@/application/utils";
-import { isNumber, isString } from "@/utils";
-import { Request, Response, type NextFunction } from "express";
+import { isObject } from "@/utils";
+import { type RequestHandler } from "express";
 
-export async function handlePostOrder(
-  _req: Request,
-  res: Response,
-  next: NextFunction,
-) {
+export const handlePostOrder: RequestHandler = async (_req, res) => {
   const sequelize = Order.sequelize;
   if (!sequelize) {
-    return sendResponseError(next, "Server error. Please try again later.");
+    return Responder.error(
+      res,
+      "Failed to create order",
+      "Sequelize instance is not available on Order model.",
+    );
   }
 
   const t = await sequelize.transaction();
 
   try {
+    const userId = getUserId(res);
     const cartItems = await CartItem.findAll({
       include: [
         { model: Product, as: "product" },
         { model: DeliveryOption, as: "deliveryOption" },
       ],
+      where: { userId },
       transaction: t,
     });
 
     if (cartItems.length === 0) {
       await t.rollback();
-      return sendResponse(
+
+      return Responder.failure(
         res,
         HttpStatus.BAD_REQUEST,
-        false,
         "Can't create order. Cart is empty",
-        null,
       );
     }
 
@@ -46,23 +48,18 @@ export async function handlePostOrder(
     const orderItemsData = [];
 
     for (const cartItem of cartItems) {
-      const quantity = cartItem.quantity;
-      const productId = cartItem.productId;
-      const productPriceCents = cartItem.product?.priceCents;
-      const deliveryDays = cartItem.deliveryOption?.deliveryDays;
-      const deliveryPriceCents = cartItem.deliveryOption?.priceCents;
-
-      if (
-        !isString(productId) ||
-        !isNumber(quantity) ||
-        !isNumber(productPriceCents) ||
-        !isNumber(deliveryPriceCents) ||
-        !isNumber(deliveryDays)
-      ) {
-        throw new Error("Cart item is not valid");
+      if (!isObject(cartItem.product) || !isObject(cartItem.deliveryOption)) {
+        throw new Error("Association fields are missing in cart item");
       }
 
-      totalCostCents += productPriceCents * quantity + deliveryPriceCents;
+      const quantity = cartItem.quantity;
+      const productId = cartItem.productId;
+      const productPriceCents = cartItem.product.priceCents;
+      const deliveryDays = cartItem.deliveryOption.deliveryDays;
+      const deliveryPriceCents = cartItem.deliveryOption.priceCents;
+
+      totalCostCents +=
+        productPriceCents * quantity + deliveryPriceCents * quantity;
 
       const estimatedDeliveryTimeMs =
         Date.now() + deliveryDays * 24 * 60 * 60 * 1000;
@@ -80,13 +77,10 @@ export async function handlePostOrder(
     const orderData = {
       orderTimeMs: Date.now(),
       totalCostCents: totalCostCentsWithTax,
+      userId,
     };
 
     const order = await Order.create(orderData, { transaction: t });
-
-    if (!order) {
-      throw new Error("Failed to create order");
-    }
 
     const orderItemsToCreate = orderItemsData.map((item) => ({
       ...item,
@@ -95,18 +89,18 @@ export async function handlePostOrder(
 
     await OrderItem.bulkCreate(orderItemsToCreate, { transaction: t });
 
-    await CartItem.destroy({ where: {}, transaction: t });
+    await CartItem.destroy({ where: { userId }, transaction: t });
 
     await t.commit();
-    sendResponse(
+
+    Responder.success(
       res,
       HttpStatus.CREATED,
-      true,
       "Order created successfully",
       order,
     );
-  } catch (error) {
+  } catch (err) {
     await t.rollback();
-    sendResponseError(next, "Failed to create order", error);
+    Responder.error(res, "Failed to create order", err);
   }
-}
+};

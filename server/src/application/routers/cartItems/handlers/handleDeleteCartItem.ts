@@ -1,26 +1,24 @@
-import { HttpStatus } from "@/constants";
+import { Responder } from "@/application/utils";
+import { getUserId } from "@/application/routers/auth/utils";
 import { CartItem } from "@/persistance/models";
-import { sendResponse, sendResponseError } from "@/application/utils";
-import { Request, Response, type NextFunction } from "express";
+import { HttpStatus } from "@/constants";
+import { type RequestHandler } from "express";
 
-export async function handleDeleteCartItem(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
+export const handleDeleteCartItem: RequestHandler = async (req, res) => {
   const { productId } = req.params;
 
   try {
-    const deletedCount = await CartItem.destroy({ where: { productId } });
+    const userId = getUserId(res);
+    const deletedCount = await CartItem.destroy({
+      where: { productId, userId },
+    });
 
     if (deletedCount > 0) {
-      sendResponse(res, HttpStatus.NO_CONTENT, true, "Item removed from cart");
+      Responder.noContent(res);
     } else {
-      sendResponse(res, HttpStatus.NOT_FOUND, false, "Item not found in cart");
+      Responder.failure(res, HttpStatus.NOT_FOUND, "Item not found in cart");
     }
   } catch (err) {
-    sendResponseError(next, "Failed to remove item from cart", err);
+    Responder.error(res, "Failed to remove item from cart", err);
   }
-}
-
-handleDeleteCartItem.examples = ["/api/cartItems/123"];
+};

@@ -1,9 +1,11 @@
+import type { User } from "@/persistance/models/";
 import {
   CreationOptional,
   DataTypes,
   InferAttributes,
   InferCreationAttributes,
   Model,
+  type ForeignKey,
   type Sequelize,
 } from "sequelize";
 
@@ -17,6 +19,10 @@ export class Order extends Model<
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 
+  // association
+  declare userId: ForeignKey<User["id"]>;
+
+  // initialization
   static initModel(sequelize: Sequelize) {
     this.init(
       {
@@ -29,7 +35,17 @@ export class Order extends Model<
         totalCostCents: { type: DataTypes.INTEGER, allowNull: false },
         createdAt: DataTypes.DATE,
         updatedAt: DataTypes.DATE,
+
+        userId: {
+          type: DataTypes.UUID,
+          allowNull: false,
+          references: {
+            model: "users",
+            key: "id",
+          },
+        },
       },
+      // options
       {
         sequelize,
         tableName: "orders",

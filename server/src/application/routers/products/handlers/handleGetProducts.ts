@@ -1,33 +1,14 @@
+import { Responder } from "@/application/utils";
 import { HttpStatus } from "@/constants";
 import { Product } from "@/persistance/models";
-import { sendResponse, sendResponseError } from "@/application/utils";
 import { isObject, isString } from "@/utils";
-import { Request, Response, type NextFunction } from "express";
+import type { RequestHandler } from "express";
 import Fuse from "fuse.js";
 import { Op } from "sequelize";
 
 let fuse: Fuse<unknown> | null = null;
 
-async function getSearchIndex() {
-  if (!fuse) {
-    const lightweightProducts = await Product.findAll({
-      attributes: ["id", "name", "keywords"],
-    });
-    const data = lightweightProducts.map((p) => p.dataValues);
-
-    fuse = new Fuse(data, {
-      keys: ["name", "keywords"],
-      threshold: 0.4,
-    });
-  }
-  return fuse;
-}
-
-export async function handleGetProducts(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
+export const handleGetProducts: RequestHandler = async (req, res) => {
   try {
     const { search } = req.query;
 
@@ -69,19 +50,28 @@ export async function handleGetProducts(
       });
     }
 
-    sendResponse(
+    Responder.success(
       res,
       HttpStatus.OK,
-      true,
       "Products fetched successfully",
       results,
     );
   } catch (err) {
-    sendResponseError(next, "Failed to fetch products", err);
+    Responder.error(res, "Failed to fetch products", err);
   }
-}
+};
 
-handleGetProducts.examples = [
-  "/api/products?search=apple",
-  "/api/products?search=socks",
-];
+async function getSearchIndex() {
+  if (!fuse) {
+    const lightweightProducts = await Product.findAll({
+      attributes: ["id", "name", "keywords"],
+    });
+    const data = lightweightProducts.map((p) => p.dataValues);
+
+    fuse = new Fuse(data, {
+      keys: ["name", "keywords"],
+      threshold: 0.4,
+    });
+  }
+  return fuse;
+}

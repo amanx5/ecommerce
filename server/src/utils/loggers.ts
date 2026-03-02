@@ -100,27 +100,35 @@ export async function addAppLog(level: LogLevel, ...elements: LogElements) {
       function errorToLine(err: Error): string {
         const { name, message, stack, cause } = err;
 
-        const mainText = name + ": " + message;
-        const stackText = stack != mainText ? "\n" + stack : "";
-        const causeText = isError(cause) ? "\n" + errorToLine(cause) : "";
+        let errorInfoText = name + ": " + message;
+        const errorCauseText = isError(cause)
+          ? "\nCause: " + errorToLine(cause)
+          : "";
 
-        return mainText + stackText + causeText;
+        if (stack) {
+          errorInfoText = stack.includes(errorInfoText)
+            ? stack
+            : errorInfoText + "\n" + stack;
+        }
+
+        return errorInfoText + errorCauseText;
       }
     }
   }
 }
 
 export async function addRequestLog(req: Request, res: Response) {
-  const { start, err } = res.locals;
-  const durationMs = Number(process.hrtime.bigint() - start) / 1_000_000;
+  const { start, error } = res.locals;
 
-  const firstLine =
-    `${req.method} "${req.originalUrl}"  ` +
-    `→ "${res.statusCode} ${res.statusMessage}" ` +
-    `(${durationMs.toFixed(2)} ms)`;
+  let firstLine = `${req.method} "${req.originalUrl}"   →   "${res.statusCode} ${res.statusMessage}" `;
 
-  const level = err ? "error" : "info";
-  const elements = err ? [firstLine, err] : [firstLine];
+  if (start) {
+    const durationMs = Number(process.hrtime.bigint() - start) / 1_000_000;
+    firstLine += `(${durationMs.toFixed(2)} ms)`;
+  }
+
+  const level = error ? "error" : "info";
+  const elements = error ? [firstLine, error] : [firstLine];
 
   await addAppLog(level, ...elements);
 }

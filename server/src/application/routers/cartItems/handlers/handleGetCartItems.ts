@@ -1,31 +1,27 @@
 import { HttpStatus } from "@/constants";
 import { CartItem } from "@/persistance/models";
-import { sendResponse, sendResponseError } from "@/application/utils";
-import { Request, Response, type NextFunction } from "express";
+import { Responder } from "@/application/utils";
+import { type RequestHandler } from "express";
+import { getUserId } from "@/application/routers/auth/utils";
 
-export async function handleGetCartItems(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
+export const handleGetCartItems: RequestHandler = async (req, res) => {
   try {
     const include = req.query.expand === "product" ? ["product"] : [];
+    const userId = getUserId(res);
 
     const items = await CartItem.findAll({
       include,
+      where: { userId },
       order: [["createdAt", "DESC"]],
     });
 
-    sendResponse(
+    Responder.success(
       res,
       HttpStatus.OK,
-      true,
       "Cart items fetched successfully",
       items,
     );
   } catch (err) {
-    sendResponseError(next, "Failed to fetch cart items", err);
+    Responder.error(res, "Failed to fetch cart items", err);
   }
-}
-
-handleGetCartItems.examples = ["/api/cartItems?expand=product"];
+};

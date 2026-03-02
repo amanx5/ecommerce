@@ -1,19 +1,12 @@
-import { sendResponse, sendResponseError } from "@/application/utils";
+import { ClientError, MalformedRequestUrlError } from "@/application/errors";
 import { expandDeliveryOption } from "@/application/routers/deliveryOptions/deliveryOptionsUtil";
+import { Responder } from "@/application/utils";
 import { HttpStatus } from "@/constants";
 import { DeliveryOption } from "@/persistance/models";
 import { isArray } from "@/utils";
-import { Request, Response, type NextFunction } from "express";
-import {
-  InvalidRequestError,
-  MalformedRequestUrlError,
-} from "@/application/errors";
+import type { RequestHandler } from "express";
 
-export async function handleGetDeliveryOptionById(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
+export const handleGetDeliveryOptionById: RequestHandler = async (req, res) => {
   try {
     const { expand } = req.query;
     const deliveryOptionId = req.params.id;
@@ -25,19 +18,17 @@ export async function handleGetDeliveryOptionById(
     const deliveryOption = await DeliveryOption.findByPk(deliveryOptionId);
 
     if (deliveryOption == null) {
-      return sendResponse(
+      return Responder.failure(
         res,
         HttpStatus.NOT_FOUND,
-        false,
         "Delivery option doesn't exist with given id",
       );
     }
 
     if (expand == undefined) {
-      return sendResponse(
+      return Responder.success(
         res,
         HttpStatus.OK,
-        true,
         successMessage,
         deliveryOption,
       );
@@ -45,20 +36,17 @@ export async function handleGetDeliveryOptionById(
 
     const deliveryOptionExpanded = expandDeliveryOption(deliveryOption, expand);
 
-    sendResponse(
+    Responder.success(
       res,
       HttpStatus.OK,
-      true,
       successMessage,
       deliveryOptionExpanded,
     );
   } catch (err) {
-    if (err instanceof InvalidRequestError) {
-      return sendResponse(res, HttpStatus.BAD_REQUEST, false, err.message);
+    if (err instanceof ClientError) {
+      return Responder.failure(res, HttpStatus.BAD_REQUEST, err.message);
     }
 
-    sendResponseError(next, "Failed to fetch delivery option", err);
+    Responder.error(res, "Failed to fetch delivery option", err);
   }
-}
-
-handleGetDeliveryOptionById.examples = ["/api/deliveryOptions/1"];
+};

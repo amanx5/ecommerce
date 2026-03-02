@@ -1,13 +1,19 @@
 import {
+  authRouter,
   cartItemsRouter,
   deliveryOptionsRouter,
   ordersRouter,
   paymentSummaryRouter,
   productsRouter,
 } from "@/application/routers";
-import { sendResponseError } from "@/application/utils";
+import {
+  getAuthTokenFromRequest,
+  verifyAuthToken,
+} from "@/application/routers/auth/utils";
+import { Responder } from "@/application/utils";
 import { FILE_PATHS, HttpStatus } from "@/constants";
-import { addRequestLog, isDevelopment, isError } from "@/utils";
+import { addRequestLog } from "@/utils";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, {
   type RequestHandler,
@@ -24,6 +30,9 @@ const uiDevUrl = process.env[uiDevUrlEnvKey];
 // - These are shipped/available at external sources.
 // - `cors` sets headers like Access-Control-Allow-Origin, etc. then propagates by calling next()
 // ******************************************************************************************************************
+// Middleware to parse cookies and attach them as a `cookies` object to the request.
+// Note: By default, Express does not populate `req.cookies`; it only provides `req.headers.cookie` as a raw string.
+const cookieParserMiddleware = cookieParser();
 // allow cors with frontend
 const corsMiddleWare = cors({
   origin: uiDevUrl,
@@ -56,31 +65,29 @@ const loggerMiddleware: RequestHandler = (req, res, next) => {
   next();
 };
 
-const uiProductionMiddleware: RequestHandler = (_req, res, next) => {
+const uiProductionMiddleware: RequestHandler = (_req, res) => {
   // uiBuildHtml will handle all future requests if sendFile completes without error
-  res.sendFile(FILE_PATHS.uiBuildHtml, onTransferCompleteOrError);
-
-  function onTransferCompleteOrError(err: Error) {
-    // transfer failed
+  res.sendFile(FILE_PATHS.uiBuildHtml, (err) => {
+    // if transfer failed
     if (err && !res.headersSent) {
       const isFileMissing = "code" in err && err.code === "ENOENT"; // ErrorNoENTry
-      sendResponseError(
-        next,
+      Responder.error(
+        res,
         isFileMissing ? "Webpage not available" : "Something went wrong",
         err,
       );
     }
-  }
+  });
 };
 
-const uiDevelopmentMiddleware: RequestHandler = (req, res, next) => {
+const uiDevelopmentMiddleware: RequestHandler = (req, res) => {
   if (uiDevUrl) {
-    // devUrl will handle all future requests
     res.redirect(uiDevUrl + req.originalUrl);
   } else {
-    sendResponseError(
-      next,
-      `"${uiDevUrlEnvKey}" is missing in environment file.`,
+    Responder.error(
+      res,
+      "Configuration Error",
+      `Environment variable "${uiDevUrlEnvKey}" is missing.`,
     );
   }
 };
@@ -88,6 +95,45 @@ const uiDevelopmentMiddleware: RequestHandler = (req, res, next) => {
 const notFoundMiddleware: RequestHandler = (_req, res, _next) => {
   res.sendStatus(404);
 };
+
+//
+// ******************************************************************************************************************
+//                                        Router-level middlewares
+//                                        ~~~~~~~~~~~~~~~~~~~~~~~~
+// - Any middleware which is bound to an instance of express.Router()
+// ******************************************************************************************************************
+const authRequiredMiddleware: RequestHandler = (req, res, next) => {
+  const token = getAuthTokenFromRequest(req);
+  if (!token) {
+    return Responder.failure(
+      res,
+      HttpStatus.UNAUTHORIZED,
+      "Please login to continue",
+    );
+  }
+
+  const userId = verifyAuthToken(token);
+  if (!userId) {
+    return Responder.failure(
+      res,
+      HttpStatus.UNAUTHORIZED,
+      "Session is expired or invalid. Please login again to continue",
+    );
+  }
+
+  res.locals.userId = userId;
+
+  return next();
+};
+
+const apiRouter = express.Router();
+apiRouter.use("/auth", authRouter);
+apiRouter.use("/products", productsRouter);
+apiRouter.use("/deliveryOptions", deliveryOptionsRouter);
+apiRouter.use(authRequiredMiddleware);
+apiRouter.use("/cartItems", cartItemsRouter);
+apiRouter.use("/orders", ordersRouter);
+apiRouter.use("/paymentSummary", paymentSummaryRouter);
 
 //
 // ******************************************************************************************************************
@@ -100,38 +146,12 @@ const notFoundMiddleware: RequestHandler = (_req, res, _next) => {
 // ******************************************************************************************************************
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const errorMiddleware: ErrorRequestHandler = (err, req, res, next) => {
-  const error = isError(err)
-    ? err
-    : new Error("Something went wrong", { cause: err });
-
-  res.locals.err = error; // for logging in loggerMiddleware
-  res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-    message: error.message,
-  });
+  return Responder.error(res, "Something went wrong", err);
 };
 
-//
-// ******************************************************************************************************************
-//                                        Router-level middlewares
-//                                        ~~~~~~~~~~~~~~~~~~~~~~~~
-// - Any middleware which is bound to an instance of express.Router()
-// ******************************************************************************************************************
-function getApiRouter() {
-  const apiRouter = express.Router();
-
-  apiRouter.use("/cartItems", cartItemsRouter);
-  apiRouter.use("/deliveryOptions", deliveryOptionsRouter);
-  apiRouter.use("/orders", ordersRouter);
-  apiRouter.use("/paymentSummary", paymentSummaryRouter);
-  apiRouter.use("/products", productsRouter);
-
-
-
-  return apiRouter;
-}
-
 export {
-  getApiRouter,
+  apiRouter,
+  cookieParserMiddleware,
   corsMiddleWare,
   errorMiddleware,
   imagesMiddleware,

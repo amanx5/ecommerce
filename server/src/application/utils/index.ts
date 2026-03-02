@@ -1,2 +1,2 @@
-export * from "./sendResponse";
+export * from "./Responder";
 export * from "./terminateApplication";

@@ -1,5 +1,5 @@
 import {
-  getApiRouter,
+  apiRouter,
   corsMiddleWare,
   errorMiddleware,
   imagesMiddleware,
@@ -9,6 +9,7 @@ import {
   uiBuildMiddleware,
   uiProductionMiddleware,
   uiDevelopmentMiddleware,
+  cookieParserMiddleware,
 } from "./middlewares";
 import { isProduction } from "@/utils";
 import { type Express } from "express";
@@ -24,15 +25,14 @@ import { type Express } from "express";
  *
  * @see https://expressjs.com/en/guide/using-middleware.html
  */
-export async function bindMiddlewares(
-  app: Express,
-) {
+export async function bindMiddlewares(app: Express) {
+  app.use(cookieParserMiddleware);
   app.use(loggerMiddleware);
   app.use(corsMiddleWare);
   app.use(jsonMiddleware);
 
   // Backend endpoints requests [HIGHER PRECEDENCE]
-  app.use("/api/", getApiRouter(), notFoundMiddleware);
+  app.use("/api/", apiRouter, notFoundMiddleware);
   app.use("/images/", imagesMiddleware, notFoundMiddleware);
 
   // Frontend files requests [LOWER PRECENDENCE]

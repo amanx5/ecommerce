@@ -1,14 +1,13 @@
-import { seedDatabase } from "@/persistance/utils/";
 import { terminateApplication } from "@/application/utils";
 import { FILE_PATHS } from "@/constants/";
+import { seedDatabase } from "@/persistance/utils/";
+import { initAllModels } from "@/persistance/utils/initAllModels";
 import {
   addAppLog,
   addSqlLog,
-  isDevelopment,
   isProduction,
 } from "@/utils/";
 import { Sequelize } from "sequelize";
-import { initAllModels } from "@/persistance/utils/initAllModels";
 
 export type PersistenceInstance = Sequelize;
 
@@ -42,9 +41,7 @@ export async function setupPersistence(): Promise<PersistenceInstance> {
     initAllModels(instance);
 
     // TODO: use migrations in production
-    await instance.sync({
-      force: isDevelopment(),
-    });
+    await instance.sync();
     await seedDatabase();
 
     return instance;
