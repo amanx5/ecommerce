@@ -167,7 +167,7 @@ export default function Product({ cartItem }: { cartItem: CartItemExpanded }) {
 	}
 
 	async function refreshCartAndPaymentSummary() {
-		const isCartRefreshed = await refreshStateViaAPI(
+		const { success: isCartRefreshed } = await refreshStateViaAPI(
 			'/api/cartItems?expand=product',
 			setCart,
 			{
@@ -175,7 +175,7 @@ export default function Product({ cartItem }: { cartItem: CartItemExpanded }) {
 				when: 'onFailure',
 			},
 		);
-		const isPaymentSummaryRefreshed = await refreshStateViaAPI(
+		const { success: isPaymentSummaryRefreshed } = await refreshStateViaAPI(
 			'/api/paymentSummary',
 			setPaymentSummary,
 			{

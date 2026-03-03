@@ -4,33 +4,47 @@ import CheckoutPage from '@/pages/checkout/CheckoutPage';
 import OrdersPage from '@/pages/orders/OrdersPage';
 import TrackingPage from '@/pages/tracking/TrackingPage';
 import NotFoundPage from '@/pages/notfound/NotFoundPage';
+import LoginPage from '@/pages/login/LoginPage';
+import RegisterPage from '@/pages/register/RegisterPage';
 import { AppContext, AppContextType } from '@/context/AppContext';
 import { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router';
 import { refreshStateViaAPI } from '@/utils';
-import { ToastData, type CartItemExpanded } from '@/types';
+import { ToastData, type CartItemExpanded, type User } from '@/types';
 import Toast from '@/components/Toast';
 
 export default function App() {
 	const [toast, setToast] = useState<ToastData | null>(null);
 	const [cart, setCart] = useState<CartItemExpanded[]>([]);
+	const [user, setUser] = useState<User | null>(null);
 
 	useEffect(() => {
-		refreshStateViaAPI<CartItemExpanded[]>(
-			'/api/cartItems?expand=product',
-			setCart,
-			{
-				setToast,
-				when: 'onFailure',
-			},
-		);
+		refreshStateViaAPI<User | null>('/api/auth/user', setUser, {
+			setToast,
+			when: 'onFailure',
+		});
 	}, []);
+
+	useEffect(() => {
+		if (user) {
+			refreshStateViaAPI<CartItemExpanded[]>(
+				'/api/cartItems?expand=product',
+				setCart,
+				{
+					setToast,
+					when: 'onFailure',
+				},
+			);
+		}
+	}, [user]);
 
 	const appContext: AppContextType = {
 		cart,
 		toast,
+		user,
 		setCart,
 		setToast,
+		setUser,
 	};
 
 	return (
@@ -41,6 +55,8 @@ export default function App() {
 				<Route path='checkout' element={<CheckoutPage />} />
 				<Route path='orders' element={<OrdersPage />} />
 				<Route path='tracking' element={<TrackingPage />} />
+				<Route path='login' element={<LoginPage />} />
+				<Route path='register' element={<RegisterPage />} />
 				<Route path='*' element={<NotFoundPage />} />
 			</Routes>
 		</AppContext.Provider>

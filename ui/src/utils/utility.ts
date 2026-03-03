@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
+
 import type { Dispatch, SetStateAction } from 'react';
 import type { SetToast } from '../context/AppContext';
 import { isObject, isString } from './data-types';
@@ -81,10 +82,10 @@ export const refreshStateViaAPI = async function <T>(
 				setToast: SetToast;
 				when: 'always' | 'onSuccess' | 'onFailure';
 		  },
-): Promise<boolean> {
+): Promise<ApiResponse<T>> {
 	if (!setData) {
 		warnDev('Request not sent. [Setter param is missing]');
-		return false;
+		return { success: false };
 	}
 
 	const response = await apiRequest<T>(api, { method: 'get' });
@@ -107,7 +108,7 @@ export const refreshStateViaAPI = async function <T>(
 		});
 	}
 
-	return success;
+	return response;
 };
 
 export const warnDev = function (msg: string): void {

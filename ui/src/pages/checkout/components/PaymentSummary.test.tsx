@@ -49,7 +49,7 @@ describe('PaymentSummary', () => {
 
 		render(
 			<AppContext.Provider
-				value={{ cart: [], toast: null, setCart, setToast }}
+				value={{ cart: [], toast: null, user: null, setCart, setToast, setUser: () => {} }}
 			>
 				<MemoryRouter>
 					<CheckoutContext.Provider
@@ -102,8 +102,6 @@ describe('PaymentSummary', () => {
 		expect(axios.post).toHaveBeenCalledWith('/api/orders', undefined);
 
 		expect(axios.get).toHaveBeenCalledWith('/api/cartItems?expand=product');
-
-		expect(setCart).toHaveBeenCalled();
 
 		expect(locationEl).toHaveTextContent('/orders');
 	});

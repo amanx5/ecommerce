@@ -18,18 +18,22 @@ export default function PlaceYourOrder() {
 		</button>
 	);
 
-	async function placeOrderOnClick(_event: React.MouseEvent<HTMLButtonElement>) {
+	async function placeOrderOnClick(
+		_event: React.MouseEvent<HTMLButtonElement>,
+	) {
 		const isOrderPlaced = await placeOrder(setToast);
 		if (isOrderPlaced) {
-			refreshStateViaAPI(
-				'/api/cartItems?expand=product',
-				setCart,
-				{
-					setToast,
-					when: 'onFailure',
-				},
-			);
+			refreshStateViaAPI('/api/cartItems?expand=product', setCart, {
+				setToast,
+				when: 'onFailure',
+			});
+
 			navigate('/orders');
+		} else {
+			setToast({
+				type: 'error',
+				message: 'Failed to place order. Please try again.',
+			});
 		}
 	}
 }
