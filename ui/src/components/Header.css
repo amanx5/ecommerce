@@ -107,7 +107,7 @@
   justify-content: end;
 }
 
-.header .orders-link {
+.header .nav-link {
   color: white;
 
   display: flex;
@@ -116,10 +116,15 @@
   padding-right: 13px;
 }
 
-.header .orders-text {
+.header .nav-link-text {
   display: block;
   font-size: 15px;
   font-weight: 700;
+}
+
+.header .logout-button {
+  color: white;
+  background-color: transparent;
 }
 
 .header .cart-link {

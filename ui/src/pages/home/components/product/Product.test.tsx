@@ -65,7 +65,7 @@ describe('Product component in HomePage', () => {
 		// TODO if needed: move render outside beforeEach if not all tests in this suite needs AppContext to be rendered
 		render(
 			<AppContext.Provider
-				value={{ cart: [], toast: null, setCart, setToast }}
+				value={{ cart: [], toast: null, user: null, setCart, setToast, setUser: () => {} }}
 			>
 				<Product product={product} />
 			</AppContext.Provider>,
