@@ -35,6 +35,8 @@ export default function App() {
 					when: 'onFailure',
 				},
 			);
+		} else {
+			setCart([]);
 		}
 	}, [user]);
 

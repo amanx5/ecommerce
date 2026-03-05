@@ -1,7 +1,0 @@
-{
-  "editor.insertSpaces": true,
-  "editor.tabSize": 2,
-  
-  "typescript.preferences.preferTypeOnlyAutoImports": true,
-  "typescript.preferences.importModuleSpecifier": "non-relative"
-}

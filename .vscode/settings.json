@@ -1,0 +1,9 @@
+{
+	"css.lint.unknownAtRules": "ignore",
+
+	"editor.insertSpaces": true,
+	"editor.tabSize": 2,
+
+	"js/ts.autoClosingTags.enabled": true,
+	"js/ts.preferences.importModuleSpecifier": "non-relative"
+}
