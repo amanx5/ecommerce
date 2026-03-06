@@ -30,7 +30,7 @@ export const handleGetUser: RequestHandler = async (req, res) => {
     return Responder.success<UserDTO | null>(
       res,
       200,
-      "User retrieved successfully",
+      user ? "User found" : "User not found",
       user,
     );
   } catch (err) {

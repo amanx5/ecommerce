@@ -1,46 +1,32 @@
 import { terminateApplication } from "@/application/utils";
 import { FILE_PATHS } from "@/constants/";
-import { seedDatabase } from "@/persistance/utils/";
-import { initAllModels } from "@/persistance/utils/initAllModels";
-import {
-  addAppLog,
-  addSqlLog,
-  isProduction,
-} from "@/utils/";
+import { seedDatabase, initModelsAndAssociations } from "@/persistance/utils/";
+import { addAppLog, addSqlLog, isDevelopment } from "@/utils/";
 import { Sequelize } from "sequelize";
 
 export type PersistenceInstance = Sequelize;
 
 export async function setupPersistence(): Promise<PersistenceInstance> {
   let instance: Sequelize | null = null;
+  const dbUrlKey = "DATABASE_URL";
+  const dbUrl = process.env[dbUrlKey];
+  const isDev = isDevelopment();
+  const logging = addSqlLog;
+  const logQueryParameters = isDev;
 
   try {
-    if (isProduction()) {
-      const dbUrl = process.env.DATABASE_URL;
-      if (!dbUrl) {
-        throw new Error("Environment variable `DATABASE_URL` is missing.");
-      }
-
-      instance = new Sequelize(dbUrl, {
-        dialect: "postgres",
-        dialectOptions: {
-          ssl: { rejectUnauthorized: false },
-        },
-        logging: addSqlLog,
-      });
-    } else {
-      instance = new Sequelize({
-        dialect: "sqlite",
-        storage: FILE_PATHS.database,
-        logging: addSqlLog,
-        logQueryParameters: true,
-      });
+    if (!dbUrl) {
+      throw new Error(`Environment variable ${dbUrlKey} is missing.`);
     }
 
-    await instance.authenticate();
-    initAllModels(instance);
+    instance = new Sequelize(dbUrl, {
+      logging,
+      logQueryParameters,
+    });
 
-    // TODO: use migrations in production
+    await instance.authenticate();
+    initModelsAndAssociations(instance);
+
     await instance.sync({ alter: true });
     await seedDatabase();
 
