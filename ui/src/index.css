@@ -1,5 +1,18 @@
-html,body, #root {
-  height: 100%;  
+:root {
+  --header-height: 60px;
+  --header-bg: rgb(8, 79, 45);
+}
+
+@media (max-width: 600px) {
+  :root {
+    --header-height: 100px;
+  }
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
 }
 
 body {
@@ -24,7 +37,9 @@ select {
   cursor: pointer;
 }
 
-input, select, button {
+input,
+select,
+button {
   font-family: Roboto, Arial;
 }
 

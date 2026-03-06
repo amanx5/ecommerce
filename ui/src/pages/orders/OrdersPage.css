@@ -1,6 +1,6 @@
 .orders-page {
   max-width: 850px;
-  margin-top: 90px;
+  margin-top: calc(var(--header-height, 60px) + 30px);
   margin-bottom: 100px;
   padding-left: 20px;
   padding-right: 20px;

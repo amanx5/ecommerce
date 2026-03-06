@@ -1,5 +1,5 @@
 .header {
-  background-color: rgb(8, 79, 45);
+  background-color: var(--header-bg, rgb(8, 79, 45));
   color: white;
   padding-left: 15px;
   padding-right: 15px;
@@ -12,7 +12,8 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 60px;
+  height: var(--header-height, 60px);
+  z-index: 1000;
 }
 
 .header .left-section {
@@ -97,7 +98,6 @@
 }
 
 .header .right-section {
-  width: 180px;
   flex-shrink: 0;
   display: flex;
   justify-content: end;
@@ -127,6 +127,51 @@
   white-space: nowrap;
 }
 
+@media (max-width: 600px) {
+  .header {
+    height: 100px;
+    flex-wrap: wrap;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  .header .left-section {
+    order: 1;
+    width: auto;
+  }
+
+  .header .right-section {
+    order: 2;
+    width: auto;
+    gap: 8px;
+  }
+
+  .header .middle-section {
+    order: 3;
+    flex: none;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 5px;
+  }
+
+  .header .search-bar {
+    height: 34px;
+  }
+
+  .header .search-button {
+    height: 36px;
+  }
+
+  .header .cart-quantity {
+    right: 8px;
+    top: 6px;
+  }
+
+  .header .nav-link-text.account-text {
+    max-width: 80px;
+  }
+}
 
 .header .cart-link {
   color: white;
