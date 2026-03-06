@@ -8,7 +8,7 @@ import {
 } from "@/persistance/models/";
 import { type Sequelize } from "sequelize";
 
-export function initAllModels(sequelize: Sequelize) {
+export function initModelsAndAssociations(sequelize: Sequelize) {
   // initializations
   DeliveryOption.initModel(sequelize);
   Product.initModel(sequelize);

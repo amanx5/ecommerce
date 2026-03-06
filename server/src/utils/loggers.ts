@@ -2,6 +2,7 @@ import { FILE_PATHS } from "@/constants";
 import { appendFile } from "node:fs/promises";
 import { Request, Response } from "express";
 import { isError } from "@/utils/data-types";
+import { DatabaseError, ValidationError } from "sequelize";
 
 export type LogLevel = "info" | "warn" | "error";
 export type LogElements = unknown[];
@@ -111,7 +112,24 @@ export async function addAppLog(level: LogLevel, ...elements: LogElements) {
             : errorInfoText + "\n" + stack;
         }
 
-        return errorInfoText + errorCauseText;
+        let errorOtherInfo = "";
+        const isValidationError = err instanceof ValidationError;
+        const isDatabaseError = err instanceof DatabaseError;
+        if (isValidationError || isDatabaseError) {
+          if ("original" in err) {
+            errorOtherInfo += "\nOriginal error: " + err.original;
+          }
+
+          if (isValidationError && err.errors.length) {
+            errorOtherInfo +=
+              "\nValidation errors: " +
+              err.errors
+                .map((error) => `\n${JSON.stringify(error, null, 2)}`)
+                .join(", ");
+          }
+        }
+
+        return errorInfoText + errorOtherInfo + errorCauseText;
       }
     }
   }
