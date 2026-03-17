@@ -1,4 +1,4 @@
-import type { UserDTO } from "@/application/routers/auth/utils/user";
+import { type UserDTO } from "@/application/routers/auth/utils/user";
 import type { User } from "@/persistance/models";
 import {
   getAuthSecret,
@@ -7,7 +7,7 @@ import {
   isProduction,
   isString,
 } from "@/utils/";
-import type { Request, CookieOptions } from "express";
+import type { Request, CookieOptions, Response } from "express";
 import crypto from "node:crypto";
 
 export const TOKEN_COOKIE_OPTIONS: CookieOptions = {
@@ -62,6 +62,15 @@ export function signAuthToken(userDTO: UserDTO): string {
     .digest("base64url");
 
   return `${data}.${signature}`;
+}
+
+export function setAuthTokenInResponse(res: Response, userDTO: UserDTO) {
+  const token = signAuthToken(userDTO);
+
+  res.cookie("token", token, {
+    ...TOKEN_COOKIE_OPTIONS,
+    maxAge: TOKEN_TTL_MS,
+  });
 }
 
 export function getAuthTokenFromRequest(req: Request): string | null {

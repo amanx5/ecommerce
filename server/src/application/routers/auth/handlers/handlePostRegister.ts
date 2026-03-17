@@ -1,6 +1,7 @@
 import { Responder } from "@/application/utils/";
 import {
   hashPassword,
+  setAuthTokenInResponse,
   toUserPublicDTO,
 } from "@/application/routers/auth/utils";
 import { HttpStatus } from "@/constants";
@@ -41,11 +42,14 @@ export const handlePostRegister: RequestHandler = async (req, res) => {
     const passwordHash = hashPassword(password);
     const userCreated = await User.create({ email, passwordHash });
 
+    const userDTO = toUserPublicDTO(userCreated);
+    setAuthTokenInResponse(res, userDTO);
+
     return Responder.success(
       res,
       HttpStatus.CREATED,
       "User registered successfully",
-      toUserPublicDTO(userCreated),
+      userDTO,
     );
   } catch (err) {
     if (err instanceof ValidationError) {

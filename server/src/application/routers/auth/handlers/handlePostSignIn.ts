@@ -1,8 +1,6 @@
 import { Responder } from "@/application/utils/";
 import {
-  signAuthToken,
-  TOKEN_COOKIE_OPTIONS,
-  TOKEN_TTL_MS,
+  setAuthTokenInResponse,
   toUserPublicDTO,
   verifyPassword,
 } from "@/application/routers/auth/utils";
@@ -52,12 +50,7 @@ export const handlePostSignIn: RequestHandler = async (req, res) => {
     }
 
     const userDTO = toUserPublicDTO(userFound);
-    const token = signAuthToken(userDTO);
-
-    res.cookie("token", token, {
-      ...TOKEN_COOKIE_OPTIONS,
-      maxAge: TOKEN_TTL_MS,
-    });
+    setAuthTokenInResponse(res, userDTO);
 
     return Responder.success(res, HttpStatus.OK, "Sign-in successful", userDTO);
   } catch (err) {
