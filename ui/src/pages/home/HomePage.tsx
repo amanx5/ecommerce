@@ -32,7 +32,7 @@ export default function HomePage() {
 	return (
 		<>
 			<link rel='icon' type='image/png' href='favicon/home.png' />
-			<title>Ecommerce</title>
+			<title>Shop</title>
 
 			<Header />
 

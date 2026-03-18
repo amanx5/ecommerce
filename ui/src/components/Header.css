@@ -16,10 +16,6 @@
   z-index: 1000;
 }
 
-.header .left-section {
-  width: 208px;
-}
-
 @media (max-width: 800px) {
   .header .left-section {
     width: unset;
@@ -39,24 +35,9 @@
   border: 1px solid white;
 }
 
-.header .logo {
-  height: 26px;
-  margin-top: 1px;
-}
-
-.header .mobile-logo {
-  display: none;
-}
-
 @media (max-width: 675px) {
-  .header .logo {
+  .header .site-name {
     display: none;
-  }
-
-  .header .mobile-logo {
-    display: block;
-    height: 26px;
-    margin-top: 1px;
   }
 }
 

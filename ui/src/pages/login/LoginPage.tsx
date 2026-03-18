@@ -33,7 +33,7 @@ export default function LoginPage() {
 	return (
 		<>
 			<link rel='icon' type='image/png' href='favicon/login.png' />
-			<title>Login - Ecommerce</title>
+			<title>Login - Shop</title>
 			<Header />
 			<div className='login-page'>
 				<form className='login-form' onSubmit={onSubmit}>

@@ -1,7 +1,6 @@
 import './CheckoutHeader.css';
 import { NavLink } from 'react-router';
-import LogoGreen from '../../assets/logo/logo.png'
-import MobileLogoGreen from '../../assets/logo/mobile-logo.png'
+import StorefrontIcon from "@mui/icons-material/Storefront";
 import CheckoutLock from '@/assets/icons/checkout-lock-icon.png'
 import { useCart } from '@/hooks/useCart';
 import { getTotalCartItems } from '@/utils';
@@ -14,9 +13,29 @@ export default function CheckoutHeader() {
 		<div className="checkout-header">
 			<div className='header-content'>
 				<div className='checkout-header-left-section'>
-					<NavLink to='/'>
-						<img className='logo' src={LogoGreen} />
-						<img className='mobile-logo' src={MobileLogoGreen} />
+					<NavLink
+						to='/'
+						className='header-link'
+						style={{
+							display: 'flex',
+							alignItems: 'center',
+							gap: '8px',
+							color: 'rgb(8, 79, 45)',
+							textDecoration: 'none',
+						}}
+					>
+						<StorefrontIcon style={{ fontSize: 32 }} />
+						<span
+							className='site-name'
+							style={{
+								fontSize: '28px',
+								fontWeight: 700,
+								letterSpacing: '2px',
+								fontFamily: '"Dancing Script", cursive',
+							}}
+						>
+							SHOP
+						</span>
 					</NavLink>
 				</div>
 

@@ -34,7 +34,7 @@ export default function RegisterPage() {
 	return (
 		<>
 			<link rel='icon' type='image/png' href='favicon/register.png' />
-			<title>Register - Ecommerce</title>
+			<title>Register - Shop</title>
 			<Header />
 			<div className='register-page'>
 				<form className='register-form' onSubmit={onSubmit}>
