@@ -9,8 +9,8 @@ import type { User } from '@/types';
 export default function LoginPage() {
 	const navigate = useNavigate();
 	const { setUser } = useUser();
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
+	const [email, setEmail] = useState('user@abc.com');
+	const [password, setPassword] = useState('password');
 	const [error, setError] = useState<string | null>(null);
 
 	const onSubmit = async (e: FormEvent) => {
