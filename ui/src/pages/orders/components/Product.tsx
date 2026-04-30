@@ -2,6 +2,7 @@ import { getOrderTrackingInfo } from '@/utils';
 import Actions from './Actions';
 import BuyAgain from './BuyAgain';
 import type { OrderExpanded, OrderItemExpanded } from '@/types';
+import { getEndpointUrl } from '@/utils/api';
 
 export default function Product({
 	order,
@@ -16,7 +17,7 @@ export default function Product({
 	return (
 		<>
 			<div className='product-image-container'>
-				<img src={image} />
+				<img src={getEndpointUrl(image)} />
 			</div>
 
 			<div className='product-details'>

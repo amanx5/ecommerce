@@ -3,7 +3,7 @@ import { getPriceNative } from '../../../../utils';
 import AddToCart from './AddToCart';
 import QuantitySelector from './QuantitySelector';
 import Rating from '@/components/Rating';
-
+import { getEndpointUrl } from '@/utils/api';
 import { Product } from '@/types';
 
 interface ProductProps {
@@ -22,7 +22,7 @@ export default function ProductComponent({ product }: ProductProps) {
 				<img
 					className='product-image'
 					data-testid='product-image'
-					src={image}
+					src={getEndpointUrl(image)}
 				/>
 			</div>
 

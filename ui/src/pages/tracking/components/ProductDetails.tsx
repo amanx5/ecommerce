@@ -1,4 +1,5 @@
 import { CartItemExpanded } from '@/types';
+import { getEndpointUrl } from '@/utils/api';
 
 interface ProductDetailsProps {
 	orderItem: CartItemExpanded;
@@ -12,7 +13,7 @@ export default function ProductDetails({ orderItem }: ProductDetailsProps) {
 		<>
 			<div className='product-info'>{name}</div>
 			<div className='product-info'>Quantity: {quantity}</div>
-			<img className='product-image' src={image} />
+			<img className='product-image' src={getEndpointUrl(image)} />
 		</>
 	);
 }

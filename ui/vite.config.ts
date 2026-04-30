@@ -29,11 +29,12 @@ function getViteConfig(configEnv: ConfigEnv): UserConfig {
 	 * To get all variables from .env.development/.env.production and system variables, pass '' as 3rd argument
 	 * To access only system environment variables, use process.env
 	 */
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const env = loadEnv(configEnv.mode, process.cwd());
 
 	return {
 		build: {
-			outDir: path.resolve('../server/dist/ui'),
+			outDir: path.resolve('dist'),
 		},
 
 		plugins: [react()],
@@ -42,17 +43,19 @@ function getViteConfig(configEnv: ConfigEnv): UserConfig {
 		server: {
 			host: true,
 
+			// *** CORS error is handled in Express cors middleware ***
+			// and requests are forwarded to backend server through `getEndpointUrl` utility
 			// add `proxy` to prevent CORS error and also forward "/api" and "/images" requests to backend server
-			proxy: {
-				'/api': {
-					target: env.VITE_BACKEND_URL,
-					changeOrigin: true,
-				},
-				'/images': {
-					target: env.VITE_BACKEND_URL,
-					changeOrigin: true,
-				},
-			},
+			// proxy: {
+			// 	'/api': {
+			// 		target: env.VITE_BACKEND_URL,
+			// 		changeOrigin: true,
+			// 	},
+			// 	'/images': {
+			// 		target: env.VITE_BACKEND_URL,
+			// 		changeOrigin: true,
+			// 	},
+			// },
 		},
 
 		resolve: {

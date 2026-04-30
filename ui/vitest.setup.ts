@@ -65,13 +65,20 @@ const axiosPostMock = async (_url: string, data: unknown) => ({
 	},
 });
 
-vi.mock('axios', function mockedAxios() {
-	return {
-		default: {
-			get: vi.fn(axiosGetMock),
-			post: vi.fn(axiosPostMock),
-			put: vi.fn(),
-			delete: vi.fn(),
+vi.mock('axios', () => {
+	const mockAxios = {
+		get: vi.fn(axiosGetMock),
+		post: vi.fn(axiosPostMock),
+		put: vi.fn(),
+		delete: vi.fn(),
+		defaults: {
+			withCredentials: false,
 		},
+	};
+
+	// The reason for using both ...mockAxios and default: mockAxios is to ensure the mock works regardless of how axios is imported in different files.
+	return {
+		...mockAxios, // handles named imports
+		default: mockAxios, // handles default imports
 	};
 });

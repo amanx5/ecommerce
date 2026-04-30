@@ -1,6 +1,5 @@
 import {
 	addNewCartItem,
-	APP_CONSTANTS,
 	deleteCartItem,
 	getPriceNative,
 	refreshStateViaAPI,
@@ -10,14 +9,14 @@ import { useCheckout } from '@/hooks/useCheckout';
 import type { CartItemExpanded } from '@/types';
 import { useCart } from '@/hooks/useCart';
 import { useToast } from '@/hooks/useToast';
+import { getEndpointUrl } from '@/utils/api';
+
+const QUANTITY_ADD_MIN_LIMIT_PER_REQUEST = 0;
+const QUANTITY_ADD_MAX_LIMIT_PER_REQUEST = 10;
 
 export default function Product({ cartItem }: { cartItem: CartItemExpanded }) {
 	const { setCart } = useCart();
 	const { setToast } = useToast();
-	const {
-		QUANTITY_ADD_MIN_LIMIT_PER_REQUEST,
-		QUANTITY_ADD_MAX_LIMIT_PER_REQUEST,
-	} = APP_CONSTANTS;
 	const { setPaymentSummary } = useCheckout();
 	const { product, quantity } = cartItem;
 	const { id, image, name, priceCents } = product;
@@ -30,7 +29,7 @@ export default function Product({ cartItem }: { cartItem: CartItemExpanded }) {
 
 	return (
 		<>
-			<img className='product-image' src={image} />
+			<img className='product-image' src={getEndpointUrl(image)} />
 
 			<div className='cart-item-details'>
 				<div className='product-name'>{name}</div>
