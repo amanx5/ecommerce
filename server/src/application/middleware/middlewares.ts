@@ -12,7 +12,8 @@ import {
 } from "@/application/routers/auth/utils";
 import { Responder } from "@/application/utils";
 import { FILE_PATHS, HttpStatus } from "@/constants";
-import { addRequestLog, isDevelopment } from "@/utils";
+import { addRequestLog } from "@/utils";
+import { getFrontendUrl } from "@/utils/client";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, {
@@ -21,8 +22,7 @@ import express, {
 } from "express";
 
 
-let frontendUrl = process.env["FRONTEND_URL"];
-if (isDevelopment() && !frontendUrl) frontendUrl = "http://localhost:5173";
+const frontendUrl = getFrontendUrl();
 
 //
 // ******************************************************************************************************************
