@@ -4,11 +4,11 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "build": "tsup src/server.ts --format esm --out-dir dist/server",
+    "build": "tsup",
     "dev": "tsx watch --env-file=.env.dev src/server.ts",
     "lint": "eslint .",
-    "prod": "node --env-file=.env.prod dist/server/server.js",
-    "start": "node dist/server/server.js",
+    "prod": "node --env-file=.env.prod dist/server.js",
+    "start": "node dist/server.js",
     "typecheck": "tsc --noemit"
   },
   "keywords": [],
