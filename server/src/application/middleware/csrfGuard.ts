@@ -1,6 +1,6 @@
 import { Responder } from "@/application/utils";
 import { HttpStatus } from "@/constants";
-import { FRONTEND_URL } from "@/utils/client";
+import { FRONTEND_URLS } from "@/utils/client";
 import { addAppLog } from "@/utils/loggers";
 import { type RequestHandler } from "express";
 
@@ -42,10 +42,9 @@ export const csrfGuard: RequestHandler = (req, res, next) => {
   }
 
   const origin = req.headers.origin;
-
-  // If the request has an Origin and it doesn't match our frontend, block it.
-  // This stops cross-site malicious requests from acting on the user's session.
-  if (origin && origin !== FRONTEND_URL) {
+  
+  // If the request has an Origin and it isn't in our list of allowed frontends, block it.
+  if (origin && !FRONTEND_URLS.includes(origin)) {
     addAppLog(
       "warn",
       `[Potential CSRF Blocked] Request from unauthorized origin: ${origin}`,

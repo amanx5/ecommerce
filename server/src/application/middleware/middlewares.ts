@@ -12,7 +12,7 @@ import {
 } from "@/application/routers/auth/utils";
 import { Responder } from "@/application/utils";
 import { FILE_PATHS, HttpStatus } from "@/constants";
-import { FRONTEND_URL } from "@/utils/client";
+import { FRONTEND_URLS } from "@/utils/client";
 import { addRequestLog } from "@/utils/loggers";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -34,7 +34,7 @@ import express, {
 const cookieParserMiddleware = cookieParser();
 // allow cors with frontend
 const corsMiddleWare = cors({
-  origin: FRONTEND_URL,
+  origin: FRONTEND_URLS,
   // it adds response header `Access-Control-Allow-Credentials: true` which instructs the browser that the server is 
   // willing to accept credentials (cookies) from this Origin.
   // if this is not set true, then the browser though receives the response but doesn't allow the frontend to read it
@@ -68,10 +68,11 @@ const loggerMiddleware: RequestHandler = (req, res, next) => {
 };
 
 const rootHandler: RequestHandler = (_req, res) => {
+  const primaryUrl = FRONTEND_URLS[0] || "unknown";
   res.send(`
     <div style="font-family: sans-serif; padding: 20px;">
       <p>Status: <span style="color: #2ecc71; font-weight: bold;">Online</span></p>
-      <p>The backend services are running. Access the storefront at: <a href="${FRONTEND_URL}">${FRONTEND_URL}</a></p>
+      <p>The backend services are running. Access the storefront at: <a href="${primaryUrl}">${primaryUrl}</a></p>
     </div>
   `);
 };

@@ -1,17 +1,20 @@
 import { isDevelopment } from "@/utils/environment";
 
-function getFrontendUrl() {
-  let frontendUrl = process.env["FRONTEND_URL"];
+function getFrontendUrls(): string[] {
+  const envUrl = process.env["FRONTEND_URL"];
 
-  // fallback to localhost in development mode if FRONTEND_URL is not set
-  if (isDevelopment() && !frontendUrl) {
-    frontendUrl = "http://localhost:5173";
+  // Default for development
+  if (isDevelopment() && !envUrl) {
+    return ["http://localhost:5173"];
   }
 
-  // trim and remove trailing slashes, browsers(client) never send Origin header with trailing slash
-  frontendUrl = frontendUrl?.trim().replace(/\/+$/, "");
+  if (!envUrl) return [];
 
-  return frontendUrl;
+  // Split by comma, trim whitespace, and remove trailing slashes from each URL
+  return envUrl
+    .split(",")
+    .map((url) => url.trim().replace(/\/+$/, ""))
+    .filter((url) => url.length > 0);
 }
 
-export const FRONTEND_URL = getFrontendUrl();
+export const FRONTEND_URLS = getFrontendUrls();
