@@ -1,6 +1,6 @@
 import { isDevelopment } from "@/utils/environment";
 
-export function getFrontendUrl() {
+function getFrontendUrl() {
   let frontendUrl = process.env["FRONTEND_URL"];
 
   // fallback to localhost in development mode if FRONTEND_URL is not set
@@ -13,3 +13,5 @@ export function getFrontendUrl() {
 
   return frontendUrl;
 }
+
+export const FRONTEND_URL = getFrontendUrl();

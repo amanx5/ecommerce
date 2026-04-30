@@ -1,3 +1,4 @@
+import { csrfGuard } from "@/application/middleware/csrfGuard";
 import {
   apiRouter,
   corsMiddleWare,
@@ -26,6 +27,7 @@ export async function bindMiddlewares(app: Express) {
   app.use(cookieParserMiddleware);
   app.use(loggerMiddleware);
   app.use(corsMiddleWare);
+  app.use(csrfGuard);
   app.use(jsonMiddleware);
 
   app.get("/", rootHandler);

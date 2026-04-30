@@ -52,6 +52,12 @@ type RequestOptions = {
   data?: unknown;
 };
 
+// this property instructs the browser to attach any cookies (of the Host domain(server)) to the request,
+// and store any cookies the server sends back.
+// this is same as setting {"credentials": "include"} in the fetch() API.
+// axios internally uses xhr and sets the withCredentials property on it
+// this is required now since frontend and backend are on different origins
+// this is basically client requesting for a handshake with the server
 axios.defaults.withCredentials = true;
 
 export async function apiRequest<T>(
