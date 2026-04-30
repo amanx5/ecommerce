@@ -105,7 +105,7 @@ export async function apiRequest<T = unknown>(
       "message" in error.response.data &&
       isString(error.response.data.message)
         ? error.response.data.message
-        : "Failed to fetch data. Please try again later.";
+        : "Request failed. Please try again later."; // generic message irrespective of whether the request was to get data or perform some action
 
     return {
       success: false,
