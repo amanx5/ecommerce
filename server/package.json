@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "prod": "node --env-file=.env.prod dist/server/server.js",
     "start": "node dist/server/server.js",
-    "type": "tsc --noemit"
+    "typecheck": "tsc --noemit"
   },
   "keywords": [],
   "author": "",

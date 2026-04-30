@@ -8,7 +8,7 @@
 		"prod": "pnpm -r --parallel run build && pnpm -F server prod",
 		"start": "pnpm -F server start",
 		"test": "pnpm -r run test",
-		"type": "pnpm -r --parallel run type"
+		"typecheck": "pnpm -r run typecheck"
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [
