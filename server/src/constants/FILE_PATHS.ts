@@ -7,6 +7,4 @@ export const FILE_PATHS = {
     req: absolutePathExperimental("~/logs/req.log"),
     sql: absolutePathExperimental("~/logs/sql.log"),
   },
-  uiBuild: absolutePathExperimental("~/dist/ui/"),
-  uiBuildHtml: absolutePathExperimental("~/dist/ui/index.html"),
 };

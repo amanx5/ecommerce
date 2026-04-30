@@ -12,7 +12,7 @@ import {
 } from "@/application/routers/auth/utils";
 import { Responder } from "@/application/utils";
 import { FILE_PATHS, HttpStatus } from "@/constants";
-import { addRequestLog } from "@/utils";
+import { addRequestLog, isDevelopment } from "@/utils";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, {
@@ -20,8 +20,9 @@ import express, {
   type ErrorRequestHandler,
 } from "express";
 
-const uiDevUrlEnvKey = "DEV_UI_URL";
-const uiDevUrl = process.env[uiDevUrlEnvKey];
+
+let frontendUrl = process.env["FRONTEND_URL"];
+if (isDevelopment() && !frontendUrl) frontendUrl = "http://localhost:5173";
 
 //
 // ******************************************************************************************************************
@@ -35,7 +36,7 @@ const uiDevUrl = process.env[uiDevUrlEnvKey];
 const cookieParserMiddleware = cookieParser();
 // allow cors with frontend
 const corsMiddleWare = cors({
-  origin: uiDevUrl,
+  origin: frontendUrl,
   credentials: true,
 });
 
@@ -49,7 +50,6 @@ const corsMiddleWare = cors({
 // ******************************************************************************************************************
 const jsonMiddleware = express.json();
 const imagesMiddleware = express.static(FILE_PATHS.images);
-const uiBuildMiddleware = express.static(FILE_PATHS.uiBuild);
 
 //
 // ******************************************************************************************************************
@@ -65,31 +65,13 @@ const loggerMiddleware: RequestHandler = (req, res, next) => {
   next();
 };
 
-const uiProductionMiddleware: RequestHandler = (_req, res) => {
-  // uiBuildHtml will handle all future requests if sendFile completes without error
-  res.sendFile(FILE_PATHS.uiBuildHtml, (err) => {
-    // if transfer failed
-    if (err && !res.headersSent) {
-      const isFileMissing = "code" in err && err.code === "ENOENT"; // ErrorNoENTry
-      Responder.error(
-        res,
-        isFileMissing ? "Webpage not available" : "Something went wrong",
-        err,
-      );
-    }
-  });
-};
-
-const uiDevelopmentMiddleware: RequestHandler = (req, res) => {
-  if (uiDevUrl) {
-    res.redirect(uiDevUrl + req.originalUrl);
-  } else {
-    Responder.error(
-      res,
-      "Configuration Error",
-      `Environment variable "${uiDevUrlEnvKey}" is missing.`,
-    );
-  }
+const rootHandler: RequestHandler = (_req, res) => {
+  res.send(`
+    <div style="font-family: sans-serif; padding: 20px;">
+      <p>Status: <span style="color: #2ecc71; font-weight: bold;">Online</span></p>
+      <p>The backend services are running. Access the storefront at: <a href="${frontendUrl}">${frontendUrl}</a></p>
+    </div>
+  `);
 };
 
 const notFoundMiddleware: RequestHandler = (_req, res, _next) => {
@@ -155,10 +137,8 @@ export {
   corsMiddleWare,
   errorMiddleware,
   imagesMiddleware,
+  rootHandler,
   jsonMiddleware,
   loggerMiddleware,
   notFoundMiddleware,
-  uiBuildMiddleware,
-  uiDevelopmentMiddleware,
-  uiProductionMiddleware,
 };
