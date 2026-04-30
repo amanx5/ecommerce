@@ -5,6 +5,7 @@ import { MinimalHeader } from '@/components/MinimalHeader';
 import { apiRequest } from '@/utils';
 import { useUser } from '@/hooks/useUser';
 import type { User } from '@/types';
+import { verifyLogin } from '@/utils/account';
 
 export default function LoginPage() {
 	const navigate = useNavigate();
@@ -23,21 +24,14 @@ export default function LoginPage() {
 		});
 
 		if (resp.success && resp.data) {
-			// even though the sign-in was successful, the cookie may not have been set
-			// if the user has a preference set in browser to block third party cookies.
-			// by hitting auth/user, server will try to read token cookie, which if fails
-			// will indicate that the cookie was not set.
-			// this is a workaround in current setup (ui and api on different domains)
-			const verifyResp = await apiRequest<User>('/api/auth/user', {
-				method: 'get',
-			});
+      const userData = await verifyLogin();
 
-			if (verifyResp.success && verifyResp.data) {
-				setUser(verifyResp.data);
+      if (userData) {
+        setUser(userData);
 				navigate('/', { replace: true });
 			} else {
 				setError(
-					'Login failed. Please enable third-party cookies to continue. Or try opening the app in a Guest window.'
+					'Login failed. Please enable third-party cookies to continue. Or open the app in a Guest window.'
 				);
 			}
 		} else {
