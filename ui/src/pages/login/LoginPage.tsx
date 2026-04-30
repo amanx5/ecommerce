@@ -23,8 +23,23 @@ export default function LoginPage() {
 		});
 
 		if (resp.success && resp.data) {
-			setUser(resp.data);
-			navigate('/', { replace: true });
+			// even though the sign-in was successful, the cookie may not have been set
+			// if the user has a preference set in browser to block third party cookies.
+			// by hitting auth/user, server will try to read token cookie, which if fails
+			// will indicate that the cookie was not set.
+			// this is a workaround in current setup (ui and api on different domains)
+			const verifyResp = await apiRequest<User>('/api/auth/user', {
+				method: 'get',
+			});
+
+			if (verifyResp.success && verifyResp.data) {
+				setUser(verifyResp.data);
+				navigate('/', { replace: true });
+			} else {
+				setError(
+					'Login failed. Please enable third-party cookies to continue. Or try opening the app in a Guest window.'
+				);
+			}
 		} else {
 			setError(resp.message || 'Unable to sign in');
 		}
