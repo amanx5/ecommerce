@@ -12,6 +12,7 @@ import { Fragment, useState } from 'react';
 import { apiRequest } from '@/utils';
 import { useNavigate } from 'react-router';
 import { useToast, useUser } from '@/hooks';
+import { createUsernameFromEmail } from '@/utils/account';
 
 export function AccountMenu({ user }: { user: User }) {
 	const navigate = useNavigate();
@@ -20,9 +21,7 @@ export function AccountMenu({ user }: { user: User }) {
 
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
-	const userName = user.email.split('@')[0];
-	const userNamePascalCase =
-		userName.at(0)?.toUpperCase() + userName.slice(1);
+	const userNamePascalCase = createUsernameFromEmail(user.email);
 
 	const handleClick = (event: React.MouseEvent<HTMLElement>) => {
 		setAnchorEl(event.currentTarget);

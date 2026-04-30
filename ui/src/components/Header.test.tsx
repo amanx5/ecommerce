@@ -4,6 +4,7 @@ import Header from './Header';
 import { AppContext } from '@/context/AppContext';
 import { MemoryRouter } from 'react-router';
 import type { User } from '@/types';
+import { createUsernameFromEmail } from '@/utils/account';
 
 const dummyUser = { id: 'u1', email: 'a@b.com' };
 
@@ -33,9 +34,9 @@ describe('Header link visibility based on auth status', () => {
 		expect(screen.queryByText(/orders/i)).not.toBeInTheDocument();
 	});
 
-	it('shows orders and cart when user exists', () => {
+	it('shows user name and cart when user exists', () => {
 		renderWithContext(dummyUser);
-		expect(screen.getByText(/orders/i)).toBeInTheDocument();
+		expect(screen.getByText(createUsernameFromEmail(dummyUser.email))).toBeInTheDocument();
 		expect(screen.getByText(/cart/i)).toBeInTheDocument();
 		expect(screen.queryByText(/login/i)).not.toBeInTheDocument();
 	});

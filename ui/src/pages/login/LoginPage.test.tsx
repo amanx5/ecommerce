@@ -51,15 +51,22 @@ describe('LoginPage', () => {
 			data: { success: true, data: dummyUser },
 		});
 
-		await user.type(emailInput, 'foo@bar.com');
-		await user.type(pwdInput, 'secret');
+		const email = 'foo@bar.com';
+		const password = 'secret';
+
+		await user.clear(emailInput);
+		await user.clear(pwdInput);
+		await user.type(emailInput, email);
+		await user.type(pwdInput, password);
 		await user.click(submit);
 
-		expect(axios.post).toHaveBeenCalledWith('/api/auth/signIn', {
-			email: 'foo@bar.com',
-			password: 'secret',
+		await vi.waitFor(() => {
+			expect(axios.post).toHaveBeenCalledWith('/api/auth/signIn', {
+				email,
+				password,
+			});
+			// setUser should get called with returned user
+			expect(setUser).toHaveBeenCalledWith(dummyUser);
 		});
-		// setUser should get called with returned user
-		expect(setUser).toHaveBeenCalledWith(dummyUser);
 	});
 });
