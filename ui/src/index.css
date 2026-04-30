@@ -1,6 +1,7 @@
 :root {
   --header-height: 60px;
   --header-bg: rgb(8, 79, 45);
+  --primary-green: rgb(25, 135, 84);
 }
 
 @media (max-width: 600px) {
@@ -45,7 +46,7 @@ button {
 
 .button-primary {
   color: rgb(255, 255, 255);
-  background-color: rgb(25, 135, 84);
+  background-color: var(--primary-green);
   border: 1px solid transparent;
   border-radius: 5px;
   cursor: pointer;
@@ -95,7 +96,7 @@ button {
 }
 
 .link-primary {
-  color: rgb(25, 135, 84);
+  color: var(--primary-green);
   cursor: pointer;
 }
 

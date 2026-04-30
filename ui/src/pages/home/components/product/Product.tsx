@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { getPriceNative } from '../../../../utils';
 import AddToCart from './AddToCart';
 import QuantitySelector from './QuantitySelector';
+import Rating from '@/components/Rating';
 
 import { Product } from '@/types';
 
@@ -28,10 +29,11 @@ export default function ProductComponent({ product }: ProductProps) {
 			<div className='product-name limit-text-to-2-lines'>{name}</div>
 
 			<div className='product-rating-container'>
-				<img
+				<Rating
+					value={ratingStars}
 					className='product-rating-stars'
 					data-testid='product-rating-stars'
-					src={`images/ratings/rating-${ratingStars * 10}.png`}
+					data-rating={ratingStars.toString()}
 				/>
 				<div className='product-rating-count link-primary'>
 					{ratingCount}

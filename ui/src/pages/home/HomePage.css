@@ -112,14 +112,13 @@
 }
 
 .home-page .product-rating-stars {
-  width: 100px;
   margin-right: 6px;
 }
 
 .home-page .product-rating-count {
   color: rgb(25, 135, 84);
   cursor: auto;
-  margin-top: 3px;
+  font-size: small;
 }
 
 .home-page .product-price {

@@ -93,10 +93,9 @@ describe('Product component in HomePage', () => {
 			product.image,
 		);
 
-		expect(screen.getByTestId('product-rating-stars')).toHaveAttribute(
-			'src',
-			`images/ratings/rating-${product.rating.stars * 10}.png`,
-		);
+		expect(
+			screen.getByTestId('product-rating-stars'),
+		).toHaveAttribute('data-rating', product.rating.stars.toString());
 
 		expect(screen.getByText(product.rating.count)).toBeInTheDocument();
 	});
