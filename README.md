@@ -35,17 +35,6 @@ Follow these steps to run the application locally:
 5. Navigate to `http://localhost:5173` to access the UI.
 
 
-## Deployment (Production)
-
-To deploy the application on Render/Railway, follow these steps:
-
-1. Create a new API Service.
-2. Create a new DB service.
-3. Set the build command to `pnpm build` (root package).
-4. Set the start command to `pnpm start` (root package).
-5. Set the environment variables. Refer [server/.env.example](server/.env.example) to know more about the environment variables.
-6. Deploy the application.
-
 ## License & Credits
 
 Created as an educational project under the SuperSimpleDev React course.
