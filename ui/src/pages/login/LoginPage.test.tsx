@@ -46,8 +46,12 @@ describe('LoginPage', () => {
 		const pwdInput = screen.getByLabelText(/Password/i);
 		const submit = screen.getByRole('button', { name: /login/i });
 
-		// mock axios response
+		// mock for /api/auth/signIn endpoint
 		(axios.post as Mock).mockResolvedValue({
+			data: { success: true, data: dummyUser },
+		});
+		// mock for /api/auth/user endpoint - verifyLogin uses this
+		(axios.get as Mock).mockResolvedValue({
 			data: { success: true, data: dummyUser },
 		});
 
