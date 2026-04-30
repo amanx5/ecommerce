@@ -22,7 +22,6 @@
     - **Environment Variables**: Refer [ui/.env.example](ui/.env.example)
 
 
-### 3. Update CORS and Deploy both environments
+### 3. Configure CORS and Deploy both environments
 
-After Vercel gives you a URL, update the `ALLOWED_ORIGIN` env var on Render to match.
-
+After Vercel gives you domain URL, add it to the `FRONTEND_URL` env var on Render to enable CORS.
