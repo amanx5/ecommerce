@@ -5,6 +5,7 @@ import { MinimalHeader } from '@/components/MinimalHeader';
 import { apiRequest } from '@/utils';
 import { useUser } from '@/hooks/useUser';
 import type { User } from '@/types';
+import { verifyLogin } from '@/utils/account';
 
 export default function RegisterPage() {
 	const navigate = useNavigate();
@@ -12,6 +13,7 @@ export default function RegisterPage() {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState<string | null>(null);
+	const [message, setMessage] = useState<string | null>(null);
 
 	const onSubmit = async (e: FormEvent) => {
 		e.preventDefault();
@@ -23,9 +25,16 @@ export default function RegisterPage() {
 		});
 
 		if (resp.success && resp.data) {
-			// after registering we can sign user in
-			setUser(resp.data);
-			navigate('/', { replace: true });
+			const userData = await verifyLogin();
+
+			if (userData) {
+				setUser(userData);
+				navigate('/', { replace: true });
+			} else {
+				setMessage(
+					'Registration successful. Before logging in, please enable third-party cookies to continue. Or open the app in a Guest window.'
+				);
+			};
 		} else {
 			setError(resp.message || 'Unable to register');
 		}
@@ -40,6 +49,7 @@ export default function RegisterPage() {
 				<form className='register-form' onSubmit={onSubmit}>
 					<h2>Create account</h2>
 					{error && <div className='error'>{error}</div>}
+					{message && <div className='message'>{message}</div>}
 					<label>
 						Email
 						<input
