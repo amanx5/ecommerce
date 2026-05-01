@@ -1,6 +1,6 @@
 import { CartItem } from '@/types';
 import { apiRequest } from '@/utils/api';
-import type { SetToast } from '@/context/AppContext';
+import type { SetToast } from '@/context/ToastContext';
 
 export const getCheckoutHeading = function (cart: CartItem[] | null): string {
 	if (cart === null) {

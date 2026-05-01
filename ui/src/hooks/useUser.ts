@@ -1,10 +1,10 @@
 import { useContext } from 'react';
-import { AppContext } from '@/context/AppContext';
+import { UserContext } from '@/context/UserContext';
 
 export function useUser() {
-	const context = useContext(AppContext);
+	const context = useContext(UserContext);
 	if (!context) {
-		throw new Error('useUser must be used within an AppContext.Provider');
+		throw new Error('useUser must be used within an UserProvider');
 	}
 
 	const { user, setUser } = context;

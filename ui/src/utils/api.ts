@@ -1,6 +1,6 @@
 import { isString, isObject } from "@/utils/data-types";
 import { isDevMode, isTestMode } from "@/utils/environment";
-import type { SetToast } from "@/context/AppContext";
+import type { SetToast } from "@/context/ToastContext";
 
 import axios, { AxiosResponse } from "axios";
 import type { Dispatch, SetStateAction } from "react";

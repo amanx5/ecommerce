@@ -1,19 +1,20 @@
 import { useContext } from 'react';
-import { AppContext, type Toast, type SetToast } from '@/context/AppContext';
+import { type Toast, type SetToast } from '@/context/ToastContext';
+import { ToastContext } from '@/context/ToastContext';
 
 export function useToast(): {
-    toast: Toast;
-    setToast: SetToast;
+	toast: Toast;
+	setToast: SetToast;
 } {
-    const context = useContext(AppContext);
-    if (!context) {
-        throw new Error('useToast must be used within an AppContext.Provider');
-    }
+	const context = useContext(ToastContext);
+	if (!context) {
+		throw new Error('useToast must be used within an ToastProvider');
+	}
 
-    const { toast, setToast } = context;
+	const { toast, setToast } = context;
 
-    return {
-        toast,
-        setToast,
-    };
+	return {
+		toast,
+		setToast,
+	};
 }
