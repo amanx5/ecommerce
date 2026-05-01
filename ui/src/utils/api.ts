@@ -48,7 +48,7 @@ export interface ApiResponse<T = unknown> {
 }
 
 type RequestOptions = {
-  method: "get" | "post" | "put" | "delete";
+  method: "head" | "get" | "post" | "put" | "delete";
   data?: unknown;
 };
 
@@ -89,6 +89,8 @@ export async function apiRequest<T = unknown>(
       response = await axios.put(url, data);
     } else if (method === "post") {
       response = await axios.post(url, data);
+    } else if (method === "head") {
+      response = await axios.head(url);
     } else {
       response = await axios.get(url);
     }
