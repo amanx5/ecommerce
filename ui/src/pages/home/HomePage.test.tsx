@@ -1,15 +1,13 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import HomePage from './HomePage';
+import { renderWithContext } from '@/test/renderWithContext';
 import {
-	render,
 	screen,
 	within,
 	BoundFunctions,
 	queries,
 } from '@testing-library/react';
-import { AppContext } from '@/context/AppContext';
 import axios from 'axios';
-import { MemoryRouter } from 'react-router';
 import userEvent from '@testing-library/user-event';
 import { sampleAPIResponse } from '~/vitest.setup';
 
@@ -17,28 +15,17 @@ const productsAPI = '/api/products';
 const products = sampleAPIResponse[productsAPI];
 
 describe('HomePage component', () => {
-	let user: ReturnType<typeof userEvent.setup>,
+	let UserEvent: ReturnType<typeof userEvent.setup>,
 		productContainers: HTMLElement[],
 		firstProductContainer: BoundFunctions<typeof queries>,
 		secondProductContainer: BoundFunctions<typeof queries>,
 		firstAddToCart: HTMLElement,
 		secondAddToCart: HTMLElement;
 
-	const setCart = vi.fn();
-	const setToast = vi.fn();
-
 	beforeEach(async () => {
-		render(
-			<AppContext.Provider
-				value={{ cart: [], toast: null, user: null, setCart, setToast, setUser: () => {} }}
-			>
-				<MemoryRouter>
-					{/* homepage has header which has Link comps, which will break without router so memory router is added for tests */}
-					<HomePage />
-				</MemoryRouter>
-			</AppContext.Provider>,
-		);
-		user = userEvent.setup();
+		renderWithContext(<HomePage />);
+
+		UserEvent = userEvent.setup();
 		productContainers = await screen.findAllByTestId('product-container');
 		firstProductContainer = within(productContainers[0]);
 		secondProductContainer = within(productContainers[1]);
@@ -75,8 +62,8 @@ describe('HomePage component', () => {
 			},
 		];
 
-		await user.click(firstAddToCart);
-		await user.click(secondAddToCart);
+		await UserEvent.click(firstAddToCart);
+		await UserEvent.click(secondAddToCart);
 
 		expect(axios.post).toHaveBeenNthCalledWith(
 			1,

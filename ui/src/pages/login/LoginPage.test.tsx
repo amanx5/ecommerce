@@ -1,8 +1,7 @@
 import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
 import LoginPage from './LoginPage';
-import { render, screen } from '@testing-library/react';
-import { AppContext } from '@/context/AppContext';
-import { MemoryRouter } from 'react-router';
+import { screen } from '@testing-library/react';
+import { renderWithContext } from '@/test/renderWithContext';
 import userEvent from '@testing-library/user-event';
 import axios from 'axios';
 import type { User } from '@/types';
@@ -14,22 +13,7 @@ describe('LoginPage', () => {
 
 	beforeEach(() => {
 		vi.clearAllMocks();
-		render(
-			<AppContext.Provider
-				value={{
-					cart: [],
-					toast: null,
-					user: null,
-					setCart: () => {},
-					setToast: () => {},
-					setUser,
-				}}
-			>
-				<MemoryRouter>
-					<LoginPage />
-				</MemoryRouter>
-			</AppContext.Provider>,
-		);
+		renderWithContext(<LoginPage />, { userContext: { setUser } });
 	});
 
 	it('renders form inputs', () => {

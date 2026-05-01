@@ -1,10 +1,10 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import { renderWithContext } from '@/test/renderWithContext';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import PaymentSummary from './PaymentSummary';
 
 import { sampleAPIResponse } from '~/vitest.setup';
-import { MemoryRouter, useLocation } from 'react-router';
-import { AppContext, type SetCart, type SetToast } from '@/context/AppContext';
+import { useLocation } from 'react-router';
 import { getPriceNative } from '@/utils';
 import userEvent from '@testing-library/user-event';
 import axios from 'axios';
@@ -25,7 +25,7 @@ const {
 
 function Location() {
 	const location = useLocation();
-	return <div data-testid='url-path'>{location.pathname}</div>;
+	return <div data-testid="url-path">{location.pathname}</div>;
 }
 
 describe('PaymentSummary', () => {
@@ -34,37 +34,23 @@ describe('PaymentSummary', () => {
 		totalCostBeforeTaxCentsEl: HTMLElement,
 		taxCentsEl: HTMLElement,
 		totalCostCentsEl: HTMLElement,
-		setCart: SetCart,
-		setToast: SetToast,
 		setPaymentSummary: SetPaymentSummary,
-		user: ReturnType<typeof userEvent.setup>,
+		UserEvent: ReturnType<typeof userEvent.setup>,
 		placeOrderBtn: HTMLElement,
 		locationEl: HTMLElement;
 
 	beforeEach(() => {
-		user = userEvent.setup();
-		setCart = vi.fn();
-		setToast = vi.fn();
+		UserEvent = userEvent.setup();
 		setPaymentSummary = vi.fn();
 
-		render(
-			<AppContext.Provider
-				value={{ cart: [], toast: null, user: null, setCart, setToast, setUser: () => {} }}
-			>
-				<MemoryRouter>
-					<CheckoutContext.Provider
-						value={{ paymentSummary, setPaymentSummary }}
-					>
-						<Location />
-						<PaymentSummary />
-					</CheckoutContext.Provider>
-				</MemoryRouter>
-			</AppContext.Provider>,
+		renderWithContext(
+			<CheckoutContext.Provider value={{ paymentSummary, setPaymentSummary }}>
+				<Location />
+				<PaymentSummary />
+			</CheckoutContext.Provider>,
 		);
 
-		productCostCentsEl = screen.getByTestId(
-			'payment-summary-productCostCents',
-		);
+		productCostCentsEl = screen.getByTestId('payment-summary-productCostCents');
 		shippingCostCentsEl = screen.getByTestId(
 			'payment-summary-shippingCostCents',
 		);
@@ -88,16 +74,14 @@ describe('PaymentSummary', () => {
 			getPriceNative(totalCostBeforeTaxCents),
 		);
 		expect(taxCentsEl).toHaveTextContent(getPriceNative(taxCents));
-		expect(totalCostCentsEl).toHaveTextContent(
-			getPriceNative(totalCostCents),
-		);
+		expect(totalCostCentsEl).toHaveTextContent(getPriceNative(totalCostCents));
 	});
 
 	it('places order onclicking Place your order', async () => {
 		// in actual app, the url path will be /checkout before clicking place order, but since memory router is used with only one component, it is '/' in this case
 		expect(locationEl).toHaveTextContent('/');
 
-		await user.click(placeOrderBtn);
+		await UserEvent.click(placeOrderBtn);
 
 		expect(axios.post).toHaveBeenCalledWith('/api/orders', undefined);
 

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi, Mock } from 'vitest';
 import Product from './Product';
-import { render, screen } from '@testing-library/react';
-import { AppContext } from '@/context/AppContext';
+import { screen } from '@testing-library/react';
+import { renderWithContext } from '@/test/renderWithContext';
 import { getPriceNative } from '@/utils';
 import userEvent from '@testing-library/user-event';
 import axios from 'axios';
@@ -11,7 +11,6 @@ vi.mock('axios');
 
 describe('Product component in HomePage', () => {
 	const setCart = vi.fn();
-	const setToast = vi.fn();
 	const cartGetAPI = '/api/cartItems?expand=product';
 	const cartPostAPI = '/api/cartItems';
 	const product = {
@@ -61,15 +60,9 @@ describe('Product component in HomePage', () => {
 		// resets all previous calls and results of mock setCart
 		setCart.mockClear();
 
-		// but this renders AppContext on each testcase,
-		// TODO if needed: move render outside beforeEach if not all tests in this suite needs AppContext to be rendered
-		render(
-			<AppContext.Provider
-				value={{ cart: [], toast: null, user: null, setCart, setToast, setUser: () => {} }}
-			>
-				<Product product={product} />
-			</AppContext.Provider>,
-		);
+		renderWithContext(<Product product={product} />, {
+			userContext: { setCart },
+		});
 
 		quantitySelectorContainer = screen.getByTestId(
 			'product-quantity-container',
