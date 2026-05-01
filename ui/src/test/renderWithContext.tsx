@@ -1,15 +1,21 @@
-import { UserContext, UserContextType } from '@/context/UserContext';
-import { ToastContext, ToastContextType } from '@/context/ToastContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import {
+	ToastSetterContext,
+	type ToastSetterContextType,
+} from '@/context/ToastSetterContext';
 import { render, RenderOptions } from '@testing-library/react';
 import { ReactElement } from 'react';
 import { MemoryRouter } from 'react-router';
 import { vi } from 'vitest';
+import type { User } from '@/types';
+import type { Cart } from '@/hooks/useCart';
 
 type ExtendedRenderOptions = {
 	renderOptions?: RenderOptions;
 	route?: string;
-	toastContext?: Partial<ToastContextType>;
-	userContext?: Partial<UserContextType>;
+	toastSetterContext?: ToastSetterContextType;
+	user?: User | null;
+	cart?: Cart;
 };
 
 export function renderWithContext(
@@ -19,32 +25,35 @@ export function renderWithContext(
 	const {
 		route = '/',
 		renderOptions,
-		userContext,
-		toastContext,
+		toastSetterContext = vi.fn(),
+		user = null,
+		cart = [],
 	} = extendedRenderOptions || {};
 
-	const mockUserContext = {
-		user: userContext?.user ?? null,
-		cart: userContext?.cart ?? [],
-		setUser: userContext?.setUser ?? vi.fn(),
-		setCart: userContext?.setCart ?? vi.fn(),
-	};
+	const queryClient = new QueryClient({
+		defaultOptions: {
+			queries: {
+				retry: false,
+			},
+		},
+	});
 
-	const mockToastContext = {
-		toast: toastContext?.toast ?? null,
-		setToast: toastContext?.setToast ?? vi.fn(),
-	};
+	// Seed the TanStack Query cache with user and cart data
+	queryClient.setQueryData(['user'], user);
+	if (user) {
+		queryClient.setQueryData(['cart', user.id], cart);
+	}
 
 	return {
 		...render(
-			<ToastContext.Provider value={mockToastContext}>
-				<UserContext.Provider value={mockUserContext}>
+			<QueryClientProvider client={queryClient}>
+				<ToastSetterContext.Provider value={toastSetterContext}>
 					<MemoryRouter initialEntries={[route]}>{ui}</MemoryRouter>
-				</UserContext.Provider>
-			</ToastContext.Provider>,
+				</ToastSetterContext.Provider>
+			</QueryClientProvider>,
 			renderOptions,
 		),
-		mockUserContext,
-		mockToastContext,
+		queryClient,
+		toastSetterContext,
 	};
 }

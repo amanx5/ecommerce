@@ -1,19 +1,17 @@
 import { CheckoutContext } from '@/context/CheckoutContext';
-import Loader from '@/components/Loader';
 import { PaymentSummaryData } from '@/types';
 import { useCart } from '@/hooks/useCart';
-import { useToast } from '@/hooks/useToast';
+import { useToastSetter } from '@/hooks/useToastSetter';
 import './CheckoutPage.css';
 import PaymentSummary from './components/PaymentSummary';
 import OrderSummary from './components/OrderSummary';
 import CheckoutHeader from './CheckoutHeader';
-import { getCheckoutHeading, refreshStateViaAPI } from '@/utils';
+import { refreshStateViaAPI } from '@/utils';
 import { useEffect, useState } from 'react';
 
 export default function CheckoutPage() {
-	const { cart } = useCart();
-	const { setToast } = useToast();
-	const pageTitle = getCheckoutHeading(cart);
+	const cartQuery = useCart();
+	const setToast = useToastSetter();
 	const [paymentSummary, setPaymentSummary] =
 		useState<PaymentSummaryData | null>(null);
 
@@ -28,28 +26,38 @@ export default function CheckoutPage() {
 		);
 	}, [setToast]);
 
-	return (
-		<CheckoutContext.Provider value={{ paymentSummary, setPaymentSummary }}>
-			<link rel='icon' type='image/png' href='favicon/cart.png' />
-			<title>Checkout</title>
-			<CheckoutHeader />
+	if (!cartQuery.isSuccess) {
+		return "Loading";
+	}
 
-			{cart === null ? (
-				<Loader />
-			) : (
-				<div className='checkout-page'>
-					<div className='page-title'>{pageTitle}</div>
+	const cart = cartQuery.data;
+
+	const pageTitle = cart.length ? 'Review Your Order' : 'Cart is Empty!';
+
+	return (
+		<>
+			{/* head */}
+			<title>Checkout</title>
+
+			{/* body */}
+			<CheckoutContext.Provider
+				value={{ cart, paymentSummary, setPaymentSummary }}
+			>
+				<CheckoutHeader />
+
+				<div className="checkout-page">
+					<div className="page-title">{pageTitle}</div>
 
 					{cart.length === 0 ? (
 						<div>Add some items in the cart.</div>
 					) : (
-						<div className='checkout-grid'>
+						<div className="checkout-grid">
 							<OrderSummary />
 							<PaymentSummary />
 						</div>
 					)}
 				</div>
-			)}
-		</CheckoutContext.Provider>
+			</CheckoutContext.Provider>
+		</>
 	);
 }

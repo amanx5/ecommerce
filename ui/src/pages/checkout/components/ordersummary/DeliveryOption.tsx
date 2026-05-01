@@ -1,61 +1,58 @@
 import {
-	formatDate,
-	getPriceNative,
-	refreshStateViaAPI,
-	updateDeliveryOption,
-} from '@/utils';
-import type { CartItem, DeliveryOptionExpanded } from '@/types';
-import { useCheckout } from '@/hooks/useCheckout';
-import { useCart } from '@/hooks/useCart';
-import { useToast } from '@/hooks/useToast';
+  formatDate,
+  getPriceNative,
+  refreshStateViaAPI,
+  updateDeliveryOption,
+} from "@/utils";
+import type { CartItem, DeliveryOptionExpanded } from "@/types";
+import { useCheckoutContext } from "@/hooks/useCheckoutContext";
+import { useRefreshCart } from "@/hooks/useCart";
+import { useToastSetter } from "@/hooks/useToastSetter";
 
 export default function DeliveryOption({
-	deliveryOption,
-	cartItem,
+  deliveryOption,
+  cartItem,
 }: {
-	deliveryOption: DeliveryOptionExpanded;
-	cartItem: CartItem;
+  deliveryOption: DeliveryOptionExpanded;
+  cartItem: CartItem;
 }) {
-	const { setCart } = useCart();
-	const { setToast } = useToast();
-	const { setPaymentSummary } = useCheckout();
+  const refreshCart = useRefreshCart();
+  const setToast = useToastSetter();
+  const { setPaymentSummary } = useCheckoutContext();
 
-	const { productId, deliveryOptionId } = cartItem;
-	const { id, priceCents, estimatedDeliveryTimeMs } = deliveryOption;
+  const { productId, deliveryOptionId } = cartItem;
+  const { id, priceCents, estimatedDeliveryTimeMs } = deliveryOption;
 
-	return (
-		<label className='delivery-option'>
-			<input
-				type='radio'
-				className='delivery-option-input'
-				name={`delivery-option-${productId}`}
-				checked={id === deliveryOptionId}
-				onChange={deliveryOptionOnChange}
-			/>
-			<div>
-				<div className='delivery-option-date'>
-					{formatDate(estimatedDeliveryTimeMs)}
-				</div>
-				<div className='delivery-option-price'>
-					{priceCents ? getPriceNative(priceCents) : 'FREE Shipping'}
-				</div>
-			</div>
-		</label>
-	);
+  return (
+    <label className="delivery-option">
+      <input
+        type="radio"
+        className="delivery-option-input"
+        name={`delivery-option-${productId}`}
+        checked={id === deliveryOptionId}
+        onChange={deliveryOptionOnChange}
+      />
+      <div>
+        <div className="delivery-option-date">
+          {formatDate(estimatedDeliveryTimeMs)}
+        </div>
+        <div className="delivery-option-price">
+          {priceCents ? getPriceNative(priceCents) : "FREE Shipping"}
+        </div>
+      </div>
+    </label>
+  );
 
-	async function deliveryOptionOnChange(
-		_event: React.ChangeEvent<HTMLInputElement>,
-	) {
-		const isUpdated = await updateDeliveryOption(id, productId, setToast);
-		if (isUpdated) {
-			refreshStateViaAPI('/api/cartItems?expand=product', setCart, {
-				setToast,
-				when: 'onFailure',
-			});
-			refreshStateViaAPI('/api/paymentSummary', setPaymentSummary, {
-				setToast,
-				when: 'onFailure',
-			});
-		}
-	}
+  async function deliveryOptionOnChange(
+    _event: React.ChangeEvent<HTMLInputElement>,
+  ) {
+    const isUpdated = await updateDeliveryOption(id, productId, setToast);
+    if (isUpdated) {
+      await refreshCart();
+      await refreshStateViaAPI("/api/paymentSummary", setPaymentSummary, {
+        setToast,
+        when: "onFailure",
+      });
+    }
+  }
 }

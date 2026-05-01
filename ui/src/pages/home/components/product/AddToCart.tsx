@@ -1,44 +1,64 @@
-import { addNewCartItem, refreshStateViaAPI } from '@/utils';
-import { Product, type CartItemExpanded } from '@/types';
-import { useCart } from '@/hooks/useCart';
-import { useToast } from '@/hooks/useToast';
+import { addNewCartItem } from "@/utils";
+import { Product } from "@/types";
+import { useRefreshCart } from "@/hooks/useCart";
+import { useToastSetter } from "@/hooks/useToastSetter";
+import { useUser } from "@/hooks/useUser";
+import { useNavigate } from "react-router";
 
 interface AddToCartProps {
-	product: Product;
-	quantity: number;
+  product: Product;
+  quantity: number;
 }
 
-export default function AddToCart({ product, quantity }: AddToCartProps) {
-	const { id } = product;
-	const { setCart } = useCart();
-	const { setToast } = useToast();
+export default function AddToCart(props: AddToCartProps) {
+  const user = useUser();
 
-	return (
-		<button
-			className='add-to-cart-button button-primary'
-			data-testid='AddToCart'
-			onClick={addToCartOnClick}
-		>
-			Add to Cart
-		</button>
-	);
+  return user ? (
+    <AuthenticatedAddToCart {...props} />
+  ) : (
+    <UnauthenticatedAddToCart />
+  );
+}
 
-	async function addToCartOnClick() {
-		const data = {
-			productId: id,
-			quantity,
-		};
+function UnauthenticatedAddToCart() {
+  const navigate = useNavigate();
+  return (
+    <AddToCartButton
+      onClick={() => {
+        navigate("/login");
+      }}
+    />
+  );
+}
 
-		const success = await addNewCartItem(data, setToast);
-		if (success) {
-			refreshStateViaAPI<CartItemExpanded[]>(
-				'/api/cartItems?expand=product',
-				setCart,
-				{
-					setToast,
-					when: 'onFailure',
-				},
-			);
-		}
-	}
+function AuthenticatedAddToCart({ product, quantity }: AddToCartProps) {
+  const { id } = product;
+  const setToast = useToastSetter();
+  const refreshCart = useRefreshCart();
+
+  return <AddToCartButton onClick={addToCartOnClick} />;
+
+  async function addToCartOnClick() {
+    const data = {
+      productId: id,
+      quantity,
+    };
+
+    const success = await addNewCartItem(data, setToast);
+    if (success) {
+      await refreshCart();
+    }
+  }
+}
+
+function AddToCartButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      className="add-to-cart-button button-primary"
+      data-testid="AddToCart"
+      onClick={onClick}
+    >
+      Add to Cart
+    </button>
+  );
 }

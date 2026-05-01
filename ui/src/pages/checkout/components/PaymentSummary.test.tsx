@@ -12,6 +12,7 @@ import {
 	CheckoutContext,
 	type SetPaymentSummary,
 } from '@/context/CheckoutContext';
+import type { Cart } from '@/hooks/useCart';
 
 const paymentSummaryAPI = '/api/paymentSummary';
 const paymentSummary = sampleAPIResponse[paymentSummaryAPI];
@@ -40,14 +41,15 @@ describe('PaymentSummary', () => {
 		locationEl: HTMLElement;
 
 	beforeEach(() => {
+		const cart:Cart = []
 		UserEvent = userEvent.setup();
 		setPaymentSummary = vi.fn();
-
 		renderWithContext(
-			<CheckoutContext.Provider value={{ paymentSummary, setPaymentSummary }}>
+			<CheckoutContext.Provider value={{ cart, paymentSummary, setPaymentSummary }}>
 				<Location />
 				<PaymentSummary />
 			</CheckoutContext.Provider>,
+			{cart}
 		);
 
 		productCostCentsEl = screen.getByTestId('payment-summary-productCostCents');

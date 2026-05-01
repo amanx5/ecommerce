@@ -5,6 +5,7 @@ import { renderWithContext } from '@/test/renderWithContext';
 import userEvent from '@testing-library/user-event';
 import axios from 'axios';
 import type { User } from '@/types';
+import * as userHooks from '@/hooks/useUser';
 
 const dummyUser: User = { id: 'u1', email: 'test@example.com' };
 
@@ -13,7 +14,8 @@ describe('LoginPage', () => {
 
 	beforeEach(() => {
 		vi.clearAllMocks();
-		renderWithContext(<LoginPage />, { userContext: { setUser } });
+		vi.spyOn(userHooks, 'useSetUser').mockReturnValue(setUser);
+		renderWithContext(<LoginPage />);
 	});
 
 	it('renders form inputs', () => {

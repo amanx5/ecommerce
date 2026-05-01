@@ -1,12 +1,11 @@
 import "./Header.css";
 
 import StorefrontIcon from "@mui/icons-material/Storefront";
-import CartIcon from "../assets/icons/cart-icon.png";
-import { getTotalCartItems } from "@/utils";
-import SearchBar from "./header/SearchBar";
-import { AccountMenu } from "./header/AccountMenu";
-import { useCart, useUser } from "@/hooks/";
+import SearchBar from "@/components/header/SearchBar";
+import { AccountMenu } from "@/components/header/AccountMenu";
+import { useUser } from "@/hooks/useUser";
 import { NavLink } from "react-router";
+import { Cart } from "@/components/header/Cart";
 
 export default function Header({
   className = "",
@@ -17,9 +16,7 @@ export default function Header({
   showSearch?: boolean;
   showMenu?: boolean;
 }) {
-  const { cart } = useCart();
-  const { user } = useUser();
-  const totalCartItems = getTotalCartItems(cart);
+  const user = useUser();
 
   return (
     <div className={"header " + className}>
@@ -61,13 +58,7 @@ export default function Header({
           {user ? (
             <>
               <AccountMenu user={user} />
-
-              {/* Cart  */}
-              <NavLink className="cart-link header-link" to="/checkout">
-                <img className="cart-icon" src={CartIcon} />
-                <div className="cart-quantity">{totalCartItems}</div>
-                <div className="cart-text">Cart</div>
-              </NavLink>
+              <Cart />
             </>
           ) : (
             <NavLink className="nav-link header-link" to="/login">

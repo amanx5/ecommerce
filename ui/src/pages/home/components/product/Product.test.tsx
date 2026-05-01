@@ -60,9 +60,7 @@ describe('Product component in HomePage', () => {
 		// resets all previous calls and results of mock setCart
 		setCart.mockClear();
 
-		renderWithContext(<Product product={product} />, {
-			userContext: { setCart },
-		});
+		renderWithContext(<Product product={product} />);
 
 		quantitySelectorContainer = screen.getByTestId(
 			'product-quantity-container',
@@ -124,6 +122,5 @@ describe('Product component in HomePage', () => {
 			quantity: parseInt(newQuantity),
 		});
 
-		expect(setCart).toHaveBeenCalled();
 	});
 });

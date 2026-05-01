@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ToastData } from '@/types';
 import './Toast.css';
-import { useToast } from '../hooks/useToast';
+import { useToastSetter } from '@/hooks/useToastSetter';
 
 interface ToastProps {
 	toast: ToastData | null;
@@ -13,7 +13,7 @@ interface ActiveToast extends ToastData {
 
 export default function Toast({ toast }: ToastProps) {
 	const [activeToasts, setActiveToasts] = useState<ActiveToast[]>([]);
-	const { setToast } = useToast();
+	const setToast = useToastSetter();
 
 	useEffect(() => {
 		if (toast) {
@@ -32,13 +32,9 @@ export default function Toast({ toast }: ToastProps) {
 	if (activeToasts.length === 0) return null;
 
 	return (
-		<div className='toast-container'>
+		<div className="toast-container">
 			{activeToasts.map((t) => (
-				<ToastItem
-					key={t.id}
-					toast={t}
-					onRemove={() => removeToast(t.id)}
-				/>
+				<ToastItem key={t.id} toast={t} onRemove={() => removeToast(t.id)} />
 			))}
 		</div>
 	);
@@ -71,20 +67,20 @@ function ToastItem({
 
 	return (
 		<div className={`toast ${typeClass} ${isExiting ? 'exit' : ''}`}>
-			<div className='toast-content'>{toast.message}</div>
-			<button className='toast-close' onClick={handleClose}>
+			<div className="toast-content">{toast.message}</div>
+			<button className="toast-close" onClick={handleClose}>
 				<svg
-					width='16'
-					height='16'
-					viewBox='0 0 24 24'
-					fill='none'
-					stroke='currentColor'
-					strokeWidth='2'
-					strokeLinecap='round'
-					strokeLinejoin='round'
+					width="16"
+					height="16"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					strokeWidth="2"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				>
-					<line x1='18' y1='6' x2='6' y2='18'></line>
-					<line x1='6' y1='6' x2='18' y2='18'></line>
+					<line x1="18" y1="6" x2="6" y2="18"></line>
+					<line x1="6" y1="6" x2="18" y2="18"></line>
 				</svg>
 			</button>
 		</div>

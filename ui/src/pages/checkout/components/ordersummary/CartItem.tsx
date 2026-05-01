@@ -8,10 +8,10 @@ import type {
 	CartItemExpanded,
 	DeliveryOptionExpanded,
 } from '@/types';
-import { useToast } from '@/hooks/useToast';
+import { useToastSetter } from '@/hooks/useToastSetter';
 
 export default function CartItem({ cartItem }: { cartItem: CartItemExpanded }) {
-	const { setToast } = useToast();
+	const setToast = useToastSetter();
 	const [deliveryOptions, setDeliveryOptions] = useState<
 		DeliveryOptionExpanded[]
 	>([]);
@@ -28,12 +28,9 @@ export default function CartItem({ cartItem }: { cartItem: CartItemExpanded }) {
 	}, [setToast]);
 
 	return (
-		<div className='cart-item-container'>
-			<DeliveryDate
-				cartItem={cartItem}
-				deliveryOptions={deliveryOptions}
-			/>
-			<div className='cart-item-details-grid'>
+		<div className="cart-item-container">
+			<DeliveryDate cartItem={cartItem} deliveryOptions={deliveryOptions} />
+			<div className="cart-item-details-grid">
 				<Product cartItem={cartItem} />
 				<DeliveryOptions
 					cartItem={cartItem}

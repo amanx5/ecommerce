@@ -1,18 +1,18 @@
 import './OrdersPage.css';
-import Header from '@/components/Header';
+import Header from '@/components/header/Header';
 import OrderComponent from './components/Order';
 import { useEffect, useState } from 'react';
 import { refreshStateViaAPI } from '@/utils';
 import { type OrderExpanded } from '@/types';
-import { useToast } from '@/hooks/useToast';
+import { useToastSetter } from '@/hooks/useToastSetter';
 
 export default function OrdersPage() {
-	const { setToast } = useToast();
-	const [orders, setOrders] = useState<OrderExpanded[]>([]);
+	const setToast = useToastSetter();
+	const [orders, setOrders] = useState<OrderExpanded[] | undefined>(undefined);
 	const hasOrders = Array.isArray(orders) && orders.length > 0;
 
 	useEffect(() => {
-		refreshStateViaAPI<OrderExpanded[]>(
+		refreshStateViaAPI<OrderExpanded[] | undefined>(
 			'/api/orders?expand=products',
 			setOrders,
 			{
@@ -22,16 +22,22 @@ export default function OrdersPage() {
 		);
 	}, [setToast]);
 
+	if (orders === undefined) {
+		return "Loading";
+	}
+
 	return (
 		<>
-			<link rel='icon' type='image/png' href='favicon/orders.png' />
+			{/* head */}
 			<title>Orders</title>
+
+			{/* body */}
 			<Header />
-			<div className='orders-page'>
-				<div className='page-title'>Your Orders</div>
+			<div className="orders-page">
+				<div className="page-title">Your Orders</div>
 
 				{hasOrders ? (
-					<div className='orders-grid'>
+					<div className="orders-grid">
 						{orders.map((order) => (
 							<OrderComponent key={order.id} order={order} />
 						))}

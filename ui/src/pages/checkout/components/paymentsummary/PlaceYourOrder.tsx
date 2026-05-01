@@ -1,17 +1,17 @@
-import { placeOrder, refreshStateViaAPI } from '@/utils';
+import { placeOrder } from '@/utils';
 import { useNavigate } from 'react-router';
-import { useCart } from '@/hooks/useCart';
-import { useToast } from '@/hooks/useToast';
+import { useRefreshCart } from '@/hooks/useCart';
+import { useToastSetter } from '@/hooks/useToastSetter';
 
 export default function PlaceYourOrder() {
 	const navigate = useNavigate();
-	const { setCart } = useCart();
-	const { setToast } = useToast();
+	const refreshCart = useRefreshCart();
+	const setToast = useToastSetter();
 
 	return (
 		<button
-			className='place-order-button button-primary'
-			data-testid='place-order-button'
+			className="place-order-button button-primary"
+			data-testid="place-order-button"
 			onClick={placeOrderOnClick}
 		>
 			Place your order
@@ -23,10 +23,7 @@ export default function PlaceYourOrder() {
 	) {
 		const isOrderPlaced = await placeOrder(setToast);
 		if (isOrderPlaced) {
-			refreshStateViaAPI('/api/cartItems?expand=product', setCart, {
-				setToast,
-				when: 'onFailure',
-			});
+			await refreshCart();
 
 			navigate('/orders');
 		} else {

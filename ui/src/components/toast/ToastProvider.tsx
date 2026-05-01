@@ -1,5 +1,5 @@
-import Toast from '@/components/Toast';
-import { ToastContext } from '@/context/ToastContext';
+import Toast from '@/components/toast/Toast';
+import { ToastSetterContext } from '@/context/ToastSetterContext';
 import type { ToastData } from '@/types';
 import { useState, type ReactNode } from 'react';
 
@@ -7,9 +7,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 	const [toast, setToast] = useState<ToastData | null>(null);
 
 	return (
-		<ToastContext.Provider value={{ toast, setToast }}>
+		<ToastSetterContext.Provider value={ setToast }>
 			<Toast toast={toast} />
 			{children}
-		</ToastContext.Provider>
+		</ToastSetterContext.Provider>
 	);
 }

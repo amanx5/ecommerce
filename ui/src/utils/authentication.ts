@@ -1,5 +1,5 @@
 import type { User } from "@/types";
-import { apiRequest } from "@/utils/api";
+import { apiRequest } from "@/utils/api-request";
 
 export function createUsernameFromEmail(email: string) {
   const userName = email.split("@")[0];
@@ -9,7 +9,7 @@ export function createUsernameFromEmail(email: string) {
 }
 
 // Returns the user data if the user is succesfully logged in otherwise null;
-// Even when the sign-in/register requests are successful, the auth cookie
+// Even when the signIn/register requests are successful, the auth cookie
 // may not have been set if the user has a preference set in browser to block
 // third-party cookies.
 //
@@ -18,14 +18,14 @@ export function createUsernameFromEmail(email: string) {
 //
 // This is a workaround for the current setup where the ui and api are on
 // different domains.
-export async function verifyLogin() {
-  const resp = await apiRequest<User>("/api/auth/user", {
-    method: "get",
+export async function verifyLogin(): Promise<User | null> {
+  const { success, error, data } = await apiRequest<User | null>({
+    endpoint: "/api/auth/user",
   });
 
-  if (resp.success && resp.data) {
-    return resp.data;
-  } 
+  if (!success || data === undefined) {
+    throw error;
+  }
 
-  return null;
+  return data;
 }

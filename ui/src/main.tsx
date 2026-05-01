@@ -10,9 +10,9 @@ if (!container) {
 }
 
 createRoot(container).render(
-  <StrictMode>
+  // <StrictMode>
     <BrowserRouter>
       <App />
     </BrowserRouter>
-  </StrictMode>,
+  // </StrictMode>,
 );

@@ -1,5 +1,5 @@
 import './NotFoundPage.css';
-import Header from '../../components/Header';
+import Header from '@/components/header/Header';
 export default function NotFoundPage() {
 	return (
 		<>

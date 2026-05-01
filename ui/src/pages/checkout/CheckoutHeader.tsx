@@ -2,11 +2,11 @@ import './CheckoutHeader.css';
 import { NavLink } from 'react-router';
 import StorefrontIcon from "@mui/icons-material/Storefront";
 import CheckoutLock from '@/assets/icons/checkout-lock-icon.png'
-import { useCart } from '@/hooks/useCart';
+import { useCheckoutContext } from '@/hooks/useCheckoutContext';
 import { getTotalCartItems } from '@/utils';
 
 export default function CheckoutHeader() {
-	const { cart } = useCart();
+	const { cart } = useCheckoutContext();
 	const totalCartItems = getTotalCartItems(cart);
 
 	return (
@@ -40,11 +40,10 @@ export default function CheckoutHeader() {
 				</div>
 
 				<div className='checkout-header-middle-section'>
-					Checkout (
+					<span>Checkout</span> 
 					<NavLink className='return-to-home-link' to='/'>
-						{totalCartItems + ' items'} 
+						{`(${totalCartItems} items)`} 
 					</NavLink>
-					)
 				</div>
 
 				<div className='checkout-header-right-section'>

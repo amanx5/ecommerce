@@ -1,132 +1,128 @@
-import { CartItem } from '@/types';
-import { apiRequest } from '@/utils/api';
-import type { SetToast } from '@/context/ToastContext';
+import { apiRequest, hitRequest } from "@/utils/api-request";
+import type { ToastSetter } from "@/context/ToastSetterContext";
+import type { Cart } from "@/hooks/useCart";
 
-export const getCheckoutHeading = function (cart: CartItem[] | null): string {
-	if (cart === null) {
-		return 'Loading...';
-	} else if (Array.isArray(cart)) {
-		if (cart.length) {
-			return 'Review your order';
-		} else {
-			return 'Cart is Empty!';
-		}
-	} else {
-		return 'Failed to load cart.';
-	}
+export const getTotalCartItems = function (cart: Cart): number {
+  return cart.reduce((acc, curr) => (acc += curr.quantity), 0);
 };
 
-export const getTotalCartItems = function (cart: CartItem[] | null): number {
-	if (Array.isArray(cart)) {
-		return cart.reduce((acc, curr) => (acc += curr.quantity), 0);
-	} else {
-		return 0;
-	}
-};
+export async function getCart(): Promise<Cart> {
+  const resp = await apiRequest<Cart>({
+    endpoint: "/api/cartItems?expand=product",
+  });
+
+  if (resp.success && resp.data) {
+    return resp.data;
+  } else {
+    throw new Error(resp.message);
+  }
+}
 
 export interface AddToCartData {
-	productId: string;
-	quantity: number;
+  productId: string;
+  quantity: number;
 }
 
 export const addNewCartItem = async function (
-	data: AddToCartData,
-	setToast: SetToast | false,
+  data: AddToCartData,
+  setToast: ToastSetter | false,
 ): Promise<boolean> {
-	const response = await apiRequest<void>('/api/cartItems', {
-		method: 'post',
-		data,
-	});
+  const response = await apiRequest<void>({
+    endpoint: "/api/cartItems",
+    method: "post",
+    payload: data,
+  });
 
-	const { message, success } = response;
+  const { message, success } = response;
 
-	if (setToast) {
-		setToast({
-			message: message || 'Failed to add item to cart.',
-			type: success ? 'success' : 'error',
-		});
-	}
+  if (setToast) {
+    setToast({
+      message: message || "Failed to add item to cart.",
+      type: success ? "success" : "error",
+    });
+  }
 
-	return success;
+  return success;
 };
 
 export const deleteCartItem = async function (
-	productId: string,
-	setToast: SetToast | false,
+  productId: string,
+  setToast: ToastSetter | false,
 ): Promise<boolean> {
-	const response = await apiRequest(
-		`/api/cartItems/${productId}`,
-		{
-			method: 'delete',
-		},
-		true,
-	);
+  const { response } = await hitRequest({
+    endpoint: `/api/cartItems/${productId}`,
+    method: "delete",
+  });
 
-	const success = response.status === 204;
+  const success = response ? response.status === 204 : false;
 
-	if (setToast) {
-		setToast({
-			message: success
-				? 'Item removed from cart.'
-				: 'Failed to remove item from cart.',
-			type: success ? 'success' : 'error',
-		});
-	}
+  if (setToast) {
+    const message = success
+      ? "Item removed from cart."
+      : "Failed to remove item from cart.";
 
-	return success;
+    setToast({
+      message,
+      type: success ? "success" : "error",
+    });
+  }
+
+  return success;
 };
 
 export const updateDeliveryOption = async function (
-	deliveryOptionId: string,
-	productId: string,
-	setToast: SetToast | false,
+  deliveryOptionId: string,
+  productId: string,
+  setToast: ToastSetter | false,
 ): Promise<boolean> {
-	const data = {
-		deliveryOptionId,
-	};
+  const payload = {
+    deliveryOptionId,
+  };
 
-	const response = await apiRequest<void>(`/api/cartItems/${productId}`, {
-		method: 'put',
-		data,
-	});
+  const response = await apiRequest<void>({
+    endpoint: `/api/cartItems/${productId}`,
+    method: "put",
+    payload,
+  });
 
-	const { message, success } = response;
-	const toastMessage =
-		message || success
-			? 'Delivery option updated successfully.'
-			: 'Failed to update delivery option.';
-	const toastType = success ? 'success' : 'error';
+  const { message, success } = response;
+  const toastMessage =
+    message || success
+      ? "Delivery option updated successfully."
+      : "Failed to update delivery option.";
+  const toastType = success ? "success" : "error";
 
-	if (setToast) {
-		setToast({
-			message: toastMessage,
-			type: toastType,
-		});
-	}
+  if (setToast) {
+    setToast({
+      message: toastMessage,
+      type: toastType,
+    });
+  }
 
-	return success;
+  return success;
 };
 
 export const placeOrder = async function (
-	setToast: SetToast | false,
+  setToast: ToastSetter | false,
 ): Promise<boolean> {
-	const response = await apiRequest<{ id: string }>('/api/orders', {
-		method: 'post',
-	});
+  const response = await apiRequest<{ id: string }>({
+    endpoint: "/api/orders",
+    method: "post",
+  });
 
-	const { message, success } = response;
-	const toastMessage =
-		message || success
-			? 'Order placed successfully.'
-			: 'Failed to place order.';
-	const toastType = success ? 'success' : 'error';
+  const { message, success } = response;
+  const toastMessage =
+    message || success
+      ? "Order placed successfully."
+      : "Failed to place order.";
+  const toastType = success ? "success" : "error";
 
-	if (setToast) {
-		setToast({
-			message: toastMessage,
-			type: toastType,
-		});
-	}
+  if (setToast) {
+    setToast({
+      message: toastMessage,
+      type: toastType,
+    });
+  }
 
-	return success;
+  return success;
 };
