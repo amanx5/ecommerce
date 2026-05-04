@@ -38,12 +38,15 @@ export function getEndpointUrl<T extends string>(
   return `${getBackendUrl()}/${relativeEndpoint}`;
 }
 
+
 const AUTH_API_BASE = "/api/auth";
 const CART_API_BASE = "/api/cartItems";
 const ORDERS_API_BASE = "/api/orders";
 const DELIVERYOPTIONS_API_BASE = "/api/deliveryOptions";
 
 export const API_ENDPOINTS = {
+  healthcheck: { GET: getBackendUrl() },
+
   auth: {
 		register: { POST: `${AUTH_API_BASE}/register` },
     signIn: { POST: `${AUTH_API_BASE}/signIn` },
