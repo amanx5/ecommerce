@@ -1,8 +1,8 @@
 import "./HomePage.css";
 import { useEffect, useState } from "react";
 import Header from "@/components/header/Header";
-import ProductComponent from "./components/product/Product";
-import { refreshStateViaAPI } from "@/utils";
+import {ProductHome} from "@/pages/home/components/product/ProductHome";
+import { API_ENDPOINTS, refreshStateViaAPI } from "@/utils";
 import { useSearchParams } from "react-router";
 import { Product } from "@/types";
 import { useToastSetter } from "@/hooks/useToastSetter";
@@ -19,8 +19,9 @@ export default function HomePage() {
     : "No products found";
 
   useEffect(() => {
-    const url =
-      "/api/products" + (productSearch ? "?search=" + productSearch : "");
+    const url = productSearch
+      ? API_ENDPOINTS.products.GETQUERY(productSearch)
+      : API_ENDPOINTS.products.GET;
 
     refreshStateViaAPI<Product[] | null>(url, setProducts, {
       setToast,
@@ -38,7 +39,7 @@ export default function HomePage() {
         ) : isProductsAvailable ? (
           <div className="products-grid">
             {products.map((product) => (
-              <ProductComponent key={product.id} product={product} />
+              <ProductHome key={product.id} product={product} />
             ))}
           </div>
         ) : (

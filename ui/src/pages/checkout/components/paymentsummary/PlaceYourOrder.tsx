@@ -24,7 +24,6 @@ export default function PlaceYourOrder() {
 		const isOrderPlaced = await placeOrder(setToast);
 		if (isOrderPlaced) {
 			await refreshCart();
-
 			navigate('/orders');
 		} else {
 			setToast({

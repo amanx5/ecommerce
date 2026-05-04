@@ -1,8 +1,8 @@
-import Product from './Product';
+import {ProductCheckout} from '@/pages/checkout/components/ordersummary/ProductCheckout';
 import DeliveryDate from './DeliveryDate';
 import DeliveryOptions from './DeliveryOptions';
 import { useEffect, useState } from 'react';
-import { refreshStateViaAPI } from '@/utils';
+import { API_ENDPOINTS, refreshStateViaAPI } from '@/utils';
 import type {
 	CartItem,
 	CartItemExpanded,
@@ -18,7 +18,7 @@ export default function CartItem({ cartItem }: { cartItem: CartItemExpanded }) {
 
 	useEffect(() => {
 		refreshStateViaAPI(
-			'/api/deliveryOptions?expand=estimatedDeliveryTimeMs',
+			API_ENDPOINTS.deliveryOptions.GETEXPANDED,
 			setDeliveryOptions,
 			{
 				setToast,
@@ -31,7 +31,7 @@ export default function CartItem({ cartItem }: { cartItem: CartItemExpanded }) {
 		<div className="cart-item-container">
 			<DeliveryDate cartItem={cartItem} deliveryOptions={deliveryOptions} />
 			<div className="cart-item-details-grid">
-				<Product cartItem={cartItem} />
+				<ProductCheckout cartItem={cartItem} />
 				<DeliveryOptions
 					cartItem={cartItem}
 					deliveryOptions={deliveryOptions}

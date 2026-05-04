@@ -1,4 +1,5 @@
 import type { User } from "@/types";
+import { API_ENDPOINTS } from "@/utils/api-endpoint";
 import { apiRequest } from "@/utils/api-request";
 
 export function createUsernameFromEmail(email: string) {
@@ -20,7 +21,7 @@ export function createUsernameFromEmail(email: string) {
 // different domains.
 export async function verifyLogin(): Promise<User | null> {
   const { success, error, data } = await apiRequest<User | null>({
-    endpoint: "/api/auth/user",
+    endpoint: API_ENDPOINTS.auth.user.GET,
   });
 
   if (!success || data === undefined) {

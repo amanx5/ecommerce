@@ -1,52 +1,74 @@
-import { addNewCartItem } from "@/utils";
+import { updateCart, deleteCartItem, addCartItem } from "@/utils";
 import { Product } from "@/types";
-import { useRefreshCart } from "@/hooks/useCart";
+import { useCart, useRefreshCart } from "@/hooks/useCart";
 import { useToastSetter } from "@/hooks/useToastSetter";
 import { useUser } from "@/hooks/useUser";
 import { useNavigate } from "react-router";
 
 interface AddToCartProps {
   product: Product;
-  quantity: number;
 }
 
 export default function AddToCart(props: AddToCartProps) {
   const user = useUser();
 
-  return user ? (
-    <AuthenticatedAddToCart {...props} />
-  ) : (
-    <UnauthenticatedAddToCart />
-  );
+  if (!user) return <UnauthenticatedAddToCart />;
+  return <AuthenticatedAddToCart {...props} />;
 }
 
 function UnauthenticatedAddToCart() {
   const navigate = useNavigate();
-  return (
-    <AddToCartButton
-      onClick={() => {
-        navigate("/login");
-      }}
-    />
-  );
+  return <AddToCartButton onClick={() => navigate("/login")} />;
 }
 
-function AuthenticatedAddToCart({ product, quantity }: AddToCartProps) {
-  const { id } = product;
+function AuthenticatedAddToCart({ product }: AddToCartProps) {
+  const productId = product.id;
   const setToast = useToastSetter();
+  const { data = [] } = useCart();
+  const currentQuantity =
+    data.find((item) => item.productId === productId)?.quantity || 0;
   const refreshCart = useRefreshCart();
 
-  return <AddToCartButton onClick={addToCartOnClick} />;
+  if (currentQuantity === 0) {
+    return <AddToCartButton onClick={() => add()} />;
+  }
 
-  async function addToCartOnClick() {
-    const data = {
-      productId: id,
-      quantity,
-    };
+  return <QuantityChange productId={productId} />;
 
-    const success = await addNewCartItem(data, setToast);
-    if (success) {
-      await refreshCart();
+  async function add() {
+    await addCartItem({ productId, quantity: 1 }, setToast, refreshCart);
+  }
+}
+
+function QuantityChange({ productId }: { productId: string }) {
+  const setToast = useToastSetter();
+
+  const { data = [] } = useCart();
+
+  const currentQuantity =
+    data.find((item) => item.productId === productId)?.quantity || 0;
+
+  const refreshCart = useRefreshCart();
+
+  return (
+    <div>
+      {currentQuantity === 1 ? (
+        <button onClick={() => operation("delete")}>X</button>
+      ) : (
+        <button onClick={() => operation("decrease")}>-</button>
+      )}
+      {currentQuantity}
+      <button onClick={() => operation("increase")}>+</button>
+    </div>
+  );
+
+  function operation(op: "increase" | "decrease" | "delete") {
+    if (op === "delete") {
+      deleteCartItem(productId, setToast, refreshCart);
+    } else {
+      const quantity =
+        op === "decrease" ? currentQuantity - 1 : currentQuantity + 1;
+      updateCart(productId, { quantity }, setToast, refreshCart);
     }
   }
 }

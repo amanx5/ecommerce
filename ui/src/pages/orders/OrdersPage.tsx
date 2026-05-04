@@ -2,7 +2,7 @@ import './OrdersPage.css';
 import Header from '@/components/header/Header';
 import OrderComponent from './components/Order';
 import { useEffect, useState } from 'react';
-import { refreshStateViaAPI } from '@/utils';
+import { API_ENDPOINTS, refreshStateViaAPI } from '@/utils';
 import { type OrderExpanded } from '@/types';
 import { useToastSetter } from '@/hooks/useToastSetter';
 
@@ -13,7 +13,7 @@ export default function OrdersPage() {
 
 	useEffect(() => {
 		refreshStateViaAPI<OrderExpanded[] | undefined>(
-			'/api/orders?expand=products',
+			API_ENDPOINTS.orders.GETEXPANDED,
 			setOrders,
 			{
 				setToast,

@@ -13,7 +13,7 @@ import { useNavigate } from "react-router";
 import { createUsernameFromEmail } from "@/utils/authentication";
 import { useSetUser } from "@/hooks/useUser";
 import { useToastSetter } from "@/hooks/useToastSetter";
-import { hitRequest } from "@/utils";
+import { API_ENDPOINTS, hitRequest } from "@/utils";
 
 export function AccountMenu({ user }: { user: User }) {
   const navigate = useNavigate();
@@ -132,7 +132,7 @@ export function AccountMenu({ user }: { user: User }) {
 
   async function onLogoutClick() {
     const { response, error } = await hitRequest({
-      endpoint: "/api/auth/signOut",
+      endpoint: API_ENDPOINTS.auth.signOut.POST,
       method: "post",
     });
 

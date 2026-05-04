@@ -1,14 +1,18 @@
-import CartItem from './ordersummary/CartItem.jsx';
-import { useCheckoutContext } from '@/hooks/useCheckoutContext.js';
+import { useCart } from "@/hooks/useCart.js";
+import CartItem from "./ordersummary/CartItem.jsx";
 
 export default function OrderSummary() {
-	const { cart } = useCheckoutContext();
+  const { data: cart } = useCart();
 
-	return (
-		<div className='order-summary'>
-			{cart.map((cartItem) => (
-				<CartItem key={cartItem.id} cartItem={cartItem} />
-			))}
-		</div>
-	);
+  if (!cart) {
+    return <div className="order-summary">Loading</div>;
+  }
+
+  return (
+    <div className="order-summary">
+      {cart.map((cartItem) => (
+        <CartItem key={cartItem.id} cartItem={cartItem} />
+      ))}
+    </div>
+  );
 }

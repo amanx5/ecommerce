@@ -1,3 +1,4 @@
+import "./Splash.css";
 import { useEffect, useState } from 'react'
 import CheckroomIcon from '@mui/icons-material/Checkroom'
 import Inventory2Icon from '@mui/icons-material/Inventory2'
@@ -47,69 +48,6 @@ export function Splash() {
       >
         <CurrentIcon className="loading-icon" />
       </div>
-
-      <style>{`
-        .splash-container {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          min-height: 100vh;
-          background:
-            radial-gradient(circle at center, rgba(25, 135, 84, 0.1), transparent 34%),
-            rgb(255, 255, 255);
-        }
-
-        .loading-icon-wrapper {
-          position: relative;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 96px;
-          height: 96px;
-          border: 1px solid rgba(25, 135, 84, 0.16);
-          border-radius: 50%;
-          background: rgba(25, 135, 84, 0.06);
-          box-shadow: 0 14px 35px rgba(8, 79, 45, 0.12);
-        }
-
-        .loading-icon-wrapper::after {
-          position: absolute;
-          inset: -7px;
-          content: '';
-          border: 1px solid rgba(25, 135, 84, 0.16);
-          border-top-color: var(--primary-green);
-          border-radius: 50%;
-          animation: splashSpin 1s linear infinite;
-        }
-
-        .loading-icon {
-          width: 48px;
-          height: 48px;
-          color: var(--primary-green);
-          animation: iconPop 0.7s ease-in-out infinite;
-        }
-
-        @keyframes iconPop {
-          0% {
-            transform: scale(0.9);
-            opacity: 0.65;
-          }
-          50% {
-            transform: scale(1.05);
-            opacity: 1;
-          }
-          100% {
-            transform: scale(1);
-            opacity: 1;
-          }
-        }
-
-        @keyframes splashSpin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
     </div>
   )
 }

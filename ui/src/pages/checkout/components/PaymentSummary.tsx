@@ -1,11 +1,30 @@
-import { getPriceNative } from "@/utils";
+import { API_ENDPOINTS, getPriceNative, refreshStateViaAPI } from "@/utils";
 import PlaceYourOrder from "./paymentsummary/PlaceYourOrder";
-import { useCheckoutContext } from "@/hooks/useCheckoutContext";
 import { PaymentSummarySkeleton } from "@/pages/checkout/components/paymentsummary/PaymentSummarySkeleton";
+import { useCart } from "@/hooks/useCart";
+import type { PaymentSummaryData } from "@/types";
+import { useEffect, useState } from "react";
+import { useToastSetter } from "@/hooks/useToastSetter";
 
 export default function PaymentSummary() {
-  const { paymentSummary } = useCheckoutContext();
-  const isLoading = !paymentSummary;
+  const { data: cart } = useCart();
+  const setToast = useToastSetter();
+
+  const [paymentSummary, setPaymentSummary] =
+    useState<PaymentSummaryData | null>(null);
+
+  useEffect(() => {
+    refreshStateViaAPI<PaymentSummaryData | null>(
+      API_ENDPOINTS.paymentSummary.GET,
+      setPaymentSummary,
+      {
+        setToast,
+        when: "onFailure",
+      },
+    );
+  }, [setToast, cart]);
+
+  const isLoading = !cart || !paymentSummary;
 
   if (isLoading) {
     return <PaymentSummarySkeleton />;

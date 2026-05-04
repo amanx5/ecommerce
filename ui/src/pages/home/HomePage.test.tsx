@@ -10,8 +10,9 @@ import {
 import axios from 'axios';
 import userEvent from '@testing-library/user-event';
 import { sampleAPIResponse } from '~/vitest.setup';
+import { API_ENDPOINTS } from '@/utils';
 
-const productsAPI = '/api/products';
+const productsAPI = API_ENDPOINTS.products.GET;
 const products = sampleAPIResponse[productsAPI];
 
 describe('HomePage component', () => {
@@ -23,7 +24,7 @@ describe('HomePage component', () => {
 		secondAddToCart: HTMLElement;
 
 	beforeEach(async () => {
-		renderWithContext(<HomePage />);
+		renderWithContext(<HomePage />, { useSampleUser: true });
 
 		UserEvent = userEvent.setup();
 		productContainers = await screen.findAllByTestId('product-container');
@@ -55,7 +56,7 @@ describe('HomePage component', () => {
 
 	it('updates the cart on clicking addtocart of the product', async () => {
 		const getParamsToCallCartPostAPI = (productIndex: number) => [
-			'/api/cartItems',
+			API_ENDPOINTS.cart.POST,
 			{
 				productId: products[productIndex].id,
 				quantity: 1,

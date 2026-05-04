@@ -2,7 +2,7 @@ import "./LoginPage.css";
 import { useState, type SubmitEvent } from "react";
 import { NavLink, useNavigate } from "react-router";
 import { MinimalHeader } from "@/components/header/MinimalHeader";
-import { apiRequest } from "@/utils";
+import { API_ENDPOINTS, apiRequest } from "@/utils";
 import { useSetUser } from "@/hooks/useUser";
 import type { User } from "@/types";
 import { verifyLogin } from "@/utils/authentication";
@@ -19,7 +19,7 @@ export default function LoginPage() {
     setError(null);
 
     const resp = await apiRequest<User>({
-      endpoint: "/api/auth/signIn",
+      endpoint: API_ENDPOINTS.auth.signIn.POST,
       method: "post",
       payload: { email, password },
     });

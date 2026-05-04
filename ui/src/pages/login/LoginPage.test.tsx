@@ -6,6 +6,7 @@ import userEvent from '@testing-library/user-event';
 import axios from 'axios';
 import type { User } from '@/types';
 import * as userHooks from '@/hooks/useUser';
+import { API_ENDPOINTS } from '@/utils';
 
 const dummyUser: User = { id: 'u1', email: 'test@example.com' };
 
@@ -32,11 +33,11 @@ describe('LoginPage', () => {
 		const pwdInput = screen.getByLabelText(/Password/i);
 		const submit = screen.getByRole('button', { name: /login/i });
 
-		// mock for /api/auth/signIn endpoint
+		// mock for API_ENDPOINTS.auth.signIn.POST endpoint
 		(axios.post as Mock).mockResolvedValue({
 			data: { success: true, data: dummyUser },
 		});
-		// mock for /api/auth/user endpoint - verifyLogin uses this
+		// mock for API_ENDPOINTS.auth.user.GET endpoint - verifyLogin uses this
 		(axios.get as Mock).mockResolvedValue({
 			data: { success: true, data: dummyUser },
 		});
@@ -51,7 +52,7 @@ describe('LoginPage', () => {
 		await user.click(submit);
 
 		await vi.waitFor(() => {
-			expect(axios.post).toHaveBeenCalledWith('/api/auth/signIn', {
+			expect(axios.post).toHaveBeenCalledWith(API_ENDPOINTS.auth.signIn.POST, {
 				email,
 				password,
 			});

@@ -1,7 +1,5 @@
-import { useState } from "react";
 import { getPriceNative } from "../../../../utils";
 import AddToCart from "./AddToCart";
-import QuantitySelector from "./QuantitySelector";
 import Rating from "@/pages/home/components/product/Rating";
 import { getEndpointUrl } from "@/utils/api-endpoint";
 import { Product } from "@/types";
@@ -10,9 +8,7 @@ interface ProductProps {
   product: Product;
 }
 
-export default function ProductComponent({ product }: ProductProps) {
-  const [quantity, setQuantity] = useState(1);
-
+export function ProductHome({ product }: ProductProps) {
   const { image, name, rating, priceCents } = product;
   const { stars: ratingStars = 0, count: ratingCount = 0 } = rating || {};
 
@@ -40,11 +36,9 @@ export default function ProductComponent({ product }: ProductProps) {
 
       <div className="product-price">{getPriceNative(priceCents)}</div>
 
-      <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
-
       <div className="product-spacer"></div>
 
-      <AddToCart product={product} quantity={quantity} />
+      <AddToCart product={product} />
     </div>
   );
 }

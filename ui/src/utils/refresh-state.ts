@@ -1,4 +1,4 @@
-import type { ToastSetter } from "@/context/ToastSetterContext";
+import type { ToastSetter } from "@/hooks/useToastSetter";
 import { apiRequest, type ApiResponseBody } from "@/utils/api-request";
 import type { Dispatch, SetStateAction } from "react";
 

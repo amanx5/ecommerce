@@ -4,7 +4,7 @@ import { getCart } from "@/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export type Cart = CartItemExpanded[];
-export type SetCart = (cart: Cart) => void;
+export type RefreshCart = () => Promise<boolean>;
 
 function getQueryKey(user: User): string[] {
   return ["cart", user.id];
