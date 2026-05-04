@@ -75,28 +75,6 @@
   }
 }
 
-@keyframes toast-slide-in {
-  from {
-    transform: translateX(100%) translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0) translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes toast-slide-out {
-  from {
-    transform: translateX(0) translateY(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateX(100%) translateY(20px);
-    opacity: 0;
-  }
-}
-
 :root {
   --header-height: 60px;
   --header-bg: rgb(8, 79, 45);

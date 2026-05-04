@@ -1,11 +1,10 @@
-import type { ToastSetter } from "@/hooks/useToastSetter";
 import { apiRequest, type ApiResponseBody } from "@/utils/api-request";
 import type { Dispatch, SetStateAction } from "react";
+import { toast } from "react-hot-toast";
 
 type ToastOptions =
   | false
   | {
-      setToast: ToastSetter;
       when: "always" | "onSuccess" | "onFailure";
     };
 
@@ -28,11 +27,13 @@ export const refreshStateViaAPI = async function <T>(
       (toastOptions.when === "onSuccess" && success) ||
       (toastOptions.when === "onFailure" && !success))
   ) {
-    toastOptions.setToast({
-      message,
-      type: success ? "success" : "error",
-    });
+    if (success) {
+      toast.success(message);
+    } else {
+      toast.error(message);
+    }
   }
 
   return response;
 };
+

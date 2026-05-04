@@ -1,7 +1,6 @@
 import BuyAgainIcon from "@/assets/icons/buy-again.png";
 import type { Product } from "@/types";
 import { useCart, useRefreshCart } from "@/hooks/useCart";
-import { useToastSetter } from "@/hooks/useToastSetter";
 import { addCartItem } from "@/utils";
 
 interface BuyAgainProps {
@@ -13,7 +12,6 @@ export default function BuyAgain({ product }: BuyAgainProps) {
   const productId = product.id;
   const { data, isSuccess } = useCart();
   const refreshCart = useRefreshCart();
-  const setToast = useToastSetter();
 
   if (!isSuccess) {
     return null;
@@ -31,6 +29,7 @@ export default function BuyAgain({ product }: BuyAgainProps) {
   );
 
   async function add() {
-    await addCartItem({ productId, quantity: 1 }, setToast, refreshCart);
+    await addCartItem({ productId, quantity: 1 }, refreshCart);
   }
 }
+

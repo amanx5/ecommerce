@@ -1,12 +1,11 @@
 import { placeOrder } from '@/utils';
 import { useNavigate } from 'react-router';
 import { useRefreshCart } from '@/hooks/useCart';
-import { useToastSetter } from '@/hooks/useToastSetter';
+import { toast } from 'react-hot-toast';
 
 export default function PlaceYourOrder() {
 	const navigate = useNavigate();
 	const refreshCart = useRefreshCart();
-	const setToast = useToastSetter();
 
 	return (
 		<button
@@ -21,15 +20,13 @@ export default function PlaceYourOrder() {
 	async function placeOrderOnClick(
 		_event: React.MouseEvent<HTMLButtonElement>,
 	) {
-		const isOrderPlaced = await placeOrder(setToast);
+		const isOrderPlaced = await placeOrder();
 		if (isOrderPlaced) {
 			await refreshCart();
 			navigate('/orders');
 		} else {
-			setToast({
-				type: 'error',
-				message: 'Failed to place order. Please try again.',
-			});
+			toast.error('Failed to place order. Please try again.');
 		}
 	}
 }
+

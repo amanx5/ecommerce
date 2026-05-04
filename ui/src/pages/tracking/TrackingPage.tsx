@@ -3,10 +3,8 @@ import { API_ENDPOINTS, refreshStateViaAPI } from "@/utils";
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import TrackingDetails from "./components/TrackingDetails";
-import { useToastSetter } from "@/hooks/useToastSetter";
 
 export default function TrackingPage() {
-  const setToast = useToastSetter();
   const [order, setOrder] = useState(null);
   const [searchParams] = useSearchParams();
   const orderId = searchParams.get("orderId");
@@ -19,10 +17,10 @@ export default function TrackingPage() {
 
     const url = API_ENDPOINTS.orders.GETBYIDEXPANDED(orderId ?? "");
     refreshStateViaAPI(url, setOrder, {
-      setToast,
       when: "onFailure",
     });
-  }, [orderId, setToast]);
+  }, [orderId]);
+
 
   return (
     <>

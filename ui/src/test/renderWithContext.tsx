@@ -1,12 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
-  ToastSetterContext,
-  type ToastSetterContextType,
-} from "@/hooks/useToastSetter";
 import { render, RenderOptions } from "@testing-library/react";
 import { ReactElement } from "react";
 import { MemoryRouter } from "react-router";
-import { vi } from "vitest";
 import type { User } from "@/types";
 import type { Cart } from "@/hooks/useCart";
 import { AuthenticationLoader } from "@/components/AuthenticationLoader";
@@ -19,7 +14,6 @@ const SAMPLE_USER: User = {
 type ExtendedRenderOptions = {
   renderOptions?: RenderOptions;
   route?: string;
-  toastSetterContext?: ToastSetterContextType;
   user?: User | null;
   useSampleUser?: boolean;
   cart?: Cart;
@@ -32,7 +26,6 @@ export function renderWithContext(
   const {
     route = "/",
     renderOptions,
-    toastSetterContext = vi.fn(),
     user = extendedRenderOptions?.useSampleUser ? SAMPLE_USER : null,
     cart = [],
   } = extendedRenderOptions || {};
@@ -55,14 +48,12 @@ export function renderWithContext(
     ...render(
       <QueryClientProvider client={queryClient}>
         <AuthenticationLoader>
-          <ToastSetterContext.Provider value={toastSetterContext}>
-            <MemoryRouter initialEntries={[route]}>{ui}</MemoryRouter>
-          </ToastSetterContext.Provider>
+          <MemoryRouter initialEntries={[route]}>{ui}</MemoryRouter>
         </AuthenticationLoader>
       </QueryClientProvider>,
       renderOptions,
     ),
     queryClient,
-    toastSetterContext,
   };
 }
+

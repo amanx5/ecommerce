@@ -1,12 +1,10 @@
 import Header from "@/components/header/Header";
-import { useToastSetter } from "@/hooks/useToastSetter";
 import { OrderDetails } from "@/pages/orders/components/OrderDetails";
 import { API_ENDPOINTS, refreshStateViaAPI } from "@/utils";
 import { type OrderExpanded } from "@/types";
 import { useEffect, useState } from "react";
 
 export default function OrdersPage() {
-  const setToast = useToastSetter();
   const [orders, setOrders] = useState<OrderExpanded[] | undefined>(undefined);
   const hasOrders = Array.isArray(orders) && orders.length > 0;
 
@@ -15,11 +13,11 @@ export default function OrdersPage() {
       API_ENDPOINTS.orders.GETEXPANDED,
       setOrders,
       {
-        setToast,
         when: "onFailure",
       },
     );
-  }, [setToast]);
+  }, []);
+
 
   if (orders === undefined) {
     return "Loading";

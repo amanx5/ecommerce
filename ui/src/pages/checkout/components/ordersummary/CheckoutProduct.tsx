@@ -2,13 +2,11 @@ import { deleteCartItem, getPriceNative, updateCart } from "@/utils";
 import { useState } from "react";
 import type { CartItemExpanded } from "@/types";
 import { useRefreshCart } from "@/hooks/useCart";
-import { useToastSetter } from "@/hooks/useToastSetter";
 import { getEndpointUrl } from "@/utils/api-endpoint";
 
 export function CheckoutProduct({ cartItem }: { cartItem: CartItemExpanded }) {
   const [quantityInput, setQuantityInput] = useState(String(cartItem.quantity));
   const refreshCart = useRefreshCart();
-  const setToast = useToastSetter();
 
   const { product, quantity } = cartItem;
   const { image, name, priceCents } = product;
@@ -21,11 +19,12 @@ export function CheckoutProduct({ cartItem }: { cartItem: CartItemExpanded }) {
   const updateCartItemQuantity = (quantityInput: string) => {
     const quantity = parseInt(quantityInput);
     if (quantity === 0) {
-      deleteCartItem(productId, setToast, refreshCart);
+      deleteCartItem(productId, refreshCart);
     } else {
-      updateCart(productId, { quantity }, setToast, refreshCart);
+      updateCart(productId, { quantity }, refreshCart);
     }
   };
+
 
   return (
     <>

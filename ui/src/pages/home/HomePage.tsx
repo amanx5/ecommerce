@@ -4,13 +4,11 @@ import { HomeProduct } from "@/pages/home/components/product/HomeProduct";
 import { API_ENDPOINTS, refreshStateViaAPI } from "@/utils";
 import { useSearchParams } from "react-router";
 import { Product } from "@/types";
-import { useToastSetter } from "@/hooks/useToastSetter";
 import clsx from "clsx";
 
 export default function HomePage() {
   const [urlSearchParams] = useSearchParams();
   const productSearch = urlSearchParams.get("product");
-  const setToast = useToastSetter();
   const [products, setProducts] = useState<Product[] | null>(null);
   const isProductsLoading = products === null;
   const isProductsAvailable = Array.isArray(products) && products.length > 0;
@@ -24,10 +22,10 @@ export default function HomePage() {
       : API_ENDPOINTS.products.GET;
 
     refreshStateViaAPI<Product[] | null>(url, setProducts, {
-      setToast,
       when: "onFailure",
     });
-  }, [setToast, productSearch]);
+  }, [productSearch]);
+
 
   return (
     <>

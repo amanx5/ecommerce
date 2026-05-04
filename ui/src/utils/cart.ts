@@ -1,7 +1,7 @@
 import { apiRequest, hitRequest } from "@/utils/api-request";
-import type { ToastSetter } from "@/hooks/useToastSetter";
 import type { Cart, RefreshCart } from "@/hooks/useCart";
 import { API_ENDPOINTS } from "@/utils/api-endpoint";
+import { toast } from "react-hot-toast";
 
 export const getTotalCartItems = function (cart: Cart): number {
   return cart.reduce((acc, curr) => (acc += curr.quantity), 0);
@@ -26,7 +26,6 @@ type AddCartItemPayload = {
 
 export const addCartItem = async function (
   payload: AddCartItemPayload,
-  setToast: ToastSetter | false,
   refreshCart: RefreshCart,
 ): Promise<boolean> {
   const response = await apiRequest<void>({
@@ -37,11 +36,8 @@ export const addCartItem = async function (
 
   const { message, success } = response;
 
-  if (setToast && !success) {
-    setToast({
-      message: message || "Failed to add item to cart.",
-      type: "error",
-    });
+  if (!success) {
+    toast.error(message || "Failed to add item to cart.");
   }
 
   await refreshCart();
@@ -50,9 +46,7 @@ export const addCartItem = async function (
 
 export const deleteCartItem = async function (
   productId: string,
-  setToast: ToastSetter,
   refreshCart: RefreshCart,
-
 ): Promise<boolean> {
   const { response } = await hitRequest({
     endpoint: API_ENDPOINTS.cart.DELETE(productId),
@@ -62,13 +56,7 @@ export const deleteCartItem = async function (
   const success = response ? response.status === 204 : false;
 
   if (!success) {
-    if (setToast) {
-      setToast({
-        message: "Failed to remove item from cart.",
-        type: "error",
-      });
-    }
-
+    toast.error("Failed to remove item from cart.");
     return false;
   }
 
@@ -84,7 +72,6 @@ type UpdateCartItemPayload = {
 export async function updateCart(
   productId: string,
   payload: UpdateCartItemPayload,
-  setToast: ToastSetter,
   refreshCart: RefreshCart,
 ) {
   const { message, success } = await apiRequest<void>({
@@ -94,11 +81,7 @@ export async function updateCart(
   });
 
   if (!success) {
-    setToast({
-      message: message || "Failed to update cart.",
-      type: "error",
-    });
-
+    toast.error(message || "Failed to update cart.");
     return false;
   }
 
@@ -106,9 +89,7 @@ export async function updateCart(
   return true;
 }
 
-export const placeOrder = async function (
-  setToast: ToastSetter | false,
-): Promise<boolean> {
+export const placeOrder = async function (): Promise<boolean> {
   const response = await apiRequest<{ id: string }>({
     endpoint: API_ENDPOINTS.orders.POST,
     method: "post",
@@ -116,17 +97,14 @@ export const placeOrder = async function (
 
   const { message, success } = response;
   const toastMessage =
-    message || success
-      ? "Order placed successfully."
-      : "Failed to place order.";
-  const toastType = success ? "success" : "error";
+    message || (success ? "Order placed successfully." : "Failed to place order.");
 
-  if (setToast) {
-    setToast({
-      message: toastMessage,
-      type: toastType,
-    });
+  if (success) {
+    toast.success(toastMessage);
+  } else {
+    toast.error(toastMessage);
   }
 
   return success;
 };
+

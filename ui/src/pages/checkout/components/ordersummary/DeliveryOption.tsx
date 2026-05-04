@@ -1,7 +1,6 @@
 import { formatDate, getPriceNative, updateCart } from "@/utils";
 import type { CartItem, DeliveryOptionExpanded } from "@/types";
 import { useRefreshCart } from "@/hooks/useCart";
-import { useToastSetter } from "@/hooks/useToastSetter";
 
 export default function DeliveryOption({
   deliveryOption,
@@ -11,7 +10,6 @@ export default function DeliveryOption({
   cartItem: CartItem;
 }) {
   const refreshCart = useRefreshCart();
-  const setToast = useToastSetter();
 
   const { productId, deliveryOptionId } = cartItem;
   const { id, priceCents, estimatedDeliveryTimeMs } = deliveryOption;
@@ -24,9 +22,10 @@ export default function DeliveryOption({
         name={`delivery-option-${productId}`}
         checked={id === deliveryOptionId}
         onChange={() =>
-          updateCart(productId, { deliveryOptionId: id }, setToast, refreshCart)
+          updateCart(productId, { deliveryOptionId: id }, refreshCart)
         }
       />
+
       <div>
         <div className="font-medium mb-0.75">
           {formatDate(estimatedDeliveryTimeMs)}

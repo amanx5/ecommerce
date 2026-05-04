@@ -12,13 +12,12 @@ import { Fragment, useState } from "react";
 import { useNavigate } from "react-router";
 import { createUsernameFromEmail } from "@/utils/authentication";
 import { useSetUser } from "@/hooks/useUser";
-import { useToastSetter } from "@/hooks/useToastSetter";
 import { API_ENDPOINTS, hitRequest } from "@/utils";
 import clsx from "clsx";
+import { toast } from "react-hot-toast";
 
 export function AccountMenu({ user }: { user: User }) {
   const navigate = useNavigate();
-  const setToast = useToastSetter();
   const setUser = useSetUser();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -151,7 +150,7 @@ export function AccountMenu({ user }: { user: User }) {
         error ||
         "Failed to sign out. Please try again.";
 
-      setToast({ message, type: "error" });
+      toast.error(message);
     }
   }
 }

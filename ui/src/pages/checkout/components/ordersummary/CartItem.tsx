@@ -8,10 +8,8 @@ import type {
   CartItemExpanded,
   DeliveryOptionExpanded,
 } from "@/types";
-import { useToastSetter } from "@/hooks/useToastSetter";
 
 export default function CartItem({ cartItem }: { cartItem: CartItemExpanded }) {
-  const setToast = useToastSetter();
   const [deliveryOptions, setDeliveryOptions] = useState<
     DeliveryOptionExpanded[]
   >([]);
@@ -21,11 +19,10 @@ export default function CartItem({ cartItem }: { cartItem: CartItemExpanded }) {
       API_ENDPOINTS.deliveryOptions.GETEXPANDED,
       setDeliveryOptions,
       {
-        setToast,
         when: "onFailure",
       },
     );
-  }, [setToast]);
+  }, []);
 
   return (
     <div className="border border-[rgb(222,222,222)] rounded p-4.5 max-[400px]:p-3 mb-3">
@@ -38,6 +35,6 @@ export default function CartItem({ cartItem }: { cartItem: CartItemExpanded }) {
         />
       </div>
     </div>
-
   );
 }
+

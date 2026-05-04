@@ -4,11 +4,9 @@ import { PaymentSummarySkeleton } from "@/pages/checkout/components/paymentsumma
 import { useCart } from "@/hooks/useCart";
 import type { PaymentSummaryData } from "@/types";
 import { useEffect, useState } from "react";
-import { useToastSetter } from "@/hooks/useToastSetter";
 
 export default function PaymentSummary() {
   const { data: cart } = useCart();
-  const setToast = useToastSetter();
 
   const [paymentSummary, setPaymentSummary] =
     useState<PaymentSummaryData | null>(null);
@@ -18,11 +16,11 @@ export default function PaymentSummary() {
       API_ENDPOINTS.paymentSummary.GET,
       setPaymentSummary,
       {
-        setToast,
         when: "onFailure",
       },
     );
-  }, [setToast, cart]);
+  }, [cart]);
+
 
   const isLoading = !cart || !paymentSummary;
 
