@@ -17,10 +17,10 @@ export default function DeliveryOption({
   const { id, priceCents, estimatedDeliveryTimeMs } = deliveryOption;
 
   return (
-    <label className="delivery-option">
+    <label className="grid grid-cols-[24px_1fr] mb-3 cursor-pointer">
       <input
         type="radio"
-        className="delivery-option-input"
+        className="mt-0.75 mr-1.25 cursor-pointer"
         name={`delivery-option-${productId}`}
         checked={id === deliveryOptionId}
         onChange={() =>
@@ -28,10 +28,10 @@ export default function DeliveryOption({
         }
       />
       <div>
-        <div className="delivery-option-date">
+        <div className="font-medium mb-0.75">
           {formatDate(estimatedDeliveryTimeMs)}
         </div>
-        <div className="delivery-option-price">
+        <div className="text-[rgb(120,120,120)] text-[15px]">
           {priceCents ? getPriceNative(priceCents) : "FREE Shipping"}
         </div>
       </div>

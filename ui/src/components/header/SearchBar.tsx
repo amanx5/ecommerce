@@ -1,6 +1,7 @@
 import SearchIcon from '@/assets/icons/search-icon.png';
 import { useState, ChangeEvent, KeyboardEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
+import clsx from 'clsx';
 
 export default function SearchBar() {
 	const [urlSearchParams] = useSearchParams();
@@ -11,7 +12,12 @@ export default function SearchBar() {
 	return (
 		<>
 			<input
-				className='search-bar'
+				className={clsx(
+					'flex-1 w-0 text-[16px] h-[40px] pl-[15px]',
+					'border-none rounded-l-[5px] rounded-r-none',
+					'bg-white text-black focus:outline-none',
+					'max-[600px]:h-[36px]'
+				)}
 				type='text'
 				placeholder='Search'
 				value={searchValue}
@@ -19,8 +25,16 @@ export default function SearchBar() {
 				onKeyDown={searchInputOnKeyDown}
 			/>
 
-			<button className='search-button' onClick={searchButtonOnClick}>
-				<img className='search-icon' src={SearchIcon} />
+			<button 
+				className={clsx(
+					'bg-[rgb(186,255,190)] border-none w-[45px] h-[40px]',
+					'rounded-r-[5px] rounded-l-none shrink-0 cursor-pointer',
+					'flex items-center justify-center',
+					'max-[600px]:h-[36px]'
+				)}
+				onClick={searchButtonOnClick}
+			>
+				<img className='h-[20px]' src={SearchIcon} />
 			</button>
 		</>
 	);

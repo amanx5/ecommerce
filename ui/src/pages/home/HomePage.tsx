@@ -1,11 +1,11 @@
-import "./HomePage.css";
 import { useEffect, useState } from "react";
 import Header from "@/components/header/Header";
-import {ProductHome} from "@/pages/home/components/product/ProductHome";
+import { HomeProduct } from "@/pages/home/components/product/HomeProduct";
 import { API_ENDPOINTS, refreshStateViaAPI } from "@/utils";
 import { useSearchParams } from "react-router";
 import { Product } from "@/types";
 import { useToastSetter } from "@/hooks/useToastSetter";
+import clsx from "clsx";
 
 export default function HomePage() {
   const [urlSearchParams] = useSearchParams();
@@ -33,17 +33,25 @@ export default function HomePage() {
     <>
       <Header />
 
-      <div className="home-page">
+      <div className="mt-(--header-height,60px)">
         {isProductsLoading ? (
           <>loading</>
         ) : isProductsAvailable ? (
-          <div className="products-grid">
+          <div
+            className={clsx(
+              "grid grid-cols-8",
+              "max-[2000px]:grid-cols-7 max-[1600px]:grid-cols-6",
+              "max-[1300px]:grid-cols-5 max-[1000px]:grid-cols-4",
+              "max-[800px]:grid-cols-3 max-[575px]:grid-cols-2",
+              "max-[450px]:grid-cols-1",
+            )}
+          >
             {products.map((product) => (
-              <ProductHome key={product.id} product={product} />
+              <HomeProduct key={product.id} product={product} />
             ))}
           </div>
         ) : (
-          <div className="no-products-found">{noProductsFoundText}</div>
+          <div className="mt-[150px] ml-[30px]">{noProductsFoundText}</div>
         )}
       </div>
     </>

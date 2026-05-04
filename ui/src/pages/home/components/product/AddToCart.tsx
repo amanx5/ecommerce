@@ -76,7 +76,7 @@ function QuantityChange({ productId }: { productId: string }) {
 function AddToCartButton({ onClick }: { onClick: () => void }) {
   return (
     <button
-      className="add-to-cart-button button-primary"
+      className="w-full h-8.5 mt-0.5 button-primary"
       data-testid="AddToCart"
       onClick={onClick}
     >

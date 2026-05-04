@@ -1,11 +1,11 @@
-import './NotFoundPage.css';
-import Header from '@/components/header/Header';
+import { MinimalHeader } from '@/components/header/MinimalHeader';
+
 export default function NotFoundPage() {
 	return (
 		<>
-			<Header />
-			<div className='notfound-page'>
-				<div className='page-title'>404 Page Not Found</div>
+			<MinimalHeader />
+			<div className='flex justify-center items-center h-screen pt-15'>
+				<div className='font-bold text-2xl text-gray-800'>404 Page Not Found</div>
 			</div>
 		</>
 	);

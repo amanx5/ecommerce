@@ -9,7 +9,7 @@ export default function OrderSummary() {
   }
 
   return (
-    <div className="order-summary">
+    <div className="max-[1000px]:max-w-[500px]">
       {cart.map((cartItem) => (
         <CartItem key={cartItem.id} cartItem={cartItem} />
       ))}

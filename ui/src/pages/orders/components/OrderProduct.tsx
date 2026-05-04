@@ -4,7 +4,7 @@ import BuyAgain from "./BuyAgain";
 import type { OrderExpanded, OrderItemExpanded } from "@/types";
 import { getEndpointUrl } from "@/utils/api-endpoint";
 
-export default function Product({
+export function OrderProduct({
   order,
   orderItem,
 }: {
@@ -16,16 +16,21 @@ export default function Product({
 
   return (
     <>
-      <div className="product-image-container">
-        <img src={getEndpointUrl(image)} />
+      <div className="text-center max-[450px]:mb-6">
+        <img
+          className="max-w-[110px] max-h-[110px] max-[450px]:max-w-[150px] max-[450px]:max-h-[150px]"
+          src={getEndpointUrl(image)}
+        />
       </div>
 
       <div className="product-details">
-        <div className="product-name">{name}</div>
-        <div className="product-delivery-date">
+        <div className="font-bold mb-1 max-[450px]:mb-2.5 line-clamp-2">
+          {name}
+        </div>
+        <div className="mb-0.5">
           {getOrderTrackingInfo(order, orderItem).subHeading}
         </div>
-        <div className="product-quantity">Quantity: {quantity}</div>
+        <div className="mb-2 max-[450px]:mb-4">Quantity: {quantity}</div>
         <BuyAgain product={product} quantity={quantity} />
       </div>
 

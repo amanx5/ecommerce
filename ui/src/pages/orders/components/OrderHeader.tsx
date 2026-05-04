@@ -5,20 +5,20 @@ export default function OrderHeader({ order }: { order: OrderExpanded }) {
 	const { id, orderTimeMs, totalCostCents } = order;
 
 	return (
-		<div className='order-header'>
-			<div className='order-header-left-section'>
-				<div className='order-date'>
-					<div className='order-header-label'>Order Placed:</div>
+		<div className='bg-white border border-[rgb(222,222,222)] flex items-center justify-between p-5 px-6 rounded-t-[5px] max-[575px]:flex-col max-[575px]:items-start max-[575px]:leading-[23px] max-[575px]:p-[15px]'>
+			<div className='flex shrink-0 max-[575px]:flex-col'>
+				<div className='mr-[45px] max-[575px]:grid max-[575px]:grid-cols-[auto_1fr] max-[575px]:mr-0'>
+					<div className='font-bold max-[575px]:mr-1'>Order Placed:</div>
 					<div>{formatDate(orderTimeMs)}</div>
 				</div>
-				<div className='order-total'>
-					<div className='order-header-label'>Total:</div>
+				<div className='mr-[45px] max-[575px]:grid max-[575px]:grid-cols-[auto_1fr] max-[575px]:mr-0'>
+					<div className='font-bold max-[575px]:mr-1'>Total:</div>
 					<div>{getPriceNative(totalCostCents)}</div>
 				</div>
 			</div>
 
-			<div className='order-header-right-section'>
-				<div className='order-header-label'>Order ID:</div>
+			<div className='shrink max-[575px]:grid max-[575px]:grid-cols-[auto_1fr]'>
+				<div className='font-bold max-[575px]:mr-1'>Order ID:</div>
 				<div>{id}</div>
 			</div>
 		</div>

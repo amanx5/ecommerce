@@ -1,7 +1,7 @@
 import DeliveryOption from './DeliveryOption';
 import type { CartItemExpanded, DeliveryOptionExpanded } from '@/types';
 
-export default function DeliveryOptions({
+export function DeliveryOptions({
 	cartItem,
 	deliveryOptions,
 }: {
@@ -9,8 +9,8 @@ export default function DeliveryOptions({
 	deliveryOptions: DeliveryOptionExpanded[];
 }) {
 	return (
-		<div className='delivery-options'>
-			<div className='delivery-options-title'>
+		<div className='max-[1000px]:col-span-2'>
+			<div className='font-bold mb-2.5'>
 				Choose a delivery option:
 			</div>
 

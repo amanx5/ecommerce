@@ -1,13 +1,106 @@
-:root {
-  --header-height: 60px;
-  --header-bg: rgb(8, 79, 45);
-  --primary-green: rgb(25, 135, 84);
-}
+@import "tailwindcss";
 
 @media (max-width: 600px) {
   :root {
     --header-height: 100px;
   }
+}
+
+@utility link-primary {
+  @apply text-(--primary-green) cursor-pointer;
+
+  &:hover:not(:disabled) {
+    @apply opacity-75;
+  }
+
+  &:active:not(:disabled) {
+    @apply opacity-50;
+  }
+
+  &:disabled {
+    @apply opacity-50 cursor-default;
+  }
+}
+
+@utility button-primary {
+  @apply text-white bg-(--primary-green) border border-transparent rounded-[5px] shadow-[0_2px_5px_rgba(220,220,220,0.5)];
+
+  &:hover:not(:disabled) {
+    @apply bg-[rgba(25,135,84,0.75)];
+  }
+
+  &:active:not(:disabled) {
+    @apply bg-[rgba(25,135,84,0.5)] border-transparent shadow-none;
+  }
+
+  &:disabled {
+    @apply opacity-50 cursor-default shadow-none;
+  }
+}
+
+@utility button-secondary {
+  @apply text-[rgb(33,33,33)] bg-white border border-[rgb(200,200,200)] rounded-[5px] shadow-[0_2px_5px_rgba(220,220,220,0.2)];
+
+  &:hover:not(:disabled) {
+    @apply bg-[rgb(250,250,250)];
+  }
+
+  &:active:not(:disabled) {
+    @apply bg-[rgb(240,240,240)] shadow-none;
+  }
+
+  &:disabled {
+    @apply opacity-50 cursor-default shadow-none;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes iconPop {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.65;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-slide-in {
+  from {
+    transform: translateX(100%) translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-slide-out {
+  from {
+    transform: translateX(0) translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%) translateY(20px);
+    opacity: 0;
+  }
+}
+
+:root {
+  --header-height: 60px;
+  --header-bg: rgb(8, 79, 45);
+  --primary-green: rgb(25, 135, 84);
 }
 
 html,
@@ -24,18 +117,17 @@ body {
   margin: 0;
 }
 
-/* Remove the default margins of <p> elements. */
 p {
   margin: 0;
 }
 
-button {
-  font-size: 14px;
+button:not(:disabled),
+select:not(:disabled) {
   cursor: pointer;
 }
 
-select {
-  cursor: pointer;
+button {
+  font-size: 14px;
 }
 
 input,
@@ -44,71 +136,6 @@ button {
   font-family: Roboto, Arial;
 }
 
-.button-primary {
-  color: rgb(255, 255, 255);
-  background-color: var(--primary-green);
-  border: 1px solid transparent;
-  border-radius: 5px;
-  cursor: pointer;
-  box-shadow: 0 2px 5px rgba(220, 220, 220, 0.5);
-}
-
-.button-primary:hover {
-  background-color: rgba(25, 135, 84, 0.75);
-  border: 1px solid transparent;
-}
-
-.button-primary:active {
-  background: rgba(25, 135, 84, 0.5);
-  border-color: transparent;
-  box-shadow: none;
-}
-
-.button-secondary {
-  color: rgb(33, 33, 33);
-  background: white;
-  border: 1px solid rgb(200, 200, 200);
-  border-radius: 5px;
-  cursor: pointer;
-  box-shadow: 0 2px 5px rgba(220, 220, 220, 0.2);
-}
-
-.button-secondary:hover {
-  background-color: rgb(250, 250, 250);
-}
-
-.button-secondary:active {
-  background-color: rgb(240, 240, 240);
-  box-shadow: none;
-}
-
-/* These styles will limit text to 2 lines. Anything
-   beyond 2 lines will be replaced with "..."
-   You can find this code by using an A.I. tool or by
-   searching in Google.
-   https://css-tricks.com/almanac/properties/l/line-clamp/ */
-.limit-text-to-2-lines {
-  display: -webkit-box;
-  line-clamp: 2;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.link-primary {
-  color: var(--primary-green);
-  cursor: pointer;
-}
-
-.link-primary:hover {
-  opacity: 0.75;
-}
-
-.link-primary:active {
-  opacity: 0.5;
-}
-
-/* Styles for dropdown selectors. */
 select {
   color: rgb(33, 33, 33);
   background-color: rgb(255, 255, 255);
@@ -116,28 +143,10 @@ select {
   border-radius: 5px;
   padding: 3px 5px;
   font-size: 15px;
-  cursor: pointer;
   box-shadow: 0 1px 3px rgba(200, 200, 200, 0.2);
 }
 
 select:focus,
 input:focus {
   outline: 2px solid rgb(25, 135, 84);
-}
-
-
-.spinner {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border: 1.5px solid rgba(0, 0, 0, 0.15);
-  border-top-color: var(--header-bg);
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
 }

@@ -1,8 +1,0 @@
-.minimal-header {
-    background-color: white;
-}
-
-.minimal-header svg,
-.minimal-header .site-name {
-    color: var(--header-bg);
-}

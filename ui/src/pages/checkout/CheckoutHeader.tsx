@@ -1,48 +1,58 @@
-import "./CheckoutHeader.css";
 import { NavLink } from "react-router";
 import StorefrontIcon from "@mui/icons-material/Storefront";
 import CheckoutLock from "@/assets/icons/checkout-lock-icon.png";
 import { getTotalCartItems } from "@/utils";
 import { useCart } from "@/hooks/useCart";
+import clsx from "clsx";
 
 export default function CheckoutHeader() {
   return (
-    <div className="checkout-header">
-      <div className="header-content">
-        <div className="checkout-header-left-section">
+    <div
+      className={clsx(
+        "h-[60px] px-[30px] max-[575px]:px-[15px] bg-white flex justify-center",
+        "fixed inset-x-0 top-0 z-1000",
+      )}
+    >
+      <div className="w-full max-w-[1100px] flex items-center">
+        <div className="w-[200px] max-[575px]:w-auto">
           <NavLink
             to="/"
-            className="header-link"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              color: "var(--header-bg)",
-              textDecoration: "none",
-            }}
+            className={clsx(
+              "flex items-center gap-[8px]",
+              "text-(--header-bg) no-underline",
+            )}
           >
             <StorefrontIcon style={{ fontSize: 32 }} />
             <span
-              className="site-name"
-              style={{
-                fontSize: "28px",
-                fontWeight: 700,
-                letterSpacing: "2px",
-                fontFamily: '"Dancing Script", cursive',
-              }}
+              className={clsx(
+                "site-name",
+                "max-[575px]:hidden text-[28px] font-bold",
+                "tracking-[2px] font-['Dancing_Script',cursive]",
+              )}
             >
               SHOP
             </span>
           </NavLink>
         </div>
 
-        <div className="checkout-header-middle-section">
+        <div
+          className={clsx(
+            "flex-1 shrink-0 text-center gap-[6px] text-[22px] font-medium flex justify-center items-center whitespace-nowrap",
+            "max-[1000px]:text-[20px] max-[1000px]:mr-[60px]",
+            "max-[575px]:mr-[5px] max-[575px]:text-[18px]",
+          )}
+        >
           <span>Checkout</span>
           <CheckoutItemsCount />
         </div>
 
-        <div className="checkout-header-right-section">
-          <img src={CheckoutLock} />
+        <div
+          className={clsx(
+            "text-right w-[200px] flex items-center justify-end",
+            "max-[1000px]:w-auto",
+          )}
+        >
+          <img src={CheckoutLock} className="h-[32px]" />
         </div>
       </div>
     </div>
@@ -58,7 +68,12 @@ function CheckoutItemsCount() {
 
   const totalCartItems = getTotalCartItems(data);
   return (
-    <NavLink className="return-to-home-link" to="/">
+    <NavLink
+      className={clsx(
+        "no-underline cursor-pointer text-[rgb(25,135,84)]",
+      )}
+      to="/"
+    >
       {`(${totalCartItems} items)`}
     </NavLink>
   );

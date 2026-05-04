@@ -1,8 +1,11 @@
 import Header from "@/components/header/Header";
-import "./MinimalHeader.css";
 
 export function MinimalHeader() {
   return (
-    <Header className="minimal-header" showSearch={false} showMenu={false} />
+    <Header 
+      className="bg-white! [&_a]:text-(--header-bg)!" 
+      showSearch={false} 
+      showMenu={false} 
+    />
   );
 }

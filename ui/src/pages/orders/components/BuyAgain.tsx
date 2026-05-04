@@ -23,8 +23,8 @@ export default function BuyAgain({ product }: BuyAgainProps) {
 
   return (
     !isAlreadyInCart && (
-      <button className="buy-again-button button-primary" onClick={add}>
-        <img className="buy-again-icon" src={BuyAgainIcon} />
+      <button className="text-sm w-[140px] h-9 rounded-[5px] flex items-center justify-center max-[800px]:mb-2.5 max-[450px]:w-full max-[450px]:mb-4 button-primary" onClick={add}>
+        <img className="w-5 mr-2.5" src={BuyAgainIcon} />
         <span className="buy-again-message">Add to Cart</span>
       </button>
     )

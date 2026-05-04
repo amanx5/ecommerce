@@ -14,6 +14,7 @@ import { createUsernameFromEmail } from "@/utils/authentication";
 import { useSetUser } from "@/hooks/useUser";
 import { useToastSetter } from "@/hooks/useToastSetter";
 import { API_ENDPOINTS, hitRequest } from "@/utils";
+import clsx from "clsx";
 
 export function AccountMenu({ user }: { user: User }) {
   const navigate = useNavigate();
@@ -45,13 +46,18 @@ export function AccountMenu({ user }: { user: User }) {
           <IconButton
             onClick={handleClick}
             size="small"
-            sx={{ ml: 2, color: "white" }}
+            sx={{ ml: { xs: 0, sm: 2 }, p: { xs: "4px", sm: "5px" }, color: "white" }}
             aria-controls={open ? "account-menu" : undefined}
             aria-haspopup="true"
             aria-expanded={open ? "true" : undefined}
           >
             <AccountCircleIcon sx={{ width: 36, height: 36 }} />
-            <span className="nav-link-text account-text">
+            <span 
+              className={clsx(
+                "block text-sm font-bold max-w-15 ml-1 truncate",
+                "max-[600px]:hidden"
+              )}
+            >
               {userNamePascalCase}
             </span>
           </IconButton>

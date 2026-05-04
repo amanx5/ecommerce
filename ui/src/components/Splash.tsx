@@ -1,4 +1,3 @@
-import "./Splash.css";
 import { useEffect, useState } from 'react'
 import CheckroomIcon from '@mui/icons-material/Checkroom'
 import Inventory2Icon from '@mui/icons-material/Inventory2'
@@ -40,13 +39,13 @@ export function Splash() {
   const CurrentIcon = SHOPPING_ICONS[currentIconIndex].Icon
 
   return (
-    <div className="splash-container">
+    <div className="flex items-center justify-center min-h-screen bg-[radial-gradient(circle_at_center,rgba(25,135,84,0.1),transparent_34%),#fff]">
       <div
-        className="loading-icon-wrapper"
+        className="relative flex items-center justify-center w-24 h-24 border border-[rgba(25,135,84,0.16)] rounded-full bg-[rgba(25,135,84,0.06)] shadow-[0_14px_35px_rgba(8,79,45,0.12)] after:absolute after:inset-[-7px] after:content-[''] after:border after:border-[rgba(25,135,84,0.16)] after:border-t-(--primary-green) after:rounded-full after:animate-spin"
         aria-label={`Loading ${SHOPPING_ICONS[currentIconIndex].label}`}
         role="status"
       >
-        <CurrentIcon className="loading-icon" />
+        <CurrentIcon className="w-12 h-12 text-(--primary-green) animate-[iconPop_0.7s_ease-in-out_infinite]" />
       </div>
     </div>
   )

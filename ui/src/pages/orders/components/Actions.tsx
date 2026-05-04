@@ -11,9 +11,9 @@ export default function Actions({ order, productId }: ActionsProps) {
 	const navigate = useNavigate();
 
 	return (
-		<div className='product-actions'>
+		<div className='self-start max-[800px]:col-start-2 max-[800px]:mb-7.5 max-[450px]:col-auto max-[450px]:mb-17.5'>
 			<button
-				className='track-package-button button-secondary'
+				className='w-full text-sm p-2 max-[800px]:w-[140px] max-[450px]:w-full max-[450px]:p-3 button-secondary'
 				onClick={trackPackageOnClick}
 			>
 				Track package

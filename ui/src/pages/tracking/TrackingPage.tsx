@@ -1,4 +1,3 @@
-import "./TrackingPage.css";
 import Header from "@/components/header/Header";
 import { API_ENDPOINTS, refreshStateViaAPI } from "@/utils";
 import { useEffect, useState } from "react";
@@ -30,7 +29,7 @@ export default function TrackingPage() {
       <title>Track Package</title>
       <Header />
 
-      <div className="tracking-page">
+      <div className="max-w-[850px] mt-[calc(var(--header-height,60px)+30px)] mb-25 px-7.5 mx-auto">
         {order ? (
           <>
             <ViewAllOrders />
@@ -52,7 +51,7 @@ export default function TrackingPage() {
 
 function ViewAllOrders() {
   return (
-    <Link className="back-to-orders-link link-primary" to="/orders">
+    <Link className="inline-block mb-7.5 link-primary" to="/orders">
       View all orders
     </Link>
   );

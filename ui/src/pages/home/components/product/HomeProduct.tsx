@@ -8,35 +8,40 @@ interface ProductProps {
   product: Product;
 }
 
-export function ProductHome({ product }: ProductProps) {
+export function HomeProduct({ product }: ProductProps) {
   const { image, name, rating, priceCents } = product;
   const { stars: ratingStars = 0, count: ratingCount = 0 } = rating || {};
 
   return (
-    <div className="product-container" data-testid="product-container">
-      <div className="product-image-container">
+    <div
+      className="pt-10 pb-6 px-6 border-r border-b border-gray-100 flex flex-col"
+      data-testid="product-container"
+    >
+      <div className="flex justify-center items-center h-45 mb-5">
         <img
-          className="product-image"
+          className="max-w-full max-h-full rounded"
           data-testid="product-image"
           src={getEndpointUrl(image)}
         />
       </div>
 
-      <div className="product-name limit-text-to-2-lines">{name}</div>
+      <div className="mb-1 h-12 line-clamp-2">{name}</div>
 
-      <div className="product-rating-container">
+      <div className="flex items-center mb-2.5">
         <Rating
           value={ratingStars}
-          className="product-rating-stars"
+          className="mr-1.5"
           data-testid="product-rating-stars"
           data-rating={ratingStars.toString()}
         />
-        <div className="product-rating-count link-primary">{ratingCount}</div>
+        <div className="text-[rgb(25,135,84)] cursor-auto text-sm link-primary">
+          {ratingCount}
+        </div>
       </div>
 
-      <div className="product-price">{getPriceNative(priceCents)}</div>
+      <div className="font-bold mb-2.5">{getPriceNative(priceCents)}</div>
 
-      <div className="product-spacer"></div>
+      <div className="flex-1"></div>
 
       <AddToCart product={product} />
     </div>

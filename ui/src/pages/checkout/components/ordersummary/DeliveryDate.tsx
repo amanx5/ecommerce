@@ -1,7 +1,7 @@
 import { formatDate } from '@/utils';
 import type { CartItem, DeliveryOptionExpanded } from '@/types';
 
-export default function DeliveryDate({
+export function DeliveryDate({
 	cartItem,
 	deliveryOptions,
 }: {
@@ -19,8 +19,9 @@ export default function DeliveryDate({
 	const { estimatedDeliveryTimeMs } = selectedDeliveryOption;
 
 	return (
-		<div className='delivery-date'>
+		<div className='text-[rgb(25,135,84)] font-bold text-[19px] max-[400px]:text-[17px] mt-1.25 mb-5.5 max-[400px]:mb-3'>
 			Delivery date: {formatDate(estimatedDeliveryTimeMs)}
 		</div>
+
 	);
 }

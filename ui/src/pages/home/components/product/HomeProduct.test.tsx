@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, Mock } from "vitest";
-import { ProductHome } from "@/pages/home/components/product/ProductHome";
+import { HomeProduct } from "@/pages/home/components/product/HomeProduct";
 import { screen, waitFor } from "@testing-library/react";
 import { renderWithContext } from "@/test/renderWithContext";
 import { API_ENDPOINTS, getPriceNative } from "@/utils";
@@ -29,7 +29,7 @@ describe("Product component in HomePage", () => {
 
     UserEvent = userEvent.setup();
 
-    renderWithContext(<ProductHome product={product} />, {
+    renderWithContext(<HomeProduct product={product} />, {
       useSampleUser: true,
     });
   });

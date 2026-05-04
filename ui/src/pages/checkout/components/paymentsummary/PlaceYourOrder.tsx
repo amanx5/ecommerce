@@ -10,7 +10,7 @@ export default function PlaceYourOrder() {
 
 	return (
 		<button
-			className="place-order-button button-primary"
+			className="w-full py-3 rounded-[5px] mt-5 mb-4.75 button-primary"
 			data-testid="place-order-button"
 			onClick={placeOrderOnClick}
 		>

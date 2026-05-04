@@ -1,6 +1,7 @@
 import path from 'path';
 import { defineConfig, loadEnv, ConfigEnv, UserConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite'
 
 /**
  * Export the Vite configuration using defineConfig.
@@ -37,7 +38,7 @@ function getViteConfig(configEnv: ConfigEnv): UserConfig {
 			outDir: path.resolve('dist'),
 		},
 
-		plugins: [react()],
+		plugins: [react(), tailwindcss()],
 
 		// server is development mode only config, it doesn't have any impact on build
 		server: {
