@@ -1,7 +1,6 @@
 import { Router } from "@/pages/Router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthenticationLoader } from "@/components/AuthenticationLoader";
-import { HealthCheckLoader } from "@/components/HealthCheckLoader";
+import { StartupLoader } from "@/components/StartupLoader";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Toaster } from "react-hot-toast";
 
@@ -13,11 +12,9 @@ export default function App() {
       <Toaster position="bottom-center" />
 
       <QueryClientProvider client={queryClient}>
-        <HealthCheckLoader>
-          <AuthenticationLoader>
-            <Router />
-          </AuthenticationLoader>
-        </HealthCheckLoader>
+        <StartupLoader>
+          <Router />
+        </StartupLoader>
       </QueryClientProvider>
     </ErrorBoundary>
   );
