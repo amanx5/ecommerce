@@ -23,6 +23,14 @@ export function isArrayOf(type: ArrayOfType, value: unknown) {
   return value.every(validator);
 }
 
+export function findFirstNotIn<T extends string>(
+  array: T[],
+  validItems: T[],
+): T | undefined {
+  const validSet = new Set(validItems);
+  return array.find((el) => !validSet.has(el));
+}
+
 export function isBoolean(value: unknown): value is boolean {
   return typeof value === "boolean";
 }

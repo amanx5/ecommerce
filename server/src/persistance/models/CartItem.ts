@@ -22,7 +22,7 @@ export class CartItem extends Model<
 
   // foreign keys
   declare productId: ForeignKey<Product["id"]>;
-  declare deliveryOptionId: ForeignKey<DeliveryOption["id"]> | null;
+  declare deliveryOptionId: ForeignKey<DeliveryOption["id"]>;
   declare userId: ForeignKey<User["id"]>;
 
   // Association properties (aka Non-persistent properties, transient, Eager-loaded relations)
@@ -56,6 +56,7 @@ export class CartItem extends Model<
         },
         deliveryOptionId: {
           type: DataTypes.STRING,
+          allowNull: false, // can't be null as payment summary api uses this field to calculate price
           references: { model: "delivery_options", key: "id" },
         },
         userId: {
