@@ -1,10 +1,18 @@
-import type { ComponentProps } from "react";
+import CircularProgress, {
+  CircularProgressProps,
+} from "@mui/material/CircularProgress";
+import clsx from "clsx";
 
-export function Spinner({ className, ...props }: ComponentProps<"span">) {
+export function Spinner({ size = 16, sx, ...props }: CircularProgressProps) {
   return (
-    <span
+    <CircularProgress
+      size={size}
+      sx={{
+        color: "inherit",
+        ...sx,
+      }}
+      thickness={5}
       {...props}
-      className={`inline-block size-2 border-[1.5px] border-black/15 border-t-[--header-bg] rounded-full animate-[spin_0.6s_linear_infinite] ${className}`}
     />
   );
 }
@@ -12,8 +20,7 @@ export function Spinner({ className, ...props }: ComponentProps<"span">) {
 export function SpinnerFullScreen() {
   return (
     <div className="flex flex-col items-center justify-center gap-2 h-full">
-      <Spinner className="size-8" />
+      <Spinner size={32} />
     </div>
   );
 }
-
