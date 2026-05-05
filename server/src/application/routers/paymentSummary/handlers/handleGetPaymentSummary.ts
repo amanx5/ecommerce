@@ -1,12 +1,12 @@
 import { Responder } from "@/application/utils";
-import { getUserId } from "@/application/routers/auth/utils/user";
+import { assertUserId } from "@/application/routers/auth/utils/user";
 import { HttpStatus } from "@/constants";
 import { CartItem, Product, DeliveryOption } from "@/persistance/models/";
 import { type RequestHandler } from "express";
 
 export const handleGetPaymentSummary: RequestHandler = async (_req, res) => {
   try {
-    const where = { userId: getUserId(res) };
+    const where = { userId: assertUserId(res) };
     const cartItems = await CartItem.findAll({
       include: [
         { model: Product, as: "product" },

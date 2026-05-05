@@ -6,12 +6,10 @@ import {
   paymentSummaryRouter,
   productsRouter,
 } from "@/application/routers";
-import {
-  getAuthTokenFromRequest,
-  verifyAuthToken,
-} from "@/application/routers/auth/utils";
+import { getAuthStatus, setAuthStatus } from "@/application/routers/auth/utils";
 import { Responder } from "@/application/utils";
 import { FILE_PATHS, HttpStatus } from "@/constants";
+import { AuthStatus } from "@/types/auth";
 import { FRONTEND_URLS } from "@/utils/client";
 import { addRequestLog } from "@/utils/loggers";
 import cookieParser from "cookie-parser";
@@ -20,7 +18,6 @@ import express, {
   type RequestHandler,
   type ErrorRequestHandler,
 } from "express";
-
 
 //
 // ******************************************************************************************************************
@@ -35,7 +32,7 @@ const cookieParserMiddleware = cookieParser();
 // allow cors with frontend
 const corsMiddleWare = cors({
   origin: FRONTEND_URLS,
-  // it adds response header `Access-Control-Allow-Credentials: true` which instructs the browser that the server is 
+  // it adds response header `Access-Control-Allow-Credentials: true` which instructs the browser that the server is
   // willing to accept credentials (cookies) from this Origin.
   // if this is not set true, then the browser though receives the response but doesn't allow the frontend to read it
   // this is basically server accepting handshake of the frontend for cookies
@@ -87,31 +84,30 @@ const notFoundMiddleware: RequestHandler = (_req, res, _next) => {
 //                                        ~~~~~~~~~~~~~~~~~~~~~~~~
 // - Any middleware which is bound to an instance of express.Router()
 // ******************************************************************************************************************
-const authRequiredMiddleware: RequestHandler = (req, res, next) => {
-  const token = getAuthTokenFromRequest(req);
-  if (!token) {
-    return Responder.failure(
-      res,
-      HttpStatus.UNAUTHORIZED,
-      "Please login to continue",
-    );
+const authStatusMiddleware: RequestHandler = (req, res, next) => {
+  setAuthStatus(req, res);
+  next();
+};
+
+const authRequiredMiddleware: RequestHandler = (_req, res, next) => {
+  const status = getAuthStatus(res);
+
+  let authMissingMessage;
+  if (status === AuthStatus.Unauthenticated) {
+    authMissingMessage = "Please login to continue.";
+  } else if (status === AuthStatus.Invalid) {
+    authMissingMessage = "Session is expired or invalid. Please login again.";
   }
 
-  const userId = verifyAuthToken(token);
-  if (!userId) {
-    return Responder.failure(
-      res,
-      HttpStatus.UNAUTHORIZED,
-      "Session is expired or invalid. Please login again to continue",
-    );
+  if (authMissingMessage) {
+    return Responder.failure(res, HttpStatus.UNAUTHORIZED, authMissingMessage);
   }
-
-  res.locals.userId = userId;
 
   return next();
 };
 
 const apiRouter = express.Router();
+apiRouter.use(authStatusMiddleware);
 apiRouter.use("/auth", authRouter);
 apiRouter.use("/products", productsRouter);
 apiRouter.use("/deliveryOptions", deliveryOptionsRouter);
@@ -136,6 +132,7 @@ const errorMiddleware: ErrorRequestHandler = (err, req, res, next) => {
 
 export {
   apiRouter,
+  authStatusMiddleware,
   cookieParserMiddleware,
   corsMiddleWare,
   errorMiddleware,

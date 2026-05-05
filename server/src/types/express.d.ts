@@ -1,4 +1,5 @@
 import type { ServerError } from "@/application/errors";
+import { AuthStatus } from "./auth";
 import "express";
 
 declare module "express-serve-static-core" {
@@ -6,5 +7,6 @@ declare module "express-serve-static-core" {
     start?: bigint;
     error?: ServerError;
     userId?: string;
+    authStatus?: AuthStatus;
   }
 }

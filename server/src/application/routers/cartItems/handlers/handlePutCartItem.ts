@@ -1,5 +1,5 @@
 import { Responder } from "@/application/utils";
-import { getUserId } from "@/application/routers/auth/utils";
+import { assertUserId } from "@/application/routers/auth/utils";
 import { HttpStatus } from "@/constants";
 import { CartItem } from "@/persistance/models";
 import { type RequestHandler } from "express";
@@ -12,7 +12,7 @@ export const handlePutCartItem: RequestHandler = async (req, res) => {
 
   try {
     assertIsValidUpdateCartItemPayload(payload);
-    const userId = getUserId(res);
+    const userId = assertUserId(res);
     const cartItem = await CartItem.findOne({
       where: { productId, userId },
     });

@@ -1,4 +1,4 @@
-import { getUserId } from "@/application/routers/auth/utils";
+import { assertUserId } from "@/application/routers/auth/utils";
 import { Responder } from "@/application/utils";
 import { HttpStatus } from "@/constants";
 import { Order, OrderItem, Product } from "@/persistance/models";
@@ -23,7 +23,7 @@ export const handleGetOrders: RequestHandler = async (req, res) => {
       },
     ];
     const where = {
-      userId: getUserId(res),
+      userId: assertUserId(res),
     };
 
     const orders = await Order.findAll({

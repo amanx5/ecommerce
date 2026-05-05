@@ -1,4 +1,4 @@
-import { getUserId } from "@/application/routers/auth/utils";
+import { assertUserId } from "@/application/routers/auth/utils";
 import { Responder } from "@/application/utils";
 import { HttpStatus } from "@/constants";
 import {
@@ -24,7 +24,7 @@ export const handlePostOrder: RequestHandler = async (_req, res) => {
   const t = await sequelize.transaction();
 
   try {
-    const userId = getUserId(res);
+    const userId = assertUserId(res);
     const cartItems = await CartItem.findAll({
       include: [
         { model: Product, as: "product" },

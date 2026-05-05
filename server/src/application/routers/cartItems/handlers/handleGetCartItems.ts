@@ -2,12 +2,12 @@ import { HttpStatus } from "@/constants";
 import { CartItem } from "@/persistance/models";
 import { Responder } from "@/application/utils";
 import { type RequestHandler } from "express";
-import { getUserId } from "@/application/routers/auth/utils";
+import { assertUserId } from "@/application/routers/auth/utils";
 
 export const handleGetCartItems: RequestHandler = async (req, res) => {
   try {
     const include = req.query.expand === "product" ? ["product"] : [];
-    const userId = getUserId(res);
+    const userId = assertUserId(res);
 
     const items = await CartItem.findAll({
       include,
