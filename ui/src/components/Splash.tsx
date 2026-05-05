@@ -10,12 +10,12 @@ import {
 } from "@phosphor-icons/react";
 
 const SHOPPING_ICONS = [
-  DressIcon,
-  HighHeelIcon,
-  TShirtIcon,
+  TShirtIcon, 
   PantsIcon,
   SneakerIcon,
   WatchIcon,
+  DressIcon,
+  HighHeelIcon,
   HandbagIcon,
 ];
 

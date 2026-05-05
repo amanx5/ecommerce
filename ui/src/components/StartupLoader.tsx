@@ -15,11 +15,8 @@ export function StartupLoader({ children }: { children: ReactNode }) {
     let toastId: string | undefined;
 
     const timer = setTimeout(() => {
-      // If still loading, inform the user about the Render free tier delay
       if (health.isLoading) {
-        toastId = toast(<ColdStartMessage />, {
-          duration: 10000,
-        });
+        toastId = toast(<ColdStartMessage />, { duration: Infinity });
       }
     }, 5000);
 
