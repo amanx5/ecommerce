@@ -22,7 +22,8 @@ export function LoginPage() {
           navigate("/", { replace: true });
         },
         onError: (err) => {
-          toast.error(err.message || "Unable to sign in");
+          const message = err.message || "Unable to sign in";
+          toast.error(message, { duration: 8000 });
         },
       },
     );

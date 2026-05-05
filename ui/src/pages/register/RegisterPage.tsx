@@ -22,7 +22,8 @@ export function RegisterPage() {
           navigate("/", { replace: true });
         },
         onError: (err) => {
-          toast.error(err.message || "Unable to register");
+          const message = err.message || "Unable to register";
+          toast.error(message, { duration: 8000 });
         },
       },
     );
