@@ -21,7 +21,7 @@ export function RegisterPage() {
         onSuccess: () => {
           navigate("/", { replace: true });
         },
-        onError: (err: any) => {
+        onError: (err) => {
           toast.error(err.message || "Unable to register");
         },
       },

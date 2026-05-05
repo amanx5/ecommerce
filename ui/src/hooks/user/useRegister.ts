@@ -2,14 +2,14 @@ import { USER_QUERY_KEY } from "@/hooks/user/useQueryUser";
 import { THIRD_PARTY_COOKIE_GUIDE, verifyLogin } from "@/utils/user";
 import { apiRequest } from "@/utils/api-request";
 import { API_ENDPOINTS } from "@/utils/api-endpoint";
-import type { User } from "@/types";
+import type { RegisterPayload, User } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useRegister() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (payload: any) => {
+    mutationFn: async (payload: RegisterPayload) => {
       const resp = await apiRequest<User>({
         endpoint: API_ENDPOINTS.auth.register.POST,
         method: "post",

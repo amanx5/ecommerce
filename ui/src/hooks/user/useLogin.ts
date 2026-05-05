@@ -2,14 +2,14 @@ import { USER_QUERY_KEY } from "@/hooks/user/useQueryUser";
 import { THIRD_PARTY_COOKIE_GUIDE, verifyLogin } from "@/utils/user";
 import { API_ENDPOINTS } from "@/utils/api-endpoint";
 import { apiRequest } from "@/utils/api-request";
-import type { User } from "@/types";
+import type { LoginPayload, User } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useLogin() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (payload: any) => {
+    mutationFn: async (payload: LoginPayload) => {
       const resp = await apiRequest<User>({
         endpoint: API_ENDPOINTS.auth.signIn.POST,
         method: "post",

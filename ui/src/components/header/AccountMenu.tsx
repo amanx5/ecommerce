@@ -126,7 +126,7 @@ export function AccountMenu({ user }: { user: User }) {
               onSuccess: () => {
                 navigate("/login", { replace: true });
               },
-              onError: (error: any) => {
+              onError: (error) => {
                 toast.error(
                   error?.message || "Failed to sign out. Please try again.",
                 );

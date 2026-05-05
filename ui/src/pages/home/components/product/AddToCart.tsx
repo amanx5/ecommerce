@@ -13,6 +13,7 @@ import {
   useDeleteCartItem,
   useAddToCart,
 } from "@/hooks/cart";
+import { isObject } from "@/utils/data-types";
 
 interface AddToCartProps {
   product: Product;
@@ -44,12 +45,15 @@ function AuthenticatedAddToCart({ product }: AddToCartProps) {
     filters: { status: "pending" },
     select: (mutation) => ({
       key: mutation.options.mutationKey?.[0],
-      variables: mutation.state.variables as any,
+      variables: mutation.state.variables,
     }),
   });
 
   const isThisItemUpdating = pendingMutations.some(
-    (m) => m.key === "cartAdd" && m.variables?.productId === productId,
+    (m) =>
+      m.key === "cartAdd" &&
+      isObject(m.variables) &&
+      m.variables.productId === productId,
   );
 
   if (currentQuantity === 0) {
@@ -88,13 +92,15 @@ function QuantityChange({
     filters: { status: "pending" },
     select: (mutation) => ({
       key: mutation.options.mutationKey?.[0],
-      variables: mutation.state.variables as any,
+      variables: mutation.state.variables,
     }),
   });
 
   const isThisItemUpdating = pendingMutations.some(
     (m) =>
-      (m.key === "cartUpdate" && m.variables?.productId === productId) ||
+      (m.key === "cartUpdate" &&
+        isObject(m.variables) &&
+        m.variables?.productId === productId) ||
       (m.key === "cartDelete" && m.variables === productId),
   );
 

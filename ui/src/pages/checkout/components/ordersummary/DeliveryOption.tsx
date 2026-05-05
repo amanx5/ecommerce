@@ -11,7 +11,7 @@ export function DeliveryOption({
   deliveryOption: DeliveryOptionExpanded;
   cartItem: CartItem;
 }) {
-  const { mutate: updateItem, isPending } = useUpdateCartItem();
+  const { mutate: updateItem } = useUpdateCartItem();
   const isGlobalUpdating = useIsCartUpdating();
   const [optimisticChecked, setOptimisticChecked] = useState(false);
 

@@ -21,7 +21,7 @@ export function LoginPage() {
         onSuccess: () => {
           navigate("/", { replace: true });
         },
-        onError: (err: any) => {
+        onError: (err) => {
           toast.error(err.message || "Unable to sign in");
         },
       },

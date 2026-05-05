@@ -1,78 +1,85 @@
 export interface User {
-	id: string;
-	email: string;
+  id: string;
+  email: string;
 }
 
 export interface Rating {
-	stars: number;
-	count: number;
+  stars: number;
+  count: number;
 }
 
 export interface Product {
-	id: string;
-	name: string;
-	image: string;
-	rating: Rating;
-	priceCents: number;
-	keywords: string[];
-	createdAt: string;
-	updatedAt: string;
+  id: string;
+  name: string;
+  image: string;
+  rating: Rating;
+  priceCents: number;
+  keywords: string[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface DeliveryOption {
-	id: string;
-	deliveryDays: number;
-	priceCents: number;
+  id: string;
+  deliveryDays: number;
+  priceCents: number;
 }
 
 export interface DeliveryOptionExpanded extends DeliveryOption {
-	estimatedDeliveryTimeMs: number;
+  estimatedDeliveryTimeMs: number;
 }
 
 export interface CartItem {
-	id: string;
-	productId: string;
-	quantity: number;
-	deliveryOptionId: string;
+  id: string;
+  productId: string;
+  quantity: number;
+  deliveryOptionId: string;
 }
 
 export interface CartItemExpanded extends CartItem {
-	product: Product;
+  product: Product;
 }
 
 export interface OrderItem {
-	id: string;
-	orderId: string;
-	productId: string;
-	quantity: number;
-	deliveryOptionId: string;
-	estimatedDeliveryTimeMs: number;
-	deliveredOnTimeMs?: number;
-	createdAt: string;
-	updatedAt: string;
+  id: string;
+  orderId: string;
+  productId: string;
+  quantity: number;
+  deliveryOptionId: string;
+  estimatedDeliveryTimeMs: number;
+  deliveredOnTimeMs?: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface OrderItemExpanded extends OrderItem {
-	product: Product;
+  product: Product;
 }
 
 export interface Order<E = OrderItem> {
-	id: string;
-	orderTimeMs: number;
-	totalCostCents: number;
-	orderItems: E[];
+  id: string;
+  orderTimeMs: number;
+  totalCostCents: number;
+  orderItems: E[];
 }
 
 export type OrderExpanded = Order<OrderItemExpanded>;
 
 export interface PaymentSummaryData {
-	totalItems: number;
-	productCostCents: number;
-	shippingCostCents: number;
-	totalCostBeforeTaxCents: number;
-	taxCents: number;
-	totalCostCents: number;
+  totalItems: number;
+  productCostCents: number;
+  shippingCostCents: number;
+  totalCostBeforeTaxCents: number;
+  taxCents: number;
+  totalCostCents: number;
 }
 
 export type Cart = CartItemExpanded[];
 export type RefreshCart = () => Promise<boolean>;
+
+export type LoginPayload = {
+  email: string;
+  password: string;
+};
+
+export type RegisterPayload = LoginPayload;

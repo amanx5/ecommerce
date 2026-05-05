@@ -47,7 +47,7 @@ export function HomePage() {
         <div className="px-2.5 max-[600px]:px-1.5 pt-10">
           {productSearch && !isProductsLoading && (
             <div className="text-2xl font-bold mb-6 px-2">
-              Search results for "{productSearch}"
+              Search results for &quot;{productSearch}&quot;
             </div>
           )}
 

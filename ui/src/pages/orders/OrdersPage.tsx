@@ -47,7 +47,7 @@ export function OrdersPage() {
         ) : (
           <div className="text-center py-20 bg-gray-50 rounded-lg border border-dashed border-gray-300">
             <div className="text-xl font-bold mb-2">No orders found</div>
-            <p className="text-gray-500">You haven't placed any orders yet.</p>
+            <p className="text-gray-500">You haven&apos;t placed any orders yet.</p>
           </div>
         )}
       </div>

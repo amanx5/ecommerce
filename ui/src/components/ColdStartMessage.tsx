@@ -10,8 +10,8 @@ export function ColdStartMessage() {
           Waking up the shop... ☕
         </span>
         <span className="text-sm text-zinc-500 leading-relaxed block max-w-[280px]">
-          We haven't had a visitor in a little while, so our servers are just
-          warming up for you. It should only take a few more seconds!
+          We haven&apos;t had a visitor in a little while, so our servers are
+          just warming up for you. It should only take a few more seconds!
         </span>
       </div>
       <div className="pt-3 border-t border-zinc-100">
