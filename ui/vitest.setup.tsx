@@ -4,8 +4,13 @@
  */
 import "@testing-library/jest-dom";
 import { vi } from "vitest";
-import type { PaymentSummaryData, Product } from "@/types";
-import { API_ENDPOINTS } from "@/utils";
+import type { Cart, PaymentSummaryData, Product, User } from "@/types";
+import { API_ENDPOINTS } from "@/utils/api-endpoint";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { render, RenderOptions } from "@testing-library/react";
+import { ReactElement } from "react";
+import { MemoryRouter } from "react-router";
+import { StartupLoader } from "@/components/StartupLoader";
 
 const exampleProducts: Product[] = [
   {
@@ -46,8 +51,8 @@ const examplePaymentSummary: PaymentSummaryData = {
 };
 
 export const sampleAPIResponse = {
-	[API_ENDPOINTS.cart.GET]: [],
-	[API_ENDPOINTS.cart.GETEXPANDED]: [],
+  [API_ENDPOINTS.cart.GET]: [],
+  [API_ENDPOINTS.cart.GETEXPANDED]: [],
   [API_ENDPOINTS.products.GET]: exampleProducts,
   [API_ENDPOINTS.paymentSummary.GET]: examplePaymentSummary,
 };
@@ -72,6 +77,7 @@ vi.mock("axios", () => {
   const mockAxios = {
     get: vi.fn(axiosGetMock),
     post: vi.fn(axiosPostMock),
+    head: vi.fn(async () => ({ status: 200 })),
     put: vi.fn(),
     delete: vi.fn(),
     defaults: {
@@ -79,9 +85,61 @@ vi.mock("axios", () => {
     },
   };
 
-  // The reason for using both ...mockAxios and default: mockAxios is to ensure the mock works regardless of how axios is imported in different files.
   return {
     ...mockAxios, // handles named imports
     default: mockAxios, // handles default imports
   };
 });
+
+const SAMPLE_USER: User = {
+  id: "test-user-id",
+  email: "test@example.com",
+};
+
+type ExtendedRenderOptions = {
+  renderOptions?: RenderOptions;
+  route?: string;
+  user?: User | null;
+  useSampleUser?: boolean;
+  cart?: Cart;
+};
+
+export function renderWithContext(
+  ui: ReactElement,
+  extendedRenderOptions?: ExtendedRenderOptions,
+) {
+  const {
+    route = "/",
+    renderOptions,
+    user = extendedRenderOptions?.useSampleUser ? SAMPLE_USER : null,
+    cart = [],
+  } = extendedRenderOptions || {};
+
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
+
+  // Seed the TanStack Query cache with user and cart data
+  queryClient.setQueryData(["user"], user);
+  queryClient.setQueryData(["health-check"], true);
+
+  if (user) {
+    queryClient.setQueryData(["cart", user.id], cart);
+  }
+
+  return {
+    ...render(
+      <QueryClientProvider client={queryClient}>
+        <StartupLoader>
+          <MemoryRouter initialEntries={[route]}>{ui}</MemoryRouter>
+        </StartupLoader>
+      </QueryClientProvider>,
+      renderOptions,
+    ),
+    queryClient,
+  };
+}

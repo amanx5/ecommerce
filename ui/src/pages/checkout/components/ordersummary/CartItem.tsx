@@ -1,40 +1,51 @@
-import { DeliveryDate } from "@/pages/checkout/components/ordersummary/DeliveryDate";
 import { CheckoutProduct } from "@/pages/checkout/components/ordersummary/CheckoutProduct";
-import { DeliveryOptions } from "@/pages/checkout/components/ordersummary/DeliveryOptions";
-import { useEffect, useState } from "react";
-import { API_ENDPOINTS, refreshStateViaAPI } from "@/utils";
-import type {
-  CartItem,
-  CartItemExpanded,
-  DeliveryOptionExpanded,
-} from "@/types";
+import { DeliveryOption } from "./DeliveryOption";
+import type { CartItemExpanded, DeliveryOptionExpanded } from "@/types";
+import { useIsCartUpdating } from "@/hooks/cart";
 
-export default function CartItem({ cartItem }: { cartItem: CartItemExpanded }) {
-  const [deliveryOptions, setDeliveryOptions] = useState<
-    DeliveryOptionExpanded[]
-  >([]);
-
-  useEffect(() => {
-    refreshStateViaAPI(
-      API_ENDPOINTS.deliveryOptions.GETEXPANDED,
-      setDeliveryOptions,
-      {
-        when: "onFailure",
-      },
-    );
-  }, []);
+export function CartItem({
+  cartItem,
+  deliveryOptions,
+}: {
+  cartItem: CartItemExpanded;
+  deliveryOptions: DeliveryOptionExpanded[];
+}) {
+  const isGlobalUpdating = useIsCartUpdating();
+  const { product } = cartItem;
 
   return (
     <div className="border border-[rgb(222,222,222)] rounded p-4.5 max-[400px]:p-3 mb-3">
-      <DeliveryDate cartItem={cartItem} deliveryOptions={deliveryOptions} />
-      <div className="grid grid-cols-[100px_1fr_1fr] gap-x-6.25 max-[1000px]:grid-cols-[100px_1fr] max-[400px]:grid-cols-[80px_1fr] max-[1000px]:gap-y-7.5 max-[400px]:gap-x-4">
-        <CheckoutProduct cartItem={cartItem} />
-        <DeliveryOptions
-          cartItem={cartItem}
-          deliveryOptions={deliveryOptions}
-        />
+      <div
+        className={`font-bold text-[19px] max-[400px]:text-[17px] mt-1.25 mb-5.5 max-[400px]:mb-3 line-clamp-1 transition-opacity ${isGlobalUpdating ? "opacity-50" : "opacity-100"}`}
+      >
+        {product.name}
       </div>
+      <div className="grid grid-cols-[1fr_320px] gap-x-8 max-[700px]:grid-cols-1 max-[700px]:gap-y-8">
+        {/* Product & Quantity Cluster */}
+        <div className="flex gap-x-6 max-[500px]:flex-col max-[500px]:gap-y-4">
+          <CheckoutProduct cartItem={cartItem} />
+        </div>
+
+        {/* Delivery Options Section */}
+        <div className="border-l border-gray-100 pl-8 max-[700px]:border-l-0 max-[700px]:pl-0 max-[700px]:border-t max-[700px]:pt-6">
+          <div className="font-bold mb-3 text-[15px]">
+            Choose a delivery option:
+          </div>
+
+          {deliveryOptions.map((deliveryOption) => (
+            <DeliveryOption
+              key={deliveryOption.id}
+              cartItem={cartItem}
+              deliveryOption={deliveryOption}
+            />
+          ))}
+        </div>
+      </div>
+
     </div>
   );
 }
+
+
+
 

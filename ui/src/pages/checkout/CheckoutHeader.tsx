@@ -1,11 +1,12 @@
 import { NavLink } from "react-router";
 import StorefrontIcon from "@mui/icons-material/Storefront";
 import CheckoutLock from "@/assets/icons/checkout-lock-icon.png";
-import { getTotalCartItems } from "@/utils";
-import { useCart } from "@/hooks/useCart";
-import clsx from "clsx";
+import { getTotalCartItems } from "@/utils/user";
 
-export default function CheckoutHeader() {
+import clsx from "clsx";
+import { useCart } from "@/hooks/cart";
+
+export function CheckoutHeader() {
   return (
     <div
       className={clsx(
@@ -38,7 +39,7 @@ export default function CheckoutHeader() {
         <div
           className={clsx(
             "flex-1 shrink-0 text-center gap-[6px] text-[22px] font-medium flex justify-center items-center whitespace-nowrap",
-            "max-[1000px]:text-[20px] max-[1000px]:mr-[60px]",
+            "max-[1100px]:text-[20px] max-[1100px]:mr-[60px]",
             "max-[575px]:mr-[5px] max-[575px]:text-[18px]",
           )}
         >
@@ -49,9 +50,10 @@ export default function CheckoutHeader() {
         <div
           className={clsx(
             "text-right w-[200px] flex items-center justify-end",
-            "max-[1000px]:w-auto",
+            "max-[1100px]:w-auto",
           )}
         >
+
           <img src={CheckoutLock} className="h-[32px]" />
         </div>
       </div>

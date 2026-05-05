@@ -1,6 +1,6 @@
 import { MinimalHeader } from '@/components/header/MinimalHeader';
 
-export default function NotFoundPage() {
+export function NotFoundPage() {
 	return (
 		<>
 			<MinimalHeader />

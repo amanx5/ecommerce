@@ -6,7 +6,7 @@ interface ActionsProps {
 	productId: string;
 }
 
-export default function Actions({ order, productId }: ActionsProps) {
+export function Actions({ order, productId }: ActionsProps) {
 	const { id: orderId } = order;
 	const navigate = useNavigate();
 

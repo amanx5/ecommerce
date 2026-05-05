@@ -1,17 +1,17 @@
-import { hitRequest } from "@/utils";
+import { hitRequest } from "@/utils/api-request";
 import { useQuery } from "@tanstack/react-query";
 
 export function useHealthCheck() {
   const queryResult = useQuery({
     queryKey: ["health-check"],
     retry: false,
-    queryFn: callHealthCheck,
+    queryFn: getHealthCheck,
   });
 
   return queryResult;
 }
 
-async function callHealthCheck() {
+async function getHealthCheck() {
   const { response, error } = await hitRequest({
     endpoint: "/",
     method: "head",

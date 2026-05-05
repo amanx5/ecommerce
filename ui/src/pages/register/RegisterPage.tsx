@@ -1,43 +1,31 @@
 import { useState, type SubmitEvent } from "react";
 import { NavLink, useNavigate } from "react-router";
 import { MinimalHeader } from "@/components/header/MinimalHeader";
-import { API_ENDPOINTS, apiRequest } from "@/utils";
-import { useSetUser } from "@/hooks/useUser";
-import type { User } from "@/types";
-import { verifyLogin } from "@/utils/authentication";
+import { useRegister } from "@/hooks/user/useRegister";
+import { toast } from "react-hot-toast";
+import { Spinner } from "@/components/Spinner";
 
-export default function RegisterPage() {
+export function RegisterPage() {
   const navigate = useNavigate();
-  const setUser = useSetUser();
+  const { mutate: register, isPending: isRegistering } = useRegister();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
 
-  const onSubmit = async (e: SubmitEvent) => {
+  const onSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null);
 
-    const resp = await apiRequest<User>({
-      endpoint: API_ENDPOINTS.auth.register.POST,
-      method: "post",
-      payload: { email, password },
-    });
-
-    if (resp.success && resp.data) {
-      const userData = await verifyLogin();
-
-      if (userData) {
-        setUser(userData);
-        navigate("/", { replace: true });
-      } else {
-        setMessage(
-          "Registration successful. Before logging in, please enable third-party cookies to continue. Or open the app in a Guest window.",
-        );
-      }
-    } else {
-      setError(resp.message || "Unable to register");
-    }
+    register(
+      { email, password },
+      {
+        onSuccess: () => {
+          navigate("/", { replace: true });
+        },
+        onError: (err: any) => {
+          toast.error(err.message || "Unable to register");
+        },
+      },
+    );
   };
 
   return (
@@ -48,10 +36,14 @@ export default function RegisterPage() {
       {/* body */}
       <MinimalHeader />
       <div className="flex justify-center items-center h-screen pt-15">
-        <form className="w-80 flex flex-col gap-4 bg-white p-8 rounded shadow" onSubmit={onSubmit}>
-          <h2 className="m-0 mb-2 text-2xl font-bold text-gray-800">Create account</h2>
-          {error && <div className="text-red-700 text-sm text-center">{error}</div>}
-          {message && <div className="text-[#2e7d32] text-sm text-center">{message}</div>}
+        <form
+          className="w-80 flex flex-col gap-4 bg-white p-8 rounded shadow"
+          onSubmit={onSubmit}
+        >
+          <h2 className="m-0 mb-2 text-2xl font-bold text-gray-800">
+            Create account
+          </h2>
+
           <label className="flex flex-col text-sm text-gray-600 font-medium">
             Email
             <input
@@ -59,6 +51,7 @@ export default function RegisterPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              disabled={isRegistering}
               required
             />
           </label>
@@ -69,17 +62,25 @@ export default function RegisterPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              disabled={isRegistering}
               required
             />
           </label>
-          <button 
-            className="p-3 mt-2 bg-[#2e7d32] text-white font-semibold border-none rounded cursor-pointer text-base shadow-md hover:bg-[#1b5e20] hover:shadow-lg active:scale-[0.98] transition-all duration-200"
+          <button
+            className="button-primary w-full h-11 mt-2 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
             type="submit"
+            disabled={isRegistering}
           >
-            Register
+            {isRegistering ? <Spinner size={18} color="inherit" /> : "Register"}
           </button>
           <p className="text-sm text-gray-600 text-center mt-2">
-            Already have an account? <NavLink to="/login" className="text-[#2e7d32] font-semibold hover:underline">Login</NavLink>
+            Already have an account?{" "}
+            <NavLink
+              to="/login"
+              className="text-[#2e7d32] font-semibold hover:underline"
+            >
+              Login
+            </NavLink>
           </p>
         </form>
       </div>

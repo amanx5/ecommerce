@@ -1,7 +1,7 @@
 import { ColdStartMessage } from "@/components/ColdStartMessage";
 import { Splash } from "@/components/Splash";
 import { useHealthCheck } from "@/hooks/useHealthCheck";
-import { useQueryUser } from "@/hooks/useUser";
+import { useQueryUser } from "@/hooks/user/useQueryUser";
 import { ReactNode, useEffect } from "react";
 import { toast } from "react-hot-toast";
 
@@ -28,7 +28,6 @@ export function StartupLoader({ children }: { children: ReactNode }) {
       if (toastId) toast.dismiss(toastId);
     };
   }, [health.isLoading]);
-
 
   // Splash stays mounted until both health and auth checks are complete
   const isInitializing =

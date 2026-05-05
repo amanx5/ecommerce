@@ -65,11 +65,6 @@ export interface Order<E = OrderItem> {
 
 export type OrderExpanded = Order<OrderItemExpanded>;
 
-export interface ToastData {
-	message: string;
-	type?: 'success' | 'error' | 'info';
-}
-
 export interface PaymentSummaryData {
 	totalItems: number;
 	productCostCents: number;
@@ -78,3 +73,6 @@ export interface PaymentSummaryData {
 	taxCents: number;
 	totalCostCents: number;
 }
+
+export type Cart = CartItemExpanded[];
+export type RefreshCart = () => Promise<boolean>;

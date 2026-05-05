@@ -1,26 +1,31 @@
-import Header from "@/components/header/Header";
+import { Header } from "@/components/header/Header";
 import { OrderDetails } from "@/pages/orders/components/OrderDetails";
-import { API_ENDPOINTS, refreshStateViaAPI } from "@/utils";
+import { API_ENDPOINTS } from "@/utils/api-endpoint";
+import { apiRequest } from "@/utils/api-request";
 import { type OrderExpanded } from "@/types";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { OrderShimmer } from "@/pages/orders/components/OrderShimmer";
 
-export default function OrdersPage() {
-  const [orders, setOrders] = useState<OrderExpanded[] | undefined>(undefined);
+export function OrdersPage() {
+  const { data: orders, isLoading } = useQuery({
+    queryKey: ["orders"],
+    queryFn: async () => {
+      const res = await apiRequest<OrderExpanded[]>({
+        endpoint: API_ENDPOINTS.orders.GETEXPANDED,
+      });
+      return res.data;
+    },
+  });
+
   const hasOrders = Array.isArray(orders) && orders.length > 0;
 
-  useEffect(() => {
-    refreshStateViaAPI<OrderExpanded[] | undefined>(
-      API_ENDPOINTS.orders.GETEXPANDED,
-      setOrders,
-      {
-        when: "onFailure",
-      },
+  if (isLoading) {
+    return (
+      <>
+        <Header />
+        <OrderShimmer />
+      </>
     );
-  }, []);
-
-
-  if (orders === undefined) {
-    return "Loading";
   }
 
   return (
@@ -40,9 +45,13 @@ export default function OrdersPage() {
             ))}
           </div>
         ) : (
-          <div>No orders found</div>
+          <div className="text-center py-20 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+            <div className="text-xl font-bold mb-2">No orders found</div>
+            <p className="text-gray-500">You haven't placed any orders yet.</p>
+          </div>
         )}
       </div>
+
     </>
   );
 }

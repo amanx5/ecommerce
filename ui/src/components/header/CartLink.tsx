@@ -1,12 +1,12 @@
-import { useCart } from "@/hooks/useCart";
-import { NavLink } from "react-router";
 import CartIcon from "@/assets/icons/cart-icon.png";
-import { getTotalCartItems } from "@/utils";
 import { Dots } from "@/components/Dots";
-import clsx from "clsx";
+import { useCart } from "@/hooks/cart";
+import { getTotalCartItems } from "@/utils/user";
 import Badge from "@mui/material/Badge";
+import clsx from "clsx";
+import { NavLink } from "react-router";
 
-export function Cart() {
+export function CartLink() {
   const { data, isFetching, isSuccess } = useCart();
 
   const count = isSuccess ? getTotalCartItems(data) : 0;

@@ -10,15 +10,15 @@ import OrdersIcon from "@/assets/icons/orders.svg";
 import LogoutIcon from "@/assets/icons/logout.svg";
 import { Fragment, useState } from "react";
 import { useNavigate } from "react-router";
-import { createUsernameFromEmail } from "@/utils/authentication";
-import { useSetUser } from "@/hooks/useUser";
-import { API_ENDPOINTS, hitRequest } from "@/utils";
+import { createUsernameFromEmail } from "@/utils/user";
+import { useLogout } from "@/hooks/user/useLogout";
 import clsx from "clsx";
 import { toast } from "react-hot-toast";
+import CircularProgress from "@mui/material/CircularProgress";
 
 export function AccountMenu({ user }: { user: User }) {
   const navigate = useNavigate();
-  const setUser = useSetUser();
+  const { mutate: logout, isPending: isLoggingOut } = useLogout();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -45,16 +45,20 @@ export function AccountMenu({ user }: { user: User }) {
           <IconButton
             onClick={handleClick}
             size="small"
-            sx={{ ml: { xs: 0, sm: 2 }, p: { xs: "4px", sm: "5px" }, color: "white" }}
+            sx={{
+              ml: { xs: 0, sm: 2 },
+              p: { xs: "4px", sm: "5px" },
+              color: "white",
+            }}
             aria-controls={open ? "account-menu" : undefined}
             aria-haspopup="true"
             aria-expanded={open ? "true" : undefined}
           >
             <AccountCircleIcon sx={{ width: 36, height: 36 }} />
-            <span 
+            <span
               className={clsx(
                 "block text-sm font-bold max-w-15 ml-1 truncate",
-                "max-[600px]:hidden"
+                "max-[600px]:hidden",
               )}
             >
               {userNamePascalCase}
@@ -69,7 +73,6 @@ export function AccountMenu({ user }: { user: User }) {
         id="account-menu"
         open={open}
         onClose={handleClose}
-        onClick={handleClose}
         slotProps={{
           paper: {
             elevation: 0,
@@ -117,15 +120,28 @@ export function AccountMenu({ user }: { user: User }) {
 
         {/* logout */}
         <MenuItem
+          disabled={isLoggingOut}
           onClick={() => {
-            handleClose();
-            onLogoutClick();
+            logout(undefined, {
+              onSuccess: () => {
+                navigate("/login", { replace: true });
+              },
+              onError: (error: any) => {
+                toast.error(
+                  error?.message || "Failed to sign out. Please try again.",
+                );
+              },
+            });
           }}
         >
           <ListItemIcon>
-            <img src={LogoutIcon} />
+            {isLoggingOut ? (
+              <CircularProgress size={18} thickness={5} />
+            ) : (
+              <img src={LogoutIcon} />
+            )}
           </ListItemIcon>
-          Logout
+          {isLoggingOut ? "Logging out..." : "Logout"}
         </MenuItem>
       </Menu>
     </Fragment>
@@ -133,24 +149,5 @@ export function AccountMenu({ user }: { user: User }) {
 
   async function onOrdersClick() {
     navigate("/orders");
-  }
-
-  async function onLogoutClick() {
-    const { response, error } = await hitRequest({
-      endpoint: API_ENDPOINTS.auth.signOut.POST,
-      method: "post",
-    });
-
-    if (response && response.status === 204) {
-      navigate("/login", { replace: true });
-      setUser(null);
-    } else {
-      const message =
-        response?.data.message ||
-        error ||
-        "Failed to sign out. Please try again.";
-
-      toast.error(message);
-    }
   }
 }

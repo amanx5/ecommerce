@@ -1,6 +1,6 @@
-import { getPriceNative } from "../../../../utils";
-import AddToCart from "./AddToCart";
-import Rating from "@/pages/home/components/product/Rating";
+import { getPriceNative } from "@/utils/money";
+import { AddToCart } from "./AddToCart";
+import { Rating } from "./Rating";
 import { getEndpointUrl } from "@/utils/api-endpoint";
 import { Product } from "@/types";
 

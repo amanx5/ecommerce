@@ -1,26 +1,38 @@
-import Header from "@/components/header/Header";
-import { API_ENDPOINTS, refreshStateViaAPI } from "@/utils";
-import { useEffect, useState } from "react";
+import { Header } from "@/components/header/Header";
+import { API_ENDPOINTS } from "@/utils/api-endpoint";
+import { apiRequest } from "@/utils/api-request";
 import { Link, useSearchParams } from "react-router";
-import TrackingDetails from "./components/TrackingDetails";
+import { TrackingDetails } from "./components/TrackingDetails";
+import { useQuery } from "@tanstack/react-query";
+import { TrackingShimmer } from "./components/TrackingShimmer";
+import type { OrderExpanded } from "@/types";
 
-export default function TrackingPage() {
-  const [order, setOrder] = useState(null);
+export function TrackingPage() {
   const [searchParams] = useSearchParams();
   const orderId = searchParams.get("orderId");
   const productId = searchParams.get("productId");
 
-  useEffect(() => {
-    if (!orderId) {
-      return;
-    }
+  const { data: order, isLoading } = useQuery({
+    queryKey: ["order", orderId],
+    queryFn: async () => {
+      const res = await apiRequest<OrderExpanded>({
+        endpoint: API_ENDPOINTS.orders.GETBYIDEXPANDED(orderId ?? ""),
+      });
+      return res.data;
+    },
+    enabled: !!orderId,
+  });
 
-    const url = API_ENDPOINTS.orders.GETBYIDEXPANDED(orderId ?? "");
-    refreshStateViaAPI(url, setOrder, {
-      when: "onFailure",
-    });
-  }, [orderId]);
 
+
+  if (isLoading) {
+    return (
+      <>
+        <Header />
+        <TrackingShimmer />
+      </>
+    );
+  }
 
   return (
     <>
@@ -34,18 +46,24 @@ export default function TrackingPage() {
             {productId ? (
               <TrackingDetails order={order} productId={productId} />
             ) : (
-              <Link to="/orders">
+              <Link to="/orders" className="link-primary">
                 Go to order details page to track package.
               </Link>
             )}
           </>
         ) : (
-          "Loading..."
+          <div className="text-center py-20">
+            <div className="text-2xl font-bold mb-4">Order not found</div>
+            <Link to="/orders" className="link-primary">
+              Return to your orders
+            </Link>
+          </div>
         )}
       </div>
     </>
   );
 }
+
 
 function ViewAllOrders() {
   return (

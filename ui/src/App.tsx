@@ -6,7 +6,7 @@ import { Toaster } from "react-hot-toast";
 
 const queryClient = new QueryClient();
 
-export default function App() {
+export function App() {
   return (
     <ErrorBoundary>
       <Toaster position="bottom-center" />

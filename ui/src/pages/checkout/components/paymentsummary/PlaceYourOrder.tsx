@@ -1,32 +1,23 @@
-import { placeOrder } from '@/utils';
-import { useNavigate } from 'react-router';
-import { useRefreshCart } from '@/hooks/useCart';
-import { toast } from 'react-hot-toast';
+import { usePlaceOrder, useIsCartUpdating, usePaymentSummary } from "@/hooks/cart";
 
-export default function PlaceYourOrder() {
-	const navigate = useNavigate();
-	const refreshCart = useRefreshCart();
+export function PlaceYourOrder() {
+  const { mutate: placeOrder, isPending: isPlacing } = usePlaceOrder();
+  const isCartUpdating = useIsCartUpdating();
+  const { isFetching: isPaymentFetching } = usePaymentSummary();
 
-	return (
-		<button
-			className="w-full py-3 rounded-[5px] mt-5 mb-4.75 button-primary"
-			data-testid="place-order-button"
-			onClick={placeOrderOnClick}
-		>
-			Place your order
-		</button>
-	);
+  const isDisabled = isPlacing || isCartUpdating || isPaymentFetching;
 
-	async function placeOrderOnClick(
-		_event: React.MouseEvent<HTMLButtonElement>,
-	) {
-		const isOrderPlaced = await placeOrder();
-		if (isOrderPlaced) {
-			await refreshCart();
-			navigate('/orders');
-		} else {
-			toast.error('Failed to place order. Please try again.');
-		}
-	}
+  return (
+    <button
+      className="w-full py-3 rounded-[5px] mt-5 mb-4.75 button-primary disabled:opacity-75 disabled:cursor-default"
+      data-testid="place-order-button"
+      disabled={isDisabled}
+      onClick={() => placeOrder()}
+    >
+      {isPlacing ? "Placing Order..." : "Place your order"}
+    </button>
+  );
 }
+
+
 

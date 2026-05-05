@@ -1,31 +1,16 @@
-import { API_ENDPOINTS, getPriceNative, refreshStateViaAPI } from "@/utils";
-import PlaceYourOrder from "./paymentsummary/PlaceYourOrder";
-import { PaymentSummarySkeleton } from "@/pages/checkout/components/paymentsummary/PaymentSummarySkeleton";
-import { useCart } from "@/hooks/useCart";
-import type { PaymentSummaryData } from "@/types";
-import { useEffect, useState } from "react";
+import { PlaceYourOrder } from "@/pages/checkout/components/paymentsummary/PlaceYourOrder";
+import { PaymentSummaryShimmer } from "@/pages/checkout/components/paymentsummary/PaymentSummaryShimmer";
+import { getPriceNative } from "@/utils/money";
+import { usePaymentSummary, useIsCartUpdating } from "@/hooks/cart";
 
-export default function PaymentSummary() {
-  const { data: cart } = useCart();
+export function PaymentSummary() {
+  const { data: paymentSummary } = usePaymentSummary();
+  const isGlobalUpdating = useIsCartUpdating();
 
-  const [paymentSummary, setPaymentSummary] =
-    useState<PaymentSummaryData | null>(null);
-
-  useEffect(() => {
-    refreshStateViaAPI<PaymentSummaryData | null>(
-      API_ENDPOINTS.paymentSummary.GET,
-      setPaymentSummary,
-      {
-        when: "onFailure",
-      },
-    );
-  }, [cart]);
-
-
-  const isLoading = !cart || !paymentSummary;
+  const isLoading = !paymentSummary;
 
   if (isLoading) {
-    return <PaymentSummarySkeleton />;
+    return <PaymentSummaryShimmer />;
   }
 
   const {
@@ -38,7 +23,9 @@ export default function PaymentSummary() {
   } = paymentSummary;
 
   return (
-    <div className="border border-[rgb(222,222,222)] rounded p-4.5 pb-1.25 max-[1000px]:row-start-1 max-[1000px]:mb-3">
+    <div
+      className={`border border-[rgb(222,222,222)] rounded p-4.5 pb-1.25 max-[1100px]:row-start-1 max-[1100px]:mb-3 transition-opacity ${isGlobalUpdating ? "opacity-50" : "opacity-100"}`}
+    >
       <div className="font-bold text-lg mb-3">Payment Summary</div>
 
       <div className="grid grid-cols-[1fr_auto] text-[15px] mb-2.25">
@@ -73,10 +60,7 @@ export default function PaymentSummary() {
 
       <div className="grid grid-cols-[1fr_auto] text-[15px] mb-2.25">
         <div>Estimated tax (10%):</div>
-        <div
-          className="text-right"
-          data-testid="payment-summary-taxCents"
-        >
+        <div className="text-right" data-testid="payment-summary-taxCents">
           {getPriceNative(taxCents)}
         </div>
       </div>

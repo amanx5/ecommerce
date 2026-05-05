@@ -1,6 +1,6 @@
-import { getOrderTrackingInfo } from "@/utils";
-import Actions from "./Actions";
-import BuyAgain from "./BuyAgain";
+import { getOrderTrackingInfo } from "@/utils/order";
+import { Actions } from "./Actions";
+import { BuyAgain } from "./BuyAgain";
 import type { OrderExpanded, OrderItemExpanded } from "@/types";
 import { getEndpointUrl } from "@/utils/api-endpoint";
 

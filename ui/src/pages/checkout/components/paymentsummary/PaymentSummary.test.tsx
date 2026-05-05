@@ -1,14 +1,17 @@
-import { screen, waitFor } from "@testing-library/react";
-import { renderWithContext } from "@/test/renderWithContext";
-import { beforeEach, describe, expect, it } from "vitest";
-import PaymentSummary from "./PaymentSummary";
-
 import { sampleAPIResponse } from "~/vitest.setup";
-import { useLocation } from "react-router";
-import { API_ENDPOINTS, getPriceNative, getTotalCartItems } from "@/utils";
+import type { Cart } from "@/types";
+import { PaymentSummary } from "@/pages/checkout/components/paymentsummary/PaymentSummary";
+import { useCart } from "@/hooks/cart";
+import { API_ENDPOINTS } from "@/utils/api-endpoint";
+import { getPriceNative } from "@/utils/money";
+import { getTotalCartItems } from "@/utils/user";
+
+import { renderWithContext } from "~/vitest.setup";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
-import { useCart, type Cart } from "@/hooks/useCart";
+import { useLocation } from "react-router";
+import { beforeEach, describe, expect, it } from "vitest";
 
 const paymentSummaryAPI = API_ENDPOINTS.paymentSummary.GET;
 const paymentSummary = sampleAPIResponse[paymentSummaryAPI];

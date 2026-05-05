@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it, Mock } from "vitest";
 import { HomeProduct } from "@/pages/home/components/product/HomeProduct";
 import { screen, waitFor } from "@testing-library/react";
-import { renderWithContext } from "@/test/renderWithContext";
-import { API_ENDPOINTS, getPriceNative } from "@/utils";
+import { renderWithContext } from "~/vitest.setup";
+import { API_ENDPOINTS } from "@/utils/api-endpoint";
+import { getPriceNative } from "@/utils/money";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
 

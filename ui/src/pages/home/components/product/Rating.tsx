@@ -9,7 +9,7 @@ interface RatingProps {
 	'data-rating'?: string;
 }
 
-export default function Rating({
+export function Rating({
 	value,
 	readOnly = true,
 	size = 'small',

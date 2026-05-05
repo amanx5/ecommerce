@@ -1,4 +1,4 @@
-import { API_ENDPOINTS } from "@/utils";
+import { API_ENDPOINTS } from "@/utils/api-endpoint";
 
 export function ColdStartMessage() {
   const healthCheckApi = API_ENDPOINTS.healthcheck.GET;

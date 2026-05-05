@@ -1,7 +1,8 @@
-import { formatDate, getPriceNative } from "@/utils";
+import { formatDate } from "@/utils/date";
+import { getPriceNative } from "@/utils/money";
 import { OrderExpanded } from "@/types";
 
-export default function OrderHeader({ order }: { order: OrderExpanded }) {
+export function OrderHeader({ order }: { order: OrderExpanded }) {
 	const { id, orderTimeMs, totalCostCents } = order;
 
 	return (

@@ -1,13 +1,15 @@
-import {TrackingProduct} from "@/pages/tracking/components/TrackingProduct";
+import { LinearProgress, Box } from "@mui/material";
+import { TrackingProduct } from "@/pages/tracking/components/TrackingProduct";
 import type { OrderExpanded, OrderItemExpanded } from "@/types";
 import {
   calculateOrderStatus,
   getOrderTrackingInfo,
   orderStatusMap,
-} from "@/utils";
+} from "@/utils/order";
 import clsx from "clsx";
 
-export default function TrackingDetails({
+
+export function TrackingDetails({
   order,
   productId,
 }: {
@@ -90,10 +92,10 @@ function ProgressLabels({ orderStatus }: { orderStatus: number }) {
         <div
           key={index}
           className={clsx(
-            "max-[450px]:mb-1",
+            "max-[450px]:mb-1 transition-colors duration-500",
             status <= orderStatus
               ? "text-[rgb(25,135,84)] font-bold"
-              : "text-gray-400",
+              : "text-slate-300 font-normal",
           )}
         >
           {text}
@@ -103,15 +105,27 @@ function ProgressLabels({ orderStatus }: { orderStatus: number }) {
   );
 }
 
-function ProgressBar({ orderStatus }: { orderStatus: number }) {
-  const progressPercentStr = orderStatus + "%";
 
+function ProgressBar({ orderStatus }: { orderStatus: number }) {
   return (
-    <div className="h-[25px] w-full border border-[rgb(200,200,200)] rounded-full overflow-hidden">
-      <div
-        className="h-full bg-[rgb(25,135,84)] rounded-full"
-        style={{ width: progressPercentStr }}
-      ></div>
-    </div>
+    <Box className="w-full">
+      <LinearProgress
+        variant="determinate"
+        value={orderStatus}
+        sx={{
+          height: 25,
+          borderRadius: 12.5,
+          backgroundColor: "rgb(249, 250, 251)",
+          border: "1px solid rgb(230, 230, 230)",
+          "& .MuiLinearProgress-bar": {
+            borderRadius: 12.5,
+            backgroundColor: "rgb(25, 135, 84)",
+            // Pure CSS animation: starts from -100% (empty) and fills to the value MUI set
+            animation: "fillProgress 1.5s ease-out forwards",
+          },
+        }}
+      />
+    </Box>
   );
 }
+

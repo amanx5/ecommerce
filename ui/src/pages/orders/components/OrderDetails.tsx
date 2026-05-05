@@ -1,4 +1,4 @@
-import OrderHeader from "./OrderHeader";
+import { OrderHeader } from "./OrderHeader";
 import { OrderProduct } from "./OrderProduct";
 import { OrderExpanded } from "@/types";
 

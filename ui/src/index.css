@@ -71,6 +71,14 @@
   }
 }
 
+@keyframes fillProgress {
+  from {
+    transform: translateX(-100%);
+  }
+}
+
+
+
 :root {
   --header-height: 60px;
   --header-bg: rgb(8, 79, 45);
