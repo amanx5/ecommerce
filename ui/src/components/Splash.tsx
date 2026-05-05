@@ -33,13 +33,14 @@ export function Splash() {
   const CurrentIcon = SHOPPING_ICONS[currentIconIndex];
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-white">
-      <div className="relative">
+    <div className="flex min-h-dvh w-full items-center justify-center bg-white px-6">
+      <div className="relative flex items-center justify-center">
+        <div className="absolute h-32 w-32 animate-ping rounded-full bg-emerald-50/50" />
         <CurrentIcon
           key={currentIconIndex}
-          size={70}
-          weight="fill"
-          className="text-(--primary-green) animate-[splashIn_1s_cubic-bezier(0.175,0.885,0.32,1.275)]"
+          size={80}
+          weight="duotone"
+          className="relative text-emerald-600 animate-[splashIn_0.8s_cubic-bezier(0.175,0.885,0.32,1.275)]"
         />
       </div>
     </div>

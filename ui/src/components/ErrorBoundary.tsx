@@ -5,7 +5,9 @@ import { ErrorBoundary as ReactErrorBoundary } from "react-error-boundary";
 export function ErrorBoundary({ children }: { children: ReactNode }) {
   return (
     <ReactErrorBoundary
-      fallbackRender={({ error }) => <ErrorMessage error={error} />}
+      fallbackRender={({ error, resetErrorBoundary }) => (
+        <ErrorMessage error={error} resetErrorBoundary={resetErrorBoundary} />
+      )}
     >
       {children}
     </ReactErrorBoundary>

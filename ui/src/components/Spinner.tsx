@@ -1,7 +1,6 @@
 import CircularProgress, {
   CircularProgressProps,
 } from "@mui/material/CircularProgress";
-import clsx from "clsx";
 
 export function Spinner({ size = 16, sx, ...props }: CircularProgressProps) {
   return (
