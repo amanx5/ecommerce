@@ -1,11 +1,5 @@
 @import "tailwindcss";
 
-@media (max-width: 600px) {
-  :root {
-    --header-height: 100px;
-  }
-}
-
 @utility link-primary {
   @apply text-(--primary-green) cursor-pointer;
 
@@ -108,7 +102,6 @@ body {
   margin: 0;
 }
 
-
 button:not(:disabled),
 select:not(:disabled) {
   cursor: pointer;
@@ -137,4 +130,10 @@ select {
 select:focus,
 input:focus {
   outline: 2px solid rgb(25, 135, 84);
+}
+
+@media (max-width: 600px) {
+  :root {
+    --header-height: 100px;
+  }
 }
