@@ -41,4 +41,4 @@ export async function verifyLogin(): Promise<User | null> {
   return data;
 }
 
-export const THIRD_PARTY_COOKIE_GUIDE = "This often happens if third-party cookies are blocked. Try checking your browser settings or opening this page in a guest window.";
+export const THIRD_PARTY_COOKIE_GUIDE = "Please open this page in a guest window OR enable third-party cookies in your browser settings.";

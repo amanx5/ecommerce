@@ -24,7 +24,7 @@ export function useRegister() {
       const userData = await verifyLogin();
       if (!userData) {
         throw new Error(
-          "Account created! However, we couldn't log you in automatically. " +
+          "Account created but failed to auto-login. " +
             THIRD_PARTY_COOKIE_GUIDE,
         );
       }

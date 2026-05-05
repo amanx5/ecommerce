@@ -24,7 +24,7 @@ export function useLogin() {
       const userData = await verifyLogin();
       if (!userData) {
         throw new Error(
-          "Almost there! We couldn't complete the login. " + THIRD_PARTY_COOKIE_GUIDE
+          "Login failed. " + THIRD_PARTY_COOKIE_GUIDE
         );
       }
 
