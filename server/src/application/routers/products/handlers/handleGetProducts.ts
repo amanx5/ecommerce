@@ -1,7 +1,8 @@
 import { Responder } from "@/application/utils";
 import { HttpStatus } from "@/constants";
-import { Product } from "@/persistance/models";
+import { CartItem, Product } from "@/persistance/models";
 import { isObject, isString } from "@/utils";
+import { getUserId } from "@/application/routers/auth/utils";
 import type { RequestHandler } from "express";
 import Fuse from "fuse.js";
 import { Op } from "sequelize";
@@ -12,7 +13,19 @@ export const handleGetProducts: RequestHandler = async (req, res) => {
   try {
     const { search } = req.query;
 
-    let results: unknown[] = [];
+    let results: Product[] = [];
+
+    // get cart product ids for current user
+    let cartProductIds = new Set<string>();
+    const userId = getUserId(res);
+
+    if (userId) {
+      const cartItems = await CartItem.findAll({
+        where: { userId },
+        attributes: ["productId"],
+      });
+      cartProductIds = new Set(cartItems.map((item) => item.productId));
+    }
 
     if (isString(search) && search.trim() !== "") {
       const fuseInstance = await getSearchIndex();
@@ -47,6 +60,18 @@ export const handleGetProducts: RequestHandler = async (req, res) => {
     } else {
       results = await Product.findAll({
         order: [["createdAt", "DESC"]],
+      });
+    }
+
+    // If user has items in cart, sort them to the end
+    if (cartProductIds.size > 0) {
+      results.sort((a, b) => {
+        const aInCart = cartProductIds.has(a.id);
+        const bInCart = cartProductIds.has(b.id);
+
+        if (aInCart && !bInCart) return 1;
+        if (!aInCart && bInCart) return -1;
+        return 0; // Maintain relative order (search relevance or createdAt)
       });
     }
 
