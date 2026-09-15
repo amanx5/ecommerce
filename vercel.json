@@ -3,9 +3,7 @@
   "buildCommand": "pnpm build",
   "outputDirectory": "ui/dist",
   "functions": {
-    "server/dist/serverless.js": {
-      "runtime": "@vercel/node@3"
-    }
+    "server/dist/serverless.js": {}
   },
   "rewrites": [
     {
