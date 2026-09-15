@@ -44,19 +44,15 @@ function getViteConfig(configEnv: ConfigEnv): UserConfig {
 		server: {
 			host: true,
 
-			// *** CORS error is handled in Express cors middleware ***
-			// and requests are forwarded to backend server through `getEndpointUrl` utility
-			// add `proxy` to prevent CORS error and also forward "/api" and "/images" requests to backend server
-			// proxy: {
-			// 	'/api': {
-			// 		target: env.VITE_BACKEND_URL,
-			// 		changeOrigin: true,
-			// 	},
-			// 	'/images': {
-			// 		target: env.VITE_BACKEND_URL,
-			// 		changeOrigin: true,
-			// 	},
-			// },
+			proxy: {
+				'/api': {
+					target: 'http://localhost:5000',
+					// Keep the original Host header: the API's CSRF guard
+					// compares Origin against Host, and both are the Vite
+					// origin (e.g. localhost:5173) for proxied requests.
+					changeOrigin: false,
+				},
+			},
 		},
 
 		resolve: {

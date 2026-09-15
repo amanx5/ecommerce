@@ -26,13 +26,12 @@ Follow these steps to run the application locally:
    ```bash
    pnpm install
    ```
-2. Start the server and client (from the repo root):
+2. Create `.env.dev` file in `server/` folder. Refer [server/.env.example](server/.env.example) for more details on server env variables.
+3. Start the server and client (from the repo root):
    ```bash
    pnpm dev
    ```
-3. Create `.env.development` file in `ui/` folder. Refer [ui/.env.example](ui/.env.example) for more details on ui env variables.
-4. Create `.env.dev` file in `server/` folder. Refer [server/.env.example](server/.env.example) for more details on server env variables.
-5. Navigate to `http://localhost:5173` to access the UI.
+4. Navigate to `http://localhost:5173` to access the UI.
 
 
 ## License & Credits

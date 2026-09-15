@@ -1,27 +1,30 @@
 # Deployment
 
-### 1. Backend (Render)
+The Vite frontend and the Express API deploy together as one Vercel project:
 
-1. Go to [Render Dashboard](https://dashboard.render.com) → **New** → **Web Service**
-2. Connect GitHub repo
-3. Configure:
-    - **Root Directory**: `server`
-    - **Build Command**: `pnpm install --filter server... --frozen-lockfile && pnpm run build`
-    - **Start Command**: `pnpm run start`
-    - **Environment Variables**: Refer [server/.env.example](server/.env.example)
+- UI is served from `ui/dist`
+- All `/api/*` requests are handled by the serverless function in `api/serverless.js`
+- Product images are static assets (`ui/public/images` → `/images/*` on the CDN), not served by the function.
 
-### 2. Frontend (Vercel)
 
-1. Go to [Vercel](https://vercel.com) → **New Project** → Import GitHub repo
+## Production deployment
+
+1. Go to [Vercel Dashboard](https://vercel.com) → **New Project** → Import this GitHub repo
 2. Configure:
     - **Framework Preset**: Vite
-    - **Root Directory**: `ui`
-    - **Build Command**: `pnpm run build`
-    - **Install Command**: `pnpm install --filter ui... --frozen-lockfile`
-    - **Output Directory**: `dist`
-    - **Environment Variables**: Refer [ui/.env.example](ui/.env.example)
+    - **Root Directory**: `./` (monorepo root)
+    - **Build Command**: `pnpm build`
+    - **Output Directory**: `ui/dist`
+    - **Environment Variables**:
+      - `DATABASE_URL`: Your PostgreSQL database URL (e.g. from Neon, Supabase, with `?sslmode=require`)
+      - `AUTH_SECRET`: Secret key for JWT auth token
+      - `NODE_ENV`: `production`
+3. **First deploy only** — seed the catalog: temporarily add `DB_SEED=true`,
+   deploy, then remove the variable again.
 
 
-### 3. Configure CORS and Deploy both environments
+## Environment variables
 
-After Vercel gives you domain URL, add it to the `FRONTEND_URL` env var on Render to enable CORS.
+All variables and their defaults are documented with comments in each package's `.env.example`:
+- [`server/.env.example`](server/.env.example)
+- [`ui/.env.example`](ui/.env.example)

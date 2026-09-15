@@ -1,14 +1,12 @@
 import { csrfGuard } from "@/application/middleware/csrfGuard";
 import {
   apiRouter,
-  corsMiddleWare,
   errorMiddleware,
-  imagesMiddleware,
+  healthHandler,
   jsonMiddleware,
   loggerMiddleware,
   notFoundMiddleware,
   cookieParserMiddleware,
-  rootHandler,
 } from "./middlewares";
 import { type Express } from "express";
 
@@ -26,13 +24,12 @@ import { type Express } from "express";
 export async function bindMiddlewares(app: Express) {
   app.use(cookieParserMiddleware);
   app.use(loggerMiddleware);
-  app.use(corsMiddleWare);
   app.use(csrfGuard);
   app.use(jsonMiddleware);
 
-  app.get("/", rootHandler);
+  // Registered before the `/api/` chain so the probe never hits auth/404 logic.
+  app.get("/api/health", healthHandler);
   app.use("/api/", apiRouter, notFoundMiddleware);
-  app.use("/images/", imagesMiddleware, notFoundMiddleware);
 
   // catch unresolved requests
   app.use(notFoundMiddleware);

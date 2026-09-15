@@ -1,1 +1,4 @@
 node_modules
+api/serverless.js
+.env*
+!.env.example

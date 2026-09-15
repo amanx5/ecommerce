@@ -1,0 +1,19 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "pnpm build",
+  "outputDirectory": "ui/dist",
+  "rewrites": [
+    {
+      "source": "/api",
+      "destination": "/api/serverless"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "/api/serverless"
+    },
+    {
+      "source": "/((?!api|assets|images|favicon|og-image).*)",
+      "destination": "/index.html"
+    }
+  ]
+}

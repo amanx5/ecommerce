@@ -18,3 +18,7 @@ export function getAuthSecret() {
 
   return secret;
 }
+
+export function isServerless() {
+  return process.env.VERCEL === "1";
+}

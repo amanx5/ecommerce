@@ -21,14 +21,25 @@ const SHOPPING_ICONS = [
 
 export function Splash() {
   const [currentIconIndex, setCurrentIconIndex] = useState(0);
+  const [show, setShow] = useState(false);
+
+  // In warm loads, we dont need splash since the healthcheck instantly finishes
+  // and the splash icons gets visible for only few ms, which looks like a flicker.
+  // Plain white screen is better in such scenario, so we delay the first icon by 500ms
+  useEffect(() => {
+    const timer = setTimeout(() => setShow(true), 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
+    if (!show) return;
     const interval = setInterval(() => {
       setCurrentIconIndex((prev) => (prev + 1) % SHOPPING_ICONS.length);
     }, 600);
-
     return () => clearInterval(interval);
-  }, []);
+  }, [show]);
+
+  if (!show) return null;
 
   const CurrentIcon = SHOPPING_ICONS[currentIconIndex];
 

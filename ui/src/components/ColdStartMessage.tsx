@@ -7,11 +7,10 @@ export function ColdStartMessage() {
     <div className="flex flex-col gap-3 p-1">
       <div className="flex flex-col gap-1">
         <span className="font-bold text-zinc-900 block text-base">
-          Opening the shutter...
+          Loading...
         </span>
-        <span className="text-sm text-zinc-500 leading-relaxed block max-w-[280px]">
-          The shop was resting while you were away. Reopening now—it&apos;ll
-          take just a few more seconds!
+        <span className="text-sm text-zinc-500 leading-relaxed block max-w-70">
+          This is taking longer than usual. Please wait.
         </span>
       </div>
       <div className="pt-3 border-t border-zinc-100">

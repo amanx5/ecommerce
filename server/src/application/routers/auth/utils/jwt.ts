@@ -16,14 +16,11 @@ export const TOKEN_COOKIE_OPTIONS: CookieOptions = {
 
   // When the frontend is on an origin (e.g. abc.vercel.app) and sends an API request to the server
   // which is on a different origin (e.g. abc.onrender.com) with `credentials: "include"`,
-  // then the browsers typically do NOT include the cookies (which have "strict" value of sameSite attribute) in the request.
+  // then the browsers typically do NOT include the cookies (which have "lax" or "strict" value of sameSite attribute) in the request.
   // As a result, authRequiredMiddleware will continuously return 401 Unauthorized due to missing token cookie.
   //
-  // But since currently the frontend and backend are on different origins, we will need to set the value of sameSite attribute to "none"
-  // sameSite: "strict" can be used in following scenarios:
-  //  - In development: if the frontend proxies the requests with the same Origin.
-  //  - In production: if the frontend and backend are on the same origin
-  sameSite: isProduction() ? "none" : "lax",
+  // But since currently the frontend and backend are on same origins, we can set with "lax" or "strict". 
+  sameSite: "lax",
 };
 
 export const TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days

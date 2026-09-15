@@ -8,12 +8,10 @@ import {
 } from "@/application/routers";
 import { getAuthStatus, setAuthStatus } from "@/application/routers/auth/utils";
 import { Responder } from "@/application/utils";
-import { FILE_PATHS, HttpStatus } from "@/constants";
+import { HttpStatus } from "@/constants";
 import { AuthStatus } from "@/types/auth";
-import { FRONTEND_URLS } from "@/utils/client";
 import { addRequestLog } from "@/utils/loggers";
 import cookieParser from "cookie-parser";
-import cors from "cors";
 import express, {
   type RequestHandler,
   type ErrorRequestHandler,
@@ -24,20 +22,13 @@ import express, {
 //                                          Third-party middlewares
 //                                          ~~~~~~~~~~~~~~~~~~~~~~~
 // - These are shipped/available at external sources.
-// - `cors` sets headers like Access-Control-Allow-Origin, etc. then propagates by calling next()
 // ******************************************************************************************************************
 // Middleware to parse cookies and attach them as a `cookies` object to the request.
 // Note: By default, Express does not populate `req.cookies`; it only provides `req.headers.cookie` as a raw string.
 const cookieParserMiddleware = cookieParser();
-// allow cors with frontend
-const corsMiddleWare = cors({
-  origin: FRONTEND_URLS,
-  // it adds response header `Access-Control-Allow-Credentials: true` which instructs the browser that the server is
-  // willing to accept credentials (cookies) from this Origin.
-  // if this is not set true, then the browser though receives the response but doesn't allow the frontend to read it
-  // this is basically server accepting handshake of the frontend for cookies
-  credentials: true,
-});
+
+// NOTE: No `cors` middleware — UI and API share one origin (Vercel monolith),
+// so browsers never enforce CORS on our requests.
 
 //
 // ******************************************************************************************************************
@@ -45,10 +36,13 @@ const corsMiddleWare = cors({
 //                                          ~~~~~~~~~~~~~~~~~~~~
 // - These are shipped/available in express package itself.
 // - `express.json` only parses json & only looks at requests where the Content-Type header matches the type option.
-// - `express.static` serves static files & doesn't propagate when request URL matches with `root` directory argument
 // ******************************************************************************************************************
 const jsonMiddleware = express.json();
-const imagesMiddleware = express.static(FILE_PATHS.images);
+
+// NOTE: Product images are static assets shipped with the frontend
+// (`ui/public/images` → served from the site root as `/images/*`), not via
+// the serverless function. Function filesystems are ephemeral and every
+// function invocation costs cold-start time, so static hosting is faster.
 
 //
 // ******************************************************************************************************************
@@ -64,14 +58,10 @@ const loggerMiddleware: RequestHandler = (req, res, next) => {
   next();
 };
 
-const rootHandler: RequestHandler = (_req, res) => {
-  const primaryUrl = FRONTEND_URLS[0] || "unknown";
-  res.send(`
-    <div style="font-family: sans-serif; padding: 20px;">
-      <p>Status: <span style="color: #2ecc71; font-weight: bold;">Online</span></p>
-      <p>The backend services are running. Access the storefront at: <a href="${primaryUrl}">${primaryUrl}</a></p>
-    </div>
-  `);
+// Liveness probe for uptime checks and the UI cold-start notice.
+// Intentionally DB-free so it answers instantly on warm containers.
+const healthHandler: RequestHandler = (_req, res) => {
+  return Responder.success(res, HttpStatus.OK, "OK", { status: "ok" });
 };
 
 const notFoundMiddleware: RequestHandler = (_req, res, _next) => {
@@ -134,10 +124,8 @@ export {
   apiRouter,
   authStatusMiddleware,
   cookieParserMiddleware,
-  corsMiddleWare,
   errorMiddleware,
-  imagesMiddleware,
-  rootHandler,
+  healthHandler,
   jsonMiddleware,
   loggerMiddleware,
   notFoundMiddleware,

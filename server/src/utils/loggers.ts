@@ -1,7 +1,8 @@
-import { FILE_PATHS } from "@/constants";
-import { appendFile } from "node:fs/promises";
+import path from "node:path";
+import { appendFile, mkdir } from "node:fs/promises";
 import { Request, Response } from "express";
 import { isError } from "@/utils/data-types";
+import { isServerless } from "@/utils/environment";
 import { DatabaseError, ValidationError } from "sequelize";
 
 export type LogLevel = "info" | "warn" | "error";
@@ -36,8 +37,14 @@ function resolveLogTargets(type: LogType) {
     ? targetSetInEnv
     : LOGS_TARGET_DEFAULTS[type];
 
+  // In serverless functions (Vercel, …) the filesytem (/tmp) is ephemeral,
+  // it only lives for the duration of a single function invocation.
+  // Logs written there vanish when the container is reclaimed. 
+  // Observability comes from Vercel's log streaming (console output).
+  const fileAllowed = !isServerless();
+
   return {
-    inFile: target === "file" || target === "both",
+    inFile: fileAllowed && (target === "file" || target === "both"),
     inConsole: target === "console" || target === "both",
   };
 
@@ -60,10 +67,16 @@ function logConsole(level: LogLevel, ...elements: LogElements) {
   }
 }
 
+function getLogFileName(type: LogType) {
+  const dir = process.env["LOG_DIR"] ?? path.join(process.cwd(), "logs");
+  return path.join(dir, `${type}.log`);
+}
+
 async function logFile(type: LogType, text: string) {
-  const fileName = FILE_PATHS.logs[type];
+  const fileName = getLogFileName(type);
 
   try {
+    await mkdir(path.dirname(fileName), { recursive: true });
     await appendFile(fileName, "\n" + text);
   } catch (err) {
     logConsole("error", `Unable to write logs in file: ${fileName}\n`, err);

@@ -1,12 +1,13 @@
 import { getEndpointUrl } from "@/utils/api-endpoint";
 import axios, { AxiosResponse, type AxiosError } from "axios";
 
-// this property instructs the browser to attach any cookies (of the Host domain(server)) to the request,
-// and store any cookies the server sends back.
+// this property instructs the browser to attach the auth cookie to the
+// request and store any cookies the server sends back.
 // this is same as setting {"credentials": "include"} in the fetch() API.
 // axios internally uses xhr and sets the withCredentials property on it
-// this is required now since frontend and backend are on different origins
-// this is basically client requesting for a handshake with the server
+// the UI and API share one origin, so this is just belt-and-braces for the
+// cookie-authenticated requests (and required when VITE_BACKEND_URL points
+// at a remote API during debugging).
 axios.defaults.withCredentials = true;
 
 type RequestOptions = {
