@@ -14,6 +14,7 @@ import {
   useAddToCart,
 } from "@/hooks/cart";
 import { isObject } from "@/utils/data-types";
+import { toast } from "react-hot-toast";
 
 interface AddToCartProps {
   product: Product;
@@ -28,7 +29,10 @@ export function AddToCart(props: AddToCartProps) {
 
 function UnauthenticatedAddToCart() {
   const navigate = useNavigate();
-  return <AddToCartButton onClick={() => navigate("/login")} />;
+  return <AddToCartButton onClick={() => {
+    toast.error("Please log in to add items to your cart.");
+    navigate("/login")
+  }} />;
 }
 
 function AuthenticatedAddToCart({ product }: AddToCartProps) {

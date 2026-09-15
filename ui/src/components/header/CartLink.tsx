@@ -21,6 +21,7 @@ export function CartLink() {
     >
       <div className="relative flex items-center">
         <Badge
+          showZero
           badgeContent={isFetching ? <Dots /> : count}
           sx={{
             "& .MuiBadge-badge": {
