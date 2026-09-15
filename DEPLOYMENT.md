@@ -3,7 +3,7 @@
 The Vite frontend and the Express API deploy together as one Vercel project:
 
 - UI is served from `ui/dist`
-- All `/api/*` requests are handled by the serverless function in `api/serverless.js`
+- All `/api/*` requests are handled by the serverless function in `server/dist/serverless.js`
 - Product images are static assets (`ui/public/images` → `/images/*` on the CDN), not served by the function.
 
 

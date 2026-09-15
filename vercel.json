@@ -3,18 +3,18 @@
   "buildCommand": "pnpm build",
   "outputDirectory": "ui/dist",
   "functions": {
-    "api/serverless.js": {
+    "server/dist/serverless.js": {
       "runtime": "@vercel/node@3"
     }
   },
   "rewrites": [
     {
       "source": "/api",
-      "destination": "/api/serverless"
+      "destination": "/server/dist/serverless"
     },
     {
       "source": "/api/:path*",
-      "destination": "/api/serverless"
+      "destination": "/server/dist/serverless"
     },
     {
       "source": "/((?!api|assets|images|favicon|og-image).*)",
