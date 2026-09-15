@@ -5,7 +5,6 @@
 
   "compilerOptions": {
     // modules
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"], // ordered before ~/ deliberately for shorter import path suggestions (TS suggest auto imports based on paths order), but avoid importing files outside /src/ as they won't be compiled
       "~/*": ["./*"]
