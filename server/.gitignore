@@ -8,6 +8,7 @@ database.sqlite
 dist/
 logs/
 node_modules/
+.vercel/
 
 npm-debug.log*
 yarn-debug.log*
