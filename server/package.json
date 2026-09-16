@@ -7,6 +7,9 @@
     "node": "22.x"
   },
   "scripts": {
+    "dev-server": "tsx watch --env-file=.env.dev src/server.ts",
+    "build-server": "tsup",
+    "start-server": "node --env-file=.env.prod dist/server.js",
     "lint": "eslint .",
     "typecheck": "tsc --noemit"
   },

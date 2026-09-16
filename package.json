@@ -4,8 +4,8 @@
   "scripts": {
     "install": "npm --prefix ui install && npm --prefix server install",
     "dev:ui": "npm --prefix ui run dev",
-    "dev:server": "npm --prefix server run dev",
-    "build": "npm --prefix ui run build && npm --prefix server run build",
+    "dev:server": "npm --prefix server run dev-server",
+    "build": "npm --prefix ui run build && npm --prefix server run build-server",
     "lint": "npm --prefix ui run lint && npm --prefix server run lint",
     "typecheck": "npm --prefix ui run typecheck && npm --prefix server run typecheck",
     "test": "npm --prefix ui run test -- --run"
