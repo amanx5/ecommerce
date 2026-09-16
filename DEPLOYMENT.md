@@ -10,7 +10,7 @@ The frontend and backend deploy as **two separate Vercel projects**.
 1. Go to [Vercel Dashboard](https://vercel.com) → **New Project** → Import this GitHub repo
 2. Configure:
    - **Root Directory**: `server`
-   - **Framework Preset**: Other (Express is auto-detected; leave **Build Command** empty)
+   - **Framework Preset**: Express
    - **Environment Variables**: Refer [.env.example](server/.env.example)
 
 ## UI
@@ -18,8 +18,9 @@ The frontend and backend deploy as **two separate Vercel projects**.
 1. Go to [Vercel Dashboard](https://vercel.com) → **New Project** → Import this GitHub repo
 2. Configure:
    - **Root Directory**: `ui`
-   - **Framework Preset**: Vite (auto-detected; Build Command `npm run build`, Output Directory `dist`)
+   - **Framework Preset**: Vite
    - **Environment Variables**: Refer [.env.example](ui/.env.example)
+   - Do NOT set `NODE_ENV` here — it makes npm skip devDependencies (`@vitejs/plugin-react`, …) and fails the build with `ERR_MODULE_NOT_FOUND`.
 
 ## Custom domain (recommended)
 
