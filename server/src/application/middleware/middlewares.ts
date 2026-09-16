@@ -11,7 +11,9 @@ import { Responder } from "@/application/utils";
 import { HttpStatus } from "@/constants";
 import { AuthStatus } from "@/types/auth";
 import { addRequestLog } from "@/utils/loggers";
+import { getTrustedOrigins } from "@/utils/environment";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 import express, {
   type RequestHandler,
   type ErrorRequestHandler,
@@ -27,8 +29,13 @@ import express, {
 // Note: By default, Express does not populate `req.cookies`; it only provides `req.headers.cookie` as a raw string.
 const cookieParserMiddleware = cookieParser();
 
-// NOTE: No `cors` middleware — UI and API share one origin (Vercel monolith),
-// so browsers never enforce CORS on our requests.
+// The UI calls the API cross-origin, so browsers enforce CORS on API calls.
+// Credentialed requests (our auth cookie) need an explicit allowed origin
+// plus preflight handling, which this provides.
+const corsMiddleware = cors({
+  origin:  getTrustedOrigins(),
+  credentials: true,
+});
 
 //
 // ******************************************************************************************************************
@@ -39,10 +46,11 @@ const cookieParserMiddleware = cookieParser();
 // ******************************************************************************************************************
 const jsonMiddleware = express.json();
 
-// NOTE: Product images are static assets shipped with the frontend
-// (`ui/public/images` → served from the site root as `/images/*`), not via
-// the serverless function. Function filesystems are ephemeral and every
-// function invocation costs cold-start time, so static hosting is faster.
+// NOTE: Product images are static assets shipped with the API
+// (`server/public/images` → served from the site root as `/images/*`).
+// On Vercel they come from the CDN (`public/`); locally and standalone they
+// are served by `express.static()` in bindMiddlewares. Either way they never
+// touch the `/api` chain, so per-request cold-start cost stays off images.
 
 //
 // ******************************************************************************************************************
@@ -124,6 +132,7 @@ export {
   apiRouter,
   authStatusMiddleware,
   cookieParserMiddleware,
+  corsMiddleware,
   errorMiddleware,
   healthHandler,
   jsonMiddleware,

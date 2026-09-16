@@ -1,14 +1,18 @@
 import { csrfGuard } from "@/application/middleware/csrfGuard";
 import {
   apiRouter,
+  corsMiddleware,
   errorMiddleware,
   healthHandler,
   jsonMiddleware,
   loggerMiddleware,
   notFoundMiddleware,
   cookieParserMiddleware,
-} from "./middlewares";
-import { type Express } from "express";
+} from "@/application/middleware/middlewares";
+import { resolveFromServerRoot } from "@/utils/environment";
+import express, { type Express } from "express";
+
+const publicDir = resolveFromServerRoot("public");
 
 /**
  * Binds Middlewares to the express app.
@@ -22,6 +26,13 @@ import { type Express } from "express";
  * @see https://expressjs.com/en/guide/using-middleware.html
  */
 export async function bindMiddlewares(app: Express) {
+  // Static assets (`server/public/**` → `/...`). On Vercel these are served
+  // from the CDN and `express.static()` is ignored, so this only takes effect
+  // for local dev and standalone hosting.
+  app.use(express.static(publicDir));
+
+  // CORS first so preflights short-circuit before logging/auth logic.
+  app.use(corsMiddleware);
   app.use(cookieParserMiddleware);
   app.use(loggerMiddleware);
   app.use(csrfGuard);

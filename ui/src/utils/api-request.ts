@@ -5,9 +5,9 @@ import axios, { AxiosResponse, type AxiosError } from "axios";
 // request and store any cookies the server sends back.
 // this is same as setting {"credentials": "include"} in the fetch() API.
 // axios internally uses xhr and sets the withCredentials property on it
-// the UI and API share one origin, so this is just belt-and-braces for the
-// cookie-authenticated requests (and required when VITE_BACKEND_URL points
-// at a remote API during debugging).
+// the UI and API are separate origins in production, so this is required for
+// the cookie-authenticated requests (the API answers CORS with credentials
+// for the configured UI origin).
 axios.defaults.withCredentials = true;
 
 type RequestOptions = {

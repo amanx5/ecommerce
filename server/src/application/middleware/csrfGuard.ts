@@ -1,8 +1,11 @@
 import { Responder } from "@/application/utils";
 import { HttpStatus } from "@/constants";
+import { getTrustedOrigins } from "@/utils/environment";
 import { addAppLog } from "@/utils/loggers";
 import { type RequestHandler } from "express";
 
+const TRUSTED_ORIGINS = getTrustedOrigins();
+const CSRF_SAFE_METHODS = ["GET", "HEAD", "OPTIONS"];
 const CSRF_DETECTED_MSG = "Action blocked: Potential CSRF attempt detected.";
 
 /**
@@ -31,41 +34,64 @@ const CSRF_DETECTED_MSG = "Action blocked: Potential CSRF attempt detected.";
  *
  * ## Why CSRF Protection is needed:
  * CORS only blocks the browser from *reading* the response after the request is finished. By then, the "damage"
- * (the database action) has already happened. On the other hand, CSRF protection stops the request **before** 
+ * (the database action) has already happened. On the other hand, CSRF protection stops the request **before**
  * it reaches route handlers.
- * 
+ *
  * ## Some basic approaches to prevent CSRF:
  * 1. Set auth cookies with `SameSite: Strict` or `SameSite: lax`. This ensures the client browser doesn't include
- *    that cookie if the client is on a different domain. 
- * 2. Check whether the origin host is valid. This guard rejects state-changing requests whose `Origin` host does 
- *    not match the request's own `Host` (OWASP Origin-vs-Host check).
+ *    that cookie if the client is on a different domain.
+ * 2. Check whether the origin host is valid. Reject state-changing requests (like POST, PUT, DELETE) whose `Origin`
+ *    host does not match the request's own `Host` (OWASP Origin-vs-Host check).
+ *
+ *    For example:
+ *    `POST https://api.myshop.com/api/orders` with `Origin: https://evil.com` is rejected with 403
+ *    (`evil.com` matches neither the API's own host `api.myshop.com` nor the `TRUSTED_ORIGINS` allowlist),
+ *    while the same request with `Origin: https://myshop.com` is allowed through the allowlist.
+ *
+ *    Same-site alone is not enough: `POST https://api.shop.com/api/orders`
+ *    with `Origin: https://evil.shop.com` is still rejected with 403. The
+ *    browser treats the two as same-site and would even attach `Strict`
+ *    cookies — but `evil.shop.com` is neither the API's own host
+ *    (`api.shop.com`) nor on the allowlist. Only an exact allowlisted
+ *    origin such as `Origin: https://shop.com` passes.
  */
 export const csrfGuard: RequestHandler = (req, res, next) => {
-  const safeMethods = ["GET", "HEAD", "OPTIONS"];
   const origin = req.headers.origin;
-  const originHost = getOriginHost(origin);
+  const originHost = extractHostFromOrigin(origin);
   const targetHost = req.headers.host;
-  const block = () =>
-    Responder.failure(res, HttpStatus.FORBIDDEN, CSRF_DETECTED_MSG);
 
-  if (safeMethods.includes(req.method)) return next();
-
-  // Requests without an `Origin` header (curl, non-browser clients) are allowed through; they cannot exploit a victim's browser session.
-  if (!origin) return next();
-
-  // rejects state-changing requests whose `Origin` host does not match the request's own `Host` (OWASP Origin-vs-Host check).
-  if (!originHost) return block();
-
-  // Request's origin host must match hostname of the server (UI and server are hosted on same domain)
-  if (!targetHost || originHost !== targetHost) {
-    addAppLog("warn", `Blocked potential CSRF; Origin: ${origin}`);
-    return block();
+  // accepts request without an `Origin` header (curl/non-browser clients: they cannot exploit a victim's browser session)
+  // accepts request from clients having same host as the server (OWASP Origin-vs-Host check)
+  // accepts request from trusted origins
+  // accepts request with safe methods
+  if (
+    !origin ||
+    originHost === targetHost ||
+    TRUSTED_ORIGINS.includes(origin) ||
+    CSRF_SAFE_METHODS.includes(req.method)
+  ) {
+    return next();
   }
 
-  next();
+  addAppLog("warn", `Blocked potential CSRF; Origin: ${origin}`);
+  return Responder.failure(res, HttpStatus.FORBIDDEN, CSRF_DETECTED_MSG);
 };
 
-function getOriginHost(origin: string | undefined): string | null {
+/**
+ * Extract the `host` (hostname + port) from an `Origin` header value.
+ *
+ * The port is included when explicitly present in the URL (`URL` drops it
+ * when it is the scheme default, e.g. `:443` for https) — the same shape as
+ * `req.headers.host`, which this is compared against.
+ *
+ * @example
+ * extractHostFromOrigin("https://myshop.com"); // "myshop.com"
+ * extractHostFromOrigin("https://myshop.com:443"); // "myshop.com"
+ * extractHostFromOrigin("http://localhost:5000"); // "localhost:5000"
+ * extractHostFromOrigin("not-a-url"); // null
+ * extractHostFromOrigin(undefined); // null
+ */
+function extractHostFromOrigin(origin: string | undefined): string | null {
   if (!origin || origin.trim() === "") return null;
 
   try {

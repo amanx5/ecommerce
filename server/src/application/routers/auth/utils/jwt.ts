@@ -18,8 +18,11 @@ export const TOKEN_COOKIE_OPTIONS: CookieOptions = {
   // which is on a different origin (e.g. abc.onrender.com) with `credentials: "include"`,
   // then the browsers typically do NOT include the cookies (which have "lax" or "strict" value of sameSite attribute) in the request.
   // As a result, authRequiredMiddleware will continuously return 401 Unauthorized due to missing token cookie.
-  //
-  // But since currently the frontend and backend are on same origins, we can set with "lax" or "strict". 
+  // 
+  // To prevent this: 
+  // 1. If UI and API are on different "Site", use "none" (less secure)
+  // 2. If UI and API are on same "Site", use "lax" or "strict"
+  // Learn about "Site" here: https://security.stackexchange.com/a/223477/392876
   sameSite: "lax",
 };
 

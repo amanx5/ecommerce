@@ -3,6 +3,7 @@ import { appendFile, mkdir } from "node:fs/promises";
 import { Request, Response } from "express";
 import { isError } from "@/utils/data-types";
 import { isServerless } from "@/utils/environment";
+import { resolveFromServerRoot } from "@/utils/environment";
 import { DatabaseError, ValidationError } from "sequelize";
 
 export type LogLevel = "info" | "warn" | "error";
@@ -68,7 +69,7 @@ function logConsole(level: LogLevel, ...elements: LogElements) {
 }
 
 function getLogFileName(type: LogType) {
-  const dir = process.env["LOG_DIR"] ?? path.join(process.cwd(), "logs");
+  const dir = process.env["LOG_DIR"] ?? resolveFromServerRoot("logs");
   return path.join(dir, `${type}.log`);
 }
 

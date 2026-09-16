@@ -4,11 +4,10 @@ import { isTestMode } from "@/utils/environment";
 /**
  * Base URL of the backend.
  *
- * The UI and API are deployed as one unit (Vercel monolith), so API calls and
- * image URLs are same-origin relative paths by default (`/api/...`,
- * `/images/...`). An absolute `VITE_BACKEND_URL` override is still honored
- * when set (e.g. local debugging against a remote API), but it is optional
- * and should normally be left unset.
+ * The UI and API are deployed as separate Vercel projects, so API calls
+ * (`/api/...`) and product-image URLs (`/images/...`, served from
+ * `server/public/images`) are prefixed with `VITE_BACKEND_URL` (required in
+ * production).
  */
 function getBackendUrl(): string {
   const override = import.meta.env["VITE_BACKEND_URL"];

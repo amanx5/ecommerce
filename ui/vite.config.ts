@@ -52,6 +52,12 @@ function getViteConfig(configEnv: ConfigEnv): UserConfig {
 					// origin (e.g. localhost:5173) for proxied requests.
 					changeOrigin: false,
 				},
+				// Product images live with the API (`server/public/images`),
+				// so local dev proxies them too (same-origin `<img>` URLs).
+				'/images': {
+					target: 'http://localhost:5000',
+					changeOrigin: false,
+				},
 			},
 		},
 

@@ -1,10 +1,9 @@
-import { createApp } from "@/application/createApp";
-import { setupPersistence } from "@/persistance";
+import { init } from "@/init";
 import { addAppLog } from "@/utils";
 
+// Standalone entry for local dev and non-Vercel hosting
 try {
-  const persistanceInstance = await setupPersistence();
-  const app = await createApp();
+  const { app, db } = await init();
 
   const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
 
@@ -16,7 +15,7 @@ try {
 
   server.on("error", async (err) => {
     await addAppLog("error", "Server Error", err);
-    await persistanceInstance.close().catch(() => undefined);
+    await db.close().catch(() => undefined);
     process.exit(1);
   });
 } catch (err) {
