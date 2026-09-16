@@ -1,7 +1,0 @@
-packages:
-    - 'server'
-    - 'ui'
-
-allowBuilds:
-  esbuild: true
-  sqlite3: true

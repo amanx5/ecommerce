@@ -6,12 +6,10 @@
 
 	
 	// new settings in latest Visual Studio Code
-	"js/ts.tsdk.path": "node_modules\\typescript\\lib",
 	"js/ts.autoClosingTags.enabled": true,
 	"js/ts.preferences.importModuleSpecifier": "non-relative",
 	
 	// old settings for backward compatibility (Antigravity still uses these)
-	"typescript.tsdk": "./node_modules/typescript/lib",
 	"typescript.autoClosingTags": true,
 	"typescript.preferences.importModuleSpecifier": "non-relative",
 }

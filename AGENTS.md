@@ -1,6 +1,7 @@
 ## Package Manager
 
-- Use PNPM
+- Use NPM.
+- No workspaces: `ui/` and `server/` are isolated packages with their own `package.json` and `package-lock.json`.
 
 ## Tailwind
 

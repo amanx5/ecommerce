@@ -12,7 +12,7 @@
 ### Start the Server
 
 ```sh
-pnpm dev
+npm run dev
 ```
 
 Or run directly:
@@ -33,7 +33,7 @@ invokes the handler directly.
 ### Build
 
 ```sh
-pnpm build
+npm run build
 ```
 
 > [!NOTE]

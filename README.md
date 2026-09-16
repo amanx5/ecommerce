@@ -1,42 +1,45 @@
-# E-commerce Application
+# ecommerce
 
-This project is a simple **e-commerce platform** originally built during the [SuperSimpleDev React course](https://courses.supersimple.dev/courses/react). It follows the tutorial content, but includes some enhancements:
-
-- Fully typed using TypeScript (frontend & backend).
-- Structured as a pnpm monorepo with separated `server/` and `ui/` packages.
-
-The video series is available on YouTube:
-
-- [SuperSimpleDev React Course (YouTube)](https://www.youtube.com/watch?v=TtPXvEcE11E&t=41018s)
+A simple full-stack ecommerce app with a React frontend and Node/Express backend.
 
 ## Overview
 
-The workspace consists of two main packages:
+This reposistory consists of two main packages:
 
 - **server/** – a Node/Express backend providing REST APIs and data persistence.
 - **ui/** – a React frontend built using Vite and TypeScript.
 
-Both packages share common tooling and are managed with `pnpm` in a monorepo setup.
-
-## Getting Started (Development)
+## Getting Started
 
 Follow these steps to run the application locally:
 
-1. Install dependencies:
+1. Change the current directory to the repository root:
+    ```bash
+   cd ecommerce
+   ```  
+2. Install dependencies:
    ```bash
-   pnpm install
+   npm run install
    ```
-2. Create `.env.dev` file in `server/` folder. Refer [server/.env.example](server/.env.example) for more details on server env variables.
-3. Start the server and client (from the repo root):
+3. Create `.env.dev` file in `server/` folder. Example environment file can be found [here](server/.env.example).
+4. Start backend server
    ```bash
-   pnpm dev
+   npm run dev:server
    ```
-4. Navigate to `http://localhost:5173` to access the UI.
+5. Start UI server
+   ```bash
+   npm run dev:ui
+   ```
+6. Navigate to http://localhost:5173 to access the UI.
 
 
 ## License & Credits
 
 Created as an educational project under the SuperSimpleDev React course.
+
+YouTube link: [SuperSimpleDev React course](https://www.youtube.com/watch?v=TtPXvEcE11E)
+
+Full course:  [SuperSimpleDev React course](https://courses.supersimple.dev/courses/react)
 
 ---
 

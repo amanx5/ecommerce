@@ -1,12 +1,13 @@
 {
-	"name": "ecommerce",
-	"private": true,
-	"packageManager": "pnpm@12.4.1+sha512.2e81e399d73fe8390dab25e06aa788ab7a5908248d2f5a370f82b481147a6a7a367bf8048f9a6fdb6460f21a66f0542dedb8b94ca2c8723596741920b1656d4c",
-	"scripts": {
-		"build": "pnpm -F ui build && pnpm -F server build",
-		"dev": "pnpm -r --parallel run dev",
-		"lint": "pnpm -r --parallel run lint",
-		"test": "pnpm -r run test",
-		"typecheck": "pnpm -r run typecheck"
-	}
+  "name": "ecommerce",
+  "private": true,
+  "scripts": {
+    "install": "npm --prefix ui install && npm --prefix server install",
+    "dev:ui": "npm --prefix ui run dev",
+    "dev:server": "npm --prefix server run dev",
+    "build": "npm --prefix ui run build && npm --prefix server run build",
+    "lint": "npm --prefix ui run lint && npm --prefix server run lint",
+    "typecheck": "npm --prefix ui run typecheck && npm --prefix server run typecheck",
+    "test": "npm --prefix ui run test -- --run"
+  }
 }
