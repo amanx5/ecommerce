@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from "@/utils/api-endpoint";
 import { hitRequest } from "@/utils/api-request";
 import { useQuery } from "@tanstack/react-query";
 
@@ -13,7 +14,7 @@ export function useHealthCheck() {
 
 async function getHealthCheck() {
   const { response, error } = await hitRequest({
-    endpoint: "/",
+    endpoint: API_ENDPOINTS.healthcheck.GET,
     method: "head",
   });
 
