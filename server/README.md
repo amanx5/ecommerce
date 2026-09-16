@@ -9,14 +9,6 @@
 
 ## Development
 
-### Start the Server
-
-```sh
-npm run dev
-```
-
-Or run directly:
-
 ```sh
 # Using tsx watch
 tsx watch --env-file=.env.dev src/server.ts
@@ -42,7 +34,7 @@ Required production env vars (see `.env.example`): `DATABASE_URL`
 
 - Build the server
 ```sh
-npm run build
+npm exec tsup
 ```
 
 > [!NOTE]
