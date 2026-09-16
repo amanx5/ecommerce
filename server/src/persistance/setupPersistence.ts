@@ -2,6 +2,13 @@ import { seedDatabase, initModelsAndAssociations } from "@/persistance/utils/";
 import { addAppLog, addSqlLog, isDevelopment, isProduction } from "@/utils/";
 import { Sequelize } from "sequelize";
 
+// Static imports so Vercel's file tracer includes these packages in the
+// function bundle: Sequelize loads them via dynamic `require()`, which
+// tracers cannot see — without this the function crashes at boot with
+// "Please install pg package manually". No runtime effect beyond the import.
+import "pg";
+import "pg-hstore";
+
 export type PersistenceInstance = Sequelize;
 
 type SyncMode = "safe" | "alter" | "none";
