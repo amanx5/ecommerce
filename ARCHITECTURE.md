@@ -18,6 +18,10 @@ The [`<root>/api` convention](https://vercel.com/templates/other/nodejs-serverle
 
 On the other hand, [the standard express project](https://vercel.com/docs/frameworks/backend/express)
 requires no handler wrapper, no `/api` rewrites, no bundled dependencies.
+The single `vercel.json` rewrite (`/` → `/index.html`) exists only because
+root-path directory-index resolution does not apply next to the function
+catch-all — without it, `/` falls through to the app's 404 instead of the
+static file (verified: `/index.html` serves while `/` 404s).
 
 ## Why not a monolith (UI served from the API project)?
 
