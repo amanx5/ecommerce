@@ -72,12 +72,23 @@ const healthHandler: RequestHandler = (_req, res) => {
   return Responder.success(res, HttpStatus.OK, "OK", { status: "ok" });
 };
 
-// Root landing page (thumbs-up). Served by the app (not static) because
+// Root landing page. Served by the app (not static) because
 // directory-index resolution does not apply next to the function catch-all
 // on Vercel, and rewrites route into the function instead of static files.
 const rootHandler: RequestHandler = (_req, res) => {
   res.send(
-    `<style>html,body{margin:0;padding:0;height:100%;overflow:hidden;}</style><div style="display:flex;align-items:center;justify-content:center;height:100vh;font-size:10rem;">👍</div>`,
+    `<!doctype html>
+    <html>
+      <head>
+        <title>Shop - API</title>
+        <style>html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }</style>
+      </head>
+      <body>
+        <div style="display: flex; align-items: center; justify-content: center; height: 100vh; font-size: 3rem; font-family: sans-serif;">
+          Aal Izz Well
+        </div>
+      </body>
+    </html>`,
   );
 };
 
