@@ -21,6 +21,24 @@ export function getAuthSecret() {
   return secret;
 }
 
+export type AuthCookieSameSite = "lax" | "strict" | "none";
+
+/**
+ * Returns the configured value of SameSite attribute for the auth (`token`) cookie.
+ *
+ * Defaults to `lax`. Override with `AUTH_COOKIE_SAMESITE` (`lax` | `strict` | `none`,
+ * case-insensitive, surrounding whitespace ignored). Unknown/empty values fall back to `lax`.
+ */
+export function getAuthCookieSameSite(): AuthCookieSameSite {
+  const raw = (process.env.AUTH_COOKIE_SAMESITE ?? "lax").trim().toLowerCase();
+
+  if (["lax", "strict", "none"].includes(raw)) {
+    return raw as AuthCookieSameSite;
+  }
+
+  return "lax";
+}
+
 export function isServerless() {
   return process.env.VERCEL === "1";
 }

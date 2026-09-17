@@ -1,6 +1,7 @@
 import { type UserDTO } from "@/application/routers/auth/utils/user";
 import type { User } from "@/persistance/models";
 import {
+  getAuthCookieSameSite,
   getAuthSecret,
   isNumber,
   isObject,
@@ -12,18 +13,21 @@ import crypto from "node:crypto";
 
 export const TOKEN_COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
-  secure: isProduction(),
+  // `SameSite=None` is rejected by browsers without `Secure`, so force it on.
+  secure: isProduction() || getAuthCookieSameSite() === "none",
 
   // When the frontend is on an origin (e.g. abc.vercel.app) and sends an API request to the server
   // which is on a different origin (e.g. abc.onrender.com) with `credentials: "include"`,
   // then the browsers typically do NOT include the cookies (which have "lax" or "strict" value of sameSite attribute) in the request.
   // As a result, authRequiredMiddleware will continuously return 401 Unauthorized due to missing token cookie.
-  // 
-  // To prevent this: 
+  //
+  // To prevent this:
   // 1. If UI and API are on different "Site", use "none" (less secure)
   // 2. If UI and API are on same "Site", use "lax" or "strict"
   // Learn about "Site" here: https://security.stackexchange.com/a/223477/392876
-  sameSite: "lax",
+  //
+  // Configurable via `AUTH_COOKIE_SAMESITE` env var (defaults to `lax`).
+  sameSite: getAuthCookieSameSite(),
 };
 
 export const TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
