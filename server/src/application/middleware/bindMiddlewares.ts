@@ -8,6 +8,7 @@ import {
   loggerMiddleware,
   notFoundMiddleware,
   cookieParserMiddleware,
+  rootHandler,
 } from "@/application/middleware/middlewares";
 import { resolveFromServerRoot } from "@/utils/environment";
 import express, { type Express } from "express";
@@ -38,6 +39,7 @@ export async function bindMiddlewares(app: Express) {
   app.use(csrfGuard);
   app.use(jsonMiddleware);
 
+  app.get("/", rootHandler);
   // Registered before the `/api/` chain so the probe never hits auth/404 logic.
   app.get("/api/health", healthHandler);
   app.use("/api/", apiRouter, notFoundMiddleware);
