@@ -23,10 +23,10 @@ jobs:
             server/package-lock.json
 
       - name: Install dependencies for UI
-        run: npm --prefix ui ci
+        run: npm --prefix ui ci --include=optional
 
       - name: Install dependencies for Server
-        run: npm --prefix server ci
+        run: npm --prefix server ci --include=optional
 
       - name: Run typecheck
         run: npm run typecheck
